@@ -37,6 +37,8 @@ data/<namespace>/blacksmith/
 │  └─ <part_id>.json
 ├─ shapes/
 │  └─ <shape_id>.json
+├─ integrations/
+│  └─ <mod_id>/
 ├─ quality.json
 └─ skill_assists.json
 ```
@@ -51,7 +53,9 @@ data/<namespace>/blacksmith/
     "forging_latency_compensation_ticks": 4,
     "carving_packet_interval_ticks": 2,
     "carving_max_cells_per_request": 64,
-    "workbench_interaction_distance": 8.0
+    "workbench_interaction_distance": 8.0,
+    "session_heartbeat_ticks": 20,
+    "disconnect_grace_ticks": 100
   }
 }
 ```
@@ -63,6 +67,8 @@ data/<namespace>/blacksmith/
 ```text
 data/<namespace>/recipes/blacksmith/<recipe_id>.json
 ```
+
+共通設備と道具のレシピは[設備・道具・鋳型仕様](./equipment/stations-and-tools.md)、バニラ完成品のレシピは[バニラ装備構成仕様](./equipment/vanilla.md)に従う。
 
 他MOD連携データも連携先の名前空間を直接コードへ埋め込まず、同じ形式のJSONとレシピで定義する。ルートテーブル変更などJSONだけで表現できない初期化処理は、MODごとの連携モジュールへ分離する。
 
@@ -236,7 +242,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 | 項目 | 必須 | 内容 |
 |---|---|---|
 | `remove_per_pass` | 必須 | ブラシが1回通過したセルから減らす残存量 |
-| `path_interpolation` | 必須 | ドラッグ経路の補間方式。MVPでは `grid_traversal` 固定 |
+| `path_interpolation` | 必須 | ドラッグ経路の補間方式。MVPでは `supercover` 固定 |
 | `removed_units_per_durability` | 必須 | 道具耐久値を1消費するセル相当の累積除去量 |
 
 板材からピッケルの柄を作る定義の確定部分は以下のとおり。
@@ -256,7 +262,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
   "base_grid_size": 16,
   "carving": {
     "remove_per_pass": 0.5,
-    "path_interpolation": "grid_traversal",
+    "path_interpolation": "supercover",
     "removed_units_per_durability": 8
   },
   "warning_at_or_below_retention": 0.6,
@@ -266,6 +272,10 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 ```
 
 彫刻ナイフの最大耐久値は `128` とする。ドラッグ中は直前の入力位置から現在位置までの通過セルを補間し、通過セルごとに除去処理を行う。描画フレーム数は除去量と耐久消費へ影響させない。耐久消費に満たない累積除去量は加工状態へ保存する。
+
+入力座標は加工領域に対する `[0.0, 1.0)` の正規化座標とする。`supercover` は始点と終点を結ぶ線分が交差する全セルを列挙する。同じストロークIDの通信区間で重複したセルと、直前の通信区間の終点に相当する先頭セルは除外する。ストロークIDが変わった場合は重複履歴を破棄し、同じセルを再び加工できる。
+
+ブラシ半径 `0.5` はカーソルを含むセルだけを返す。半径が `0.5` より大きい場合は、セル単位へ変換したカーソル位置とセル中心のユークリッド距離が半径以下のセルを返す。グリッド外のセルは処理対象に含めない。
 
 理想形状として残すべき領域の残存率が `warning_at_or_below_retention` 以下になった場合は、警告音とGUI枠の色変化を発生させる。`destroy_at_or_below_retention` 以下になった場合は即時失敗とする。専用の亀裂表示はデータ上の必須要素とせず、低コストで共通描画できる場合だけ追加する。
 
@@ -293,6 +303,14 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 `binary_rows` では、`#`を残すべき領域、`.`を削るべき領域として扱う。`rows` の要素数と各文字列の長さは、どちらも `grid_size` と一致させる。
 
 下位解像度での加工結果は、正規化座標を使って最大解像度へ展開してから採点する。理想形状自体を下位解像度へ縮小して採点しない。
+
+展開処理には、入力セルと出力セルの正規化領域が重なる面積による加重平均を使用する。
+
+```text
+出力セル値 = Σ(入力セル値 × 入力セルと出力セルの重なり面積) / 出力セル面積
+```
+
+入力セルと出力セルは、それぞれのグリッドを `[0, 1) × [0, 1)` へ等分した半開区間として扱う。演算順による差を避けるため倍精度で合計し、最終結果だけを `0.0～1.0` へ丸める。最近傍補間と双線形補間は使用しない。
 
 各理想形状は、利用可能な下位解像度へ変換してから最大解像度へ戻した場合に、元の形状と一致してはならない。一致する場合は、下位解像度でも完全再現できてスキルによる精度差が失われるため、定義を無効とする。
 
@@ -364,7 +382,34 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
     { "min": 80, "max": 100, "translation_key": "quality.craftbound.masterwork" }
   ],
   "modifiers": {
+    "attack_damage": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006
+    },
+    "projectile_damage": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006
+    },
+    "armor": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006,
+      "round_to": 0.5
+    },
+    "armor_toughness": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006,
+      "round_to": 0.5
+    },
     "mining_speed": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006
+    },
+    "work_speed": {
       "evaluator": "craftbound:linear_multiplier",
       "base": 0.7,
       "per_quality": 0.006
@@ -372,11 +417,15 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
     "max_durability": {
       "evaluator": "craftbound:linear_multiplier",
       "base": 0.7,
-      "per_quality": 0.006
+      "per_quality": 0.006,
+      "rounding": "round",
+      "preserve_damage_ratio": true
     }
   }
 }
 ```
+
+攻撃速度、ノックバック、ノックバック耐性、エンチャント効果は `modifiers` に含めず、品質で変更しない。各倍率は登録時の基礎性能へ一度だけ適用する。
 
 ---
 
@@ -546,6 +595,7 @@ JSON読込時に、少なくとも以下を検証する。
 - `failure_lump.count × failure_lump.units_per_item` が金属塊化後の回収量と一致する
 - `remove_per_pass` が `0` より大きく `1` 以下である
 - `removed_units_per_durability` が `0` より大きい
+- `path_interpolation` が `supercover` である
 - `0 < destroy_at_or_below_retention < warning_at_or_below_retention <= 1` を満たす
 - 操作支援段階IDが重複しない
 - 操作支援段階が上がるにつれて、グリッド解像度は単調増加し、目盛り間隔とブラシ半径は単調減少する
@@ -557,6 +607,8 @@ JSON読込時に、少なくとも以下を検証する。
 - 理想形状が `#`と`.`以外の文字を含まない
 - 理想形状を各下位解像度へ変換して戻した結果が、元の形状と一致しない
 - 参照先の金属、パーツ、形状、評価関数が存在する
+- 品質補正対象と丸め設定が登録済みの形式である
+- 各データコンポーネントの `data_version` が移行可能な範囲にある
 
 検証に失敗した場合は、ファイルパス、項目名、問題の値をログへ出力する。該当定義は登録せず、他の正常な定義の読込は継続する。
 
@@ -587,6 +639,10 @@ JSON読込時に、少なくとも以下を検証する。
 | `session_id` | 操作要求を加工状態へ関連付ける一意なID |
 | `last_sequence` | 最後に受理したクライアント要求の連番 |
 | `active_player` | 現在の操作権を持つプレイヤーID |
+| `last_heartbeat_ticks` | 最後に生存通知を受理したサーバーティック |
+| `lease_expires_at` | 通信切断後の操作権を解放するサーバーティック |
+| `active_stroke_id` | 現在の連続ドラッグを識別するID |
+| `last_drag_cell` | 通信区間をまたぐ重複処理を防ぐ直前セル |
 
 工程で使用しない項目は省略してよい。るつぼを溶鉱炉から取り出した場合は `heating_ticks` を進行させず、再投入時に同じ値から再開する。鋳型へ流し込んだ時点で加熱評価を確定し、その後は `heating_score` を更新しない。
 
@@ -596,17 +652,37 @@ JSON読込時に、少なくとも以下を検証する。
 
 ---
 
-## 15. クライアント同期
+## 15. データコンポーネント
+
+アイテムへ保存する鍛冶データは、型付きのカスタムデータコンポーネントとして以下へ分離する。汎用の文字列キーだけを持つ非構造化データへまとめない。
+
+| コンポーネントID | 対象 | 主な内容 |
+|---|---|---|
+| `craftbound:quality` | 完成パーツ、完成品 | `0～100` の品質整数 |
+| `craftbound:crucible_contents` | るつぼ | データバージョン、金属ID、量、加熱時間、加熱済みフラグ、定義スナップショット |
+| `craftbound:metal_lump` | 金属塊 | データバージョン、金属ID、サイズ、素材量 |
+| `craftbound:metal_part_state` | 粗加工・鍛造中パーツ | データバージョン、パーツID、素材、加熱評価、冷却、破損上限、打撃履歴、定義スナップショット |
+| `craftbound:non_metal_part_state` | 非金属加工途中品 | データバージョン、パーツID、素材、解像度、加工グリッド、耐久消費用の累積除去量、定義スナップショット |
+
+各コンポーネントは永続化用Codecと通信同期用StreamCodecを持つ。`craftbound:quality` は範囲検証付き整数とし、それ以外の複合コンポーネントは `data_version` を持つ。読込時にはバージョンを検証し、対応する旧形式は現在形式へ移行する。実装より新しいバージョンや移行不能な値は黙って初期化せず、対象アイテムを使用不可にして原因をログへ記録する。
+
+完成したパーツから加工途中コンポーネントを除去し、`craftbound:quality` だけを付与する。通常レシピ品やコンポーネントを持たない対象アイテムは、読取API上で品質 `30` を返す。読取のためだけに既存アイテムを書き換えない。
+
+操作セッションはアイテムコンポーネントへ保存せず、作業台のBlock Entityで管理する。Block EntityはセッションID、操作中プレイヤー、最後に受理した連番、最終生存通知ティック、リース期限を持つ。サーバー再起動時は加工データだけを復元し、操作中プレイヤーとリースを復元しない。
+
+---
+
+## 16. クライアント同期
 
 JSONはサーバー側を正とする。クライアント描画に必要なゲージ範囲、品質段階、グリッド解像度などは、ログイン時またはデータパック再読込時にサーバーから同期する。
 
 クライアントは表示と入力送信だけを担当し、品質評価や素材消費を確定しない。
 
-操作パケットはセッションIDと単調増加する連番を持つ。鍛造入力には同期済みサーバーティック、非金属加工入力には正規化した始点と終点を含める。サーバーは `settings.json` の通信上限と、加工状態へ保存した `last_sequence` および `active_player` を使用して検証する。
+操作パケットはセッションIDと単調増加する連番を持つ。鍛造入力には同期済みサーバーティック、非金属加工入力にはストロークIDと正規化した始点・終点を含める。サーバーは `settings.json` の通信上限と、加工状態へ保存した `last_sequence` および `active_player` を使用して検証する。
 
 ---
 
-## 16. 未決定事項
+## 17. 未決定事項
 
 - スキルレベルと操作支援の対応形式
 - 中・大の金属塊が表す素材量
