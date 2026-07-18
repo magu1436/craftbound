@@ -120,7 +120,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 | `ingredient_count` | 必須 | 必要な金属量 |
 | `mold` | 必須 | 必要な鋳型のアイテムまたはブロックID |
 | `output` | 必須 | 鍛造後に生成するパーツID |
-| `cooling_ticks` | 必須 | 鋳造後の冷却時間 |
+| `cooling` | 必須 | 安全冷却時間と破損回数上限の計算設定 |
 | `forging` | 必須 | 打撃条件と評価設定 |
 | `part_quality` | 必須 | 工程評価の合成方法 |
 
@@ -138,6 +138,14 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 | `hit_count_weight` | 必須 | 回数評価の重み |
 | `evaluator` | 必須 | 使用する鍛造評価関数のID |
 
+`cooling` は以下を持つ。
+
+| 項目 | 必須 | 内容 |
+|---|---|---|
+| `safe_ticks` | 必須 | 通常の破損回数上限へ達する安全冷却時間 |
+| `minimum_break_on_hit` | 必須 | 冷却時間が0の場合の最小破損回数 |
+| `evaluator` | 必須 | 使用する冷却破損上限関数のID |
+
 鉄製ピッケルヘッドについて、値が確定した項目だけを示す未完成例は以下のとおり。このまま実データとして登録することはできない。
 
 ```json
@@ -147,6 +155,11 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
   "ingredient_count": 3,
   "mold": "craftbound:pickaxe_head_mold",
   "output": "craftbound:iron_pickaxe_head",
+  "cooling": {
+    "safe_ticks": 100,
+    "minimum_break_on_hit": 1,
+    "evaluator": "craftbound:linear_cooling_break_limit"
+  },
   "forging": {
     "strength_min": 55,
     "strength_max": 65,
@@ -166,7 +179,9 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 }
 ```
 
-`cooling_ticks` は必須項目だが、鉄製ピッケルヘッドの値が未決定であるため、上記の確定部分には記載していない。実データを登録する前に値を決定し、項目を追加する。
+冷却破損上限関数は、鋳型から取り出した時点の冷却ティック、`cooling.safe_ticks`、`forging.break_on_hit` から有効な破損回数を計算する。安全冷却時間を超えた経過時間は切り捨て、通常の `break_on_hit` を超える値を返さない。
+
+この関数は粗加工パーツを鋳型から取り出す際に一度だけ呼び出す。取り出し時の冷却ティックと計算結果を粗加工パーツへ保存し、その後の時間経過では更新しない。
 
 ---
 
@@ -334,6 +349,7 @@ MVPではすべての熱源を同じ加熱速度として扱う。熱源ごと�
 |---|---|---|
 | 加熱評価 | 加熱ティック数、金属定義 | `0～100`の加熱評価 |
 | 鍛造評価 | 打撃履歴、金属パーツ定義 | `0～100`の鍛造評価 |
+| 冷却破損上限 | 鋳型から取り出した時点の冷却ティック、金属パーツ定義 | 固定する有効破損回数 |
 | 非金属形状評価 | 加工グリッド、理想形状定義 | `0～100`の形状評価 |
 | 金属パーツ品質 | 加熱評価、鍛造評価、金属パーツ定義 | `0～100`のパーツ品質 |
 | 完成品品質 | 使用パーツ品質、完成品レシピ | `0～100`の完成品品質 |
@@ -366,6 +382,8 @@ JSON読込時に、少なくとも以下を検証する。
 - `castable_after_ticks < danger_after_ticks < destroy_after_ticks` を満たす
 - 適正強度の下限が上限以下である
 - 破損回数が適正打撃回数より大きい
+- 安全冷却時間が `1` 以上である
+- 最小破損回数が `1` 以上かつ通常の破損回数以下である
 - 評価の重み合計が `1.0` である
 - 品質段階が `0～100` を重複なく覆う
 - グリッド解像度が実装上の上限を超えない
@@ -389,7 +407,6 @@ JSONはサーバー側を正とする。クライアント描画に必要なゲ�
 
 ## 15. 未決定事項
 
-- 鉄製ピッケルヘッドの `cooling_ticks`
 - `pickaxe_handle` の理想形状
 - スキルレベルと操作支援の対応形式
 - 完成品レシピの具体的なJSON形式とレシピタイプID
