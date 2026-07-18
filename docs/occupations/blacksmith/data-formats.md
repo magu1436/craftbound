@@ -4,7 +4,7 @@
 
 本書は、鍛冶システムで使用するデータの配置、JSONの責務、検証規則、および評価関数の境界を定義する。
 
-ゲーム仕様は[鍛冶師システム仕様](./blacksmith.md)、最初の具体例は[鉄のピッケル試作仕様](./iron-pickaxe.md)に従う。
+ゲーム仕様は[鍛冶師システム仕様](./blacksmith.md)、最初の具体例は[鉄のピッケル試作仕様](./iron-pickaxe.md)、検証項目は[鍛冶システムテスト仕様](./test-cases.md)に従う。
 
 本書に記載するJava上の名称は責務を示す概念名であり、実装時にはプロジェクトの命名規則へ合わせてよい。
 
@@ -28,6 +28,7 @@
 
 ```text
 data/<namespace>/blacksmith/
+├─ settings.json
 ├─ metals/
 │  └─ <metal_id>.json
 ├─ metal_parts/
@@ -39,6 +40,23 @@ data/<namespace>/blacksmith/
 ├─ quality.json
 └─ skill_assists.json
 ```
+
+`settings.json` はパーツや金属へ依存しない共通設定を持つ。MVPの初期値は以下のとおりとする。
+
+```json
+{
+  "schema_version": 1,
+  "crucible_capacity_units": 16,
+  "network": {
+    "forging_latency_compensation_ticks": 4,
+    "carving_packet_interval_ticks": 2,
+    "carving_max_cells_per_request": 64,
+    "workbench_interaction_distance": 8.0
+  }
+}
+```
+
+`crucible_capacity_units` はインゴット換算の最大容量を表す。`network` の値はサーバー側検証に使用し、クライアントから変更できないようにする。
 
 完成品の組み立てレシピは、通常のデータパックレシピと同じ場所へ配置する。
 
@@ -60,7 +78,6 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 |---|---|---|
 | `schema_version` | 必須 | JSON形式のバージョン |
 | `ingredient` | 必須 | 金属として受け付けるアイテムまたはタグ |
-| `lump_item` | 必須 | 再加熱可能な金属塊のアイテムID |
 | `lump_loss_ratio` | 必須 | 金属塊化した際に失う割合 |
 | `lump_loss_rounding` | 必須 | 損失量の端数処理 |
 | `castable_after_ticks` | 必須 | 鋳造可能になる最小加熱時間 |
@@ -77,7 +94,6 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
   "ingredient": {
     "item": "minecraft:iron_ingot"
   },
-  "lump_item": "craftbound:iron_lump",
   "lump_loss_ratio": 0.5,
   "lump_loss_rounding": "ceil",
   "castable_after_ticks": 200,
@@ -103,7 +119,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 金属塊の量 = 使用量 - 損失量
 ```
 
-回収量が `0` の場合は金属塊を生成しない。この規則は、早すぎる鋳造と打撃回数超過による破損の両方へ適用する。
+回収量が `0` の場合は金属塊を生成しない。この規則は、早すぎる鋳造と打撃回数超過による破損の両方へ適用する。返却する金属塊のサイズと個数は、失敗した金属パーツの `failure_lump` から取得する。
 
 ---
 
@@ -120,6 +136,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 | `ingredient_count` | 必須 | 必要な金属量 |
 | `mold` | 必須 | 必要な鋳型のアイテムまたはブロックID |
 | `output` | 必須 | 鍛造後に生成するパーツID |
+| `failure_lump` | 必須 | 失敗時に返却する金属塊のアイテム、個数、1個あたりの素材量 |
 | `cooling` | 必須 | 安全冷却時間と破損回数上限の計算設定 |
 | `forging` | 必須 | 打撃条件と評価設定 |
 | `part_quality` | 必須 | 工程評価の合成方法 |
@@ -142,6 +159,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 | 項目 | 必須 | 内容 |
 |---|---|---|
+| `surface_solid_ticks` | 必須 | 蒸気音と蒸気量の変化を発生させる表面凝固時間 |
 | `safe_ticks` | 必須 | 通常の破損回数上限へ達する安全冷却時間 |
 | `minimum_break_on_hit` | 必須 | 冷却時間が0の場合の最小破損回数 |
 | `evaluator` | 必須 | 使用する冷却破損上限関数のID |
@@ -155,7 +173,13 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
   "ingredient_count": 3,
   "mold": "craftbound:pickaxe_head_mold",
   "output": "craftbound:iron_pickaxe_head",
+  "failure_lump": {
+    "item": "craftbound:small_metal_lump",
+    "count": 1,
+    "units_per_item": 1
+  },
   "cooling": {
+    "surface_solid_ticks": 40,
     "safe_ticks": 100,
     "minimum_break_on_hit": 1,
     "evaluator": "craftbound:linear_cooling_break_limit"
@@ -183,6 +207,10 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 この関数は粗加工パーツを鋳型から取り出す際に一度だけ呼び出す。取り出し時の冷却ティックと計算結果を粗加工パーツへ保存し、その後の時間経過では更新しない。
 
+`failure_lump.units_per_item` は、元の金属定義の `ingredient` を基準とした金属塊1個あたりの素材量を表す。鉄製ピッケルヘッドでは「金属塊・小」を1個返却し、`units_per_item: 1` を鉄インゴット1個分として扱う。金属塊は金属IDをデータとして保持し、同じ金属かつ同じサイズのものだけをスタック可能とする。中・大の金属塊が表す素材量は未決定とする。
+
+`cooling.surface_solid_ticks` 到達時には一度だけ蒸気音を再生し、蒸気パーティクルを多い状態から少ない状態へ変更する。`cooling.safe_ticks` 到達時には、安全冷却の正解を公開する音や通知を発生させない。
+
 ---
 
 ## 6. 非金属パーツ定義
@@ -198,8 +226,18 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 | `output` | 必須 | 完成パーツID |
 | `shape` | 必須 | パーツ種別ごとに `shapes/` へ定義した理想形状ID |
 | `base_grid_size` | 必須 | スキルなしで使用する解像度 |
-| `destroy_below_retention` | 必須 | 素材消失となる理想形状の残存率 |
+| `carving` | 必須 | 1回の除去量、経路補間、道具耐久消費の設定 |
+| `warning_at_or_below_retention` | 必須 | 危険通知を開始する理想形状の残存率 |
+| `destroy_at_or_below_retention` | 必須 | 素材消失となる理想形状の残存率 |
 | `shape_evaluator` | 必須 | 使用する形状評価関数のID |
+
+`carving` は以下を持つ。
+
+| 項目 | 必須 | 内容 |
+|---|---|---|
+| `remove_per_pass` | 必須 | ブラシが1回通過したセルから減らす残存量 |
+| `path_interpolation` | 必須 | ドラッグ経路の補間方式。MVPでは `grid_traversal` 固定 |
+| `removed_units_per_durability` | 必須 | 道具耐久値を1消費するセル相当の累積除去量 |
 
 板材からピッケルの柄を作る定義の確定部分は以下のとおり。
 
@@ -216,10 +254,20 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
   "output": "craftbound:pickaxe_handle",
   "shape": "craftbound:pickaxe_handle",
   "base_grid_size": 16,
-  "destroy_below_retention": 0.5,
+  "carving": {
+    "remove_per_pass": 0.5,
+    "path_interpolation": "grid_traversal",
+    "removed_units_per_durability": 8
+  },
+  "warning_at_or_below_retention": 0.6,
+  "destroy_at_or_below_retention": 0.5,
   "shape_evaluator": "craftbound:iou"
 }
 ```
+
+彫刻ナイフの最大耐久値は `128` とする。ドラッグ中は直前の入力位置から現在位置までの通過セルを補間し、通過セルごとに除去処理を行う。描画フレーム数は除去量と耐久消費へ影響させない。耐久消費に満たない累積除去量は加工状態へ保存する。
+
+理想形状として残すべき領域の残存率が `warning_at_or_below_retention` 以下になった場合は、警告音とGUI枠の色変化を発生させる。`destroy_at_or_below_retention` 以下になった場合は即時失敗とする。専用の亀裂表示はデータ上の必須要素とせず、低コストで共通描画できる場合だけ追加する。
 
 ---
 
@@ -248,7 +296,51 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 各理想形状は、利用可能な下位解像度へ変換してから最大解像度へ戻した場合に、元の形状と一致してはならない。一致する場合は、下位解像度でも完全再現できてスキルによる精度差が失われるため、定義を無効とする。
 
-`pickaxe_handle` の具体的なバイナリマスクは未決定とする。
+`pickaxe_handle` の初期バイナリマスクは以下のとおりとする。全高27セル、上端の接続部は最大幅8セル、中央の軸は幅4～5セル、下端の握り部は最大幅7セルとし、1セル単位の段差を含める。
+
+```json
+{
+  "schema_version": 1,
+  "grid_size": 32,
+  "encoding": "binary_rows",
+  "rows": [
+    "................................",
+    "................................",
+    "................................",
+    "............########............",
+    "............########............",
+    "............########............",
+    ".............#######............",
+    ".............######.............",
+    "..............#####.............",
+    "..............####..............",
+    "..............####..............",
+    "..............####..............",
+    "..............#####.............",
+    "..............####..............",
+    "..............####..............",
+    "..............####..............",
+    "..............####..............",
+    ".............#####..............",
+    "..............####..............",
+    "..............####..............",
+    "..............####..............",
+    "..............####..............",
+    "..............#####.............",
+    "..............#####.............",
+    ".............######.............",
+    ".............######.............",
+    "............#######.............",
+    "............#######.............",
+    "............#######.............",
+    "............#######.............",
+    "................................",
+    "................................"
+  ]
+}
+```
+
+このマスクはプレイヤーへ正解ガイドとして表示しない。プレイテストによる形状調整はJSONの変更だけで行う。
 
 ---
 
@@ -294,7 +386,43 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 スキル操作支援定義は、スキルレベルに応じて利用可能になるゲージ目盛り、削り幅、グリッド解像度を持つ。品質加点、採点基準の緩和、レシピ解放は定義しない。
 
-鉄のピッケル試作では、グリッド解像度として `16`、`24`、`32` を使用する。各解像度を解放するスキルレベルと削り幅は未決定とする。
+MVPでは以下の操作支援段階を使用する。スキルレベルと各段階の対応は未決定とする。
+
+```json
+{
+  "schema_version": 1,
+  "forging_gauge": {
+    "min": 0,
+    "max": 100,
+    "cycle_ticks": 60,
+    "waveform": "triangle",
+    "initial_value": 0,
+    "initial_direction": "up"
+  },
+  "tiers": [
+    {
+      "id": "craftbound:base",
+      "gauge_mark_interval": 25,
+      "grid_size": 16,
+      "brush_radius": 1.5
+    },
+    {
+      "id": "craftbound:intermediate",
+      "gauge_mark_interval": 10,
+      "grid_size": 24,
+      "brush_radius": 1.0
+    },
+    {
+      "id": "craftbound:advanced",
+      "gauge_mark_interval": 5,
+      "grid_size": 32,
+      "brush_radius": 0.5
+    }
+  ]
+}
+```
+
+ゲージは `0 → 100 → 0` を3秒（60ゲームティック）で往復する。内部値は連続値として進行し、`gauge_mark_interval` へ丸めない。`brush_radius` は現在のグリッドにおけるセル単位の円形半径であり、`0.5` は単一セル相当として扱う。
 
 ---
 
@@ -325,7 +453,7 @@ MVPではすべての熱源を同じ加熱速度として扱う。熱源ごと�
 
 ## 11. 完成品レシピ
 
-完成品レシピは、バニラの作業台から品質付き完成品を生成する独自レシピタイプとして定義する。
+完成品レシピは、バニラの作業台から品質付き完成品を生成する独自レシピタイプ `craftbound:quality_assembly` として定義する。
 
 レシピは少なくとも以下を持つ。
 
@@ -336,6 +464,34 @@ MVPではすべての熱源を同じ加熱速度として扱う。熱源ごと�
 - 評価関数へ渡す重みなどのパラメータ
 
 鉄のピッケルでは、鉄製ピッケルヘッドと `pickaxe_handle` を要求し、算術平均を行う完成品品質評価関数を使用する。
+
+```json
+{
+  "type": "craftbound:quality_assembly",
+  "pattern": [
+    "H",
+    "S"
+  ],
+  "key": {
+    "H": {
+      "item": "craftbound:iron_pickaxe_head"
+    },
+    "S": {
+      "item": "craftbound:pickaxe_handle"
+    }
+  },
+  "result": {
+    "item": "minecraft:iron_pickaxe"
+  },
+  "quality": {
+    "evaluator": "craftbound:arithmetic_mean"
+  }
+}
+```
+
+`key` で品質付きパーツを要求したスロットは、品質データを持つ完成パーツだけを受け付ける。クラフト時に `quality.evaluator` を呼び出し、結果の品質と品質から計算した性能補正を完成品へ保存する。
+
+バニラの通常レシピは削除しない。通常レシピから生成した鉄のピッケルには品質 `30` を付与し、`craftbound:quality_assembly` から生成したものだけが入力パーツから品質を計算する。
 
 ---
 
@@ -375,15 +531,24 @@ MVPではすべての熱源を同じ加熱速度として扱う。熱源ごと�
 JSON読込時に、少なくとも以下を検証する。
 
 - `schema_version` が対応範囲内である
+- `crucible_capacity_units` と各 `network` 設定が `1` 以上である
 - 名前空間付きIDの形式が正しい
 - 必須項目が存在する
 - 品質、打撃強度、重みが許容範囲内である
 - 加熱評価曲線のティック値が昇順である
 - `castable_after_ticks < danger_after_ticks < destroy_after_ticks` を満たす
+- `surface_solid_ticks < safe_ticks` を満たす
 - 適正強度の下限が上限以下である
 - 破損回数が適正打撃回数より大きい
 - 安全冷却時間が `1` 以上である
 - 最小破損回数が `1` 以上かつ通常の破損回数以下である
+- `failure_lump.count` と `failure_lump.units_per_item` がともに `1` 以上である
+- `failure_lump.count × failure_lump.units_per_item` が金属塊化後の回収量と一致する
+- `remove_per_pass` が `0` より大きく `1` 以下である
+- `removed_units_per_durability` が `0` より大きい
+- `0 < destroy_at_or_below_retention < warning_at_or_below_retention <= 1` を満たす
+- 操作支援段階IDが重複しない
+- 操作支援段階が上がるにつれて、グリッド解像度は単調増加し、目盛り間隔とブラシ半径は単調減少する
 - 評価の重み合計が `1.0` である
 - 品質段階が `0～100` を重複なく覆う
 - グリッド解像度が実装上の上限を超えない
@@ -397,17 +562,52 @@ JSON読込時に、少なくとも以下を検証する。
 
 ---
 
-## 14. クライアント同期
+## 14. 加工状態の保存
+
+るつぼ、粗加工パーツ、鍛造中パーツ、非金属加工中パーツは、工程に応じて以下の状態をデータコンポーネントまたはBlock Entityへ保存する。
+
+| 項目 | 内容 |
+|---|---|
+| `data_version` | 保存形式のバージョン |
+| `part_id` | 対象パーツ種別ID |
+| `material` | 素材IDと素材量 |
+| `heating_ticks` | 固定または進行中の加熱経過時間 |
+| `heating_score` | 鋳型へ流し込んだ時点で確定した加熱評価 |
+| `cooling_ticks` | 鋳型から取り出した時点の冷却時間 |
+| `surface_solid_notified` | 表面凝固の音を再生済みかどうか |
+| `effective_break_on_hit` | 冷却時間から計算して固定した破損回数上限 |
+| `strike_history` | 打撃強度を順番に保持する履歴 |
+| `gauge_value` | 中断時の打撃強度ゲージ位置 |
+| `gauge_direction` | 中断時の打撃強度ゲージ移動方向 |
+| `carving_grid` | 各セルの残存量 |
+| `carving_removed_units` | 次の道具耐久消費までの累積除去量 |
+| `completed` | 工程が完了済みかどうか |
+| `final_quality` | 完成時に確定した品質 |
+| `definition_snapshot` | 工程開始時の評価関数ID、閾値、重み、その他必要な設定 |
+| `session_id` | 操作要求を加工状態へ関連付ける一意なID |
+| `last_sequence` | 最後に受理したクライアント要求の連番 |
+| `active_player` | 現在の操作権を持つプレイヤーID |
+
+工程で使用しない項目は省略してよい。るつぼを溶鉱炉から取り出した場合は `heating_ticks` を進行させず、再投入時に同じ値から再開する。鋳型へ流し込んだ時点で加熱評価を確定し、その後は `heating_score` を更新しない。
+
+`definition_snapshot` は、加工の再開と採点に必要な定義を自己完結して保持する。データパック再読み込み後も開始済みの加工にはスナップショットを適用し、再読み込み後に開始した加工だけが新しい定義を使用する。
+
+加工途中のパーツと完成パーツはスタック不可とする。金属塊は金属IDとサイズを保存し、両方が一致する場合だけスタック可能とする。
+
+---
+
+## 15. クライアント同期
 
 JSONはサーバー側を正とする。クライアント描画に必要なゲージ範囲、品質段階、グリッド解像度などは、ログイン時またはデータパック再読込時にサーバーから同期する。
 
 クライアントは表示と入力送信だけを担当し、品質評価や素材消費を確定しない。
 
+操作パケットはセッションIDと単調増加する連番を持つ。鍛造入力には同期済みサーバーティック、非金属加工入力には正規化した始点と終点を含める。サーバーは `settings.json` の通信上限と、加工状態へ保存した `last_sequence` および `active_player` を使用して検証する。
+
 ---
 
-## 15. 未決定事項
+## 16. 未決定事項
 
-- `pickaxe_handle` の理想形状
 - スキルレベルと操作支援の対応形式
-- 完成品レシピの具体的なJSON形式とレシピタイプID
-- データパック再読込時に進行中の加工へ新旧どちらの定義を適用するか
+- 中・大の金属塊が表す素材量
+- 溶鉱炉から取り出した時点で冷却を開始する方式へ変更するか
