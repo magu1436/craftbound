@@ -4,7 +4,7 @@
 
 本書は、鍛冶システムで使用するデータの配置、JSONの責務、検証規則、および評価関数の境界を定義する。
 
-ゲーム仕様は[鍛冶師システム仕様](./blacksmith.md)、最初の具体例は[鉄のピッケル試作仕様](./iron-pickaxe.md)、検証項目は[鍛冶システムテスト仕様](./test-cases.md)に従う。
+ゲーム仕様は[鍛冶師システム仕様](./blacksmith.md)、素材初期値は[鍛冶素材仕様](./materials.md)、最初の具体例は[鉄のピッケル試作仕様](./iron-pickaxe.md)、検証項目は[鍛冶システムテスト仕様](./test-cases.md)に従う。
 
 本書に記載するJava上の名称は責務を示す概念名であり、実装時にはプロジェクトの命名規則へ合わせてよい。
 
@@ -32,9 +32,13 @@ data/<namespace>/blacksmith/
 ├─ metals/
 │  └─ <metal_id>.json
 ├─ metal_parts/
-│  └─ <part_id>.json
+│  └─ <material_id>/
+│     └─ <part_id>.json
+├─ non_metal_materials/
+│  └─ <material_id>.json
 ├─ non_metal_parts/
-│  └─ <part_id>.json
+│  └─ <material_id>/
+│     └─ <part_id>.json
 ├─ shapes/
 │  └─ <shape_id>.json
 ├─ integrations/
@@ -131,7 +135,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 ## 5. 金属パーツ定義
 
-配置先は `blacksmith/metal_parts/<part_id>.json` とする。
+配置先は `blacksmith/metal_parts/<material_id>/<part_id>.json` とする。
 
 金属パーツ定義は、製作するパーツ固有の材料量、鋳型、冷却時間、鍛造条件、品質合成方法を持つ。
 
@@ -219,59 +223,73 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 ---
 
-## 6. 非金属パーツ定義
+## 6. 非金属素材・パーツ定義
 
-配置先は `blacksmith/non_metal_parts/<part_id>.json` とする。
+### 6.1 非金属素材プロファイル
+
+配置先は `blacksmith/non_metal_materials/<material_id>.json` とする。初期値と素材区分は[鍛冶素材仕様](./materials.md)に従う。
 
 | 項目 | 必須 | 内容 |
 |---|---|---|
 | `schema_version` | 必須 | JSON形式のバージョン |
-| `ingredient` | 必須 | 素材として受け付けるアイテムまたはタグ |
-| `ingredient_count` | 必須 | 必要な素材数 |
 | `tool` | 必須 | 必要な加工用アイテムまたはタグ |
-| `output` | 必須 | 完成パーツID |
-| `shape` | 必須 | パーツ種別ごとに `shapes/` へ定義した理想形状ID |
-| `base_grid_size` | 必須 | スキルなしで使用する解像度 |
-| `carving` | 必須 | 1回の除去量、経路補間、道具耐久消費の設定 |
-| `warning_at_or_below_retention` | 必須 | 危険通知を開始する理想形状の残存率 |
-| `destroy_at_or_below_retention` | 必須 | 素材消失となる理想形状の残存率 |
-| `shape_evaluator` | 必須 | 使用する形状評価関数のID |
-
-`carving` は以下を持つ。
-
-| 項目 | 必須 | 内容 |
-|---|---|---|
 | `remove_per_pass` | 必須 | ブラシが1回通過したセルから減らす残存量 |
 | `path_interpolation` | 必須 | ドラッグ経路の補間方式。MVPでは `supercover` 固定 |
 | `removed_units_per_durability` | 必須 | 道具耐久値を1消費するセル相当の累積除去量 |
+
+木材プロファイルは以下のとおり。
+
+```json
+{
+  "schema_version": 1,
+  "tool": {
+    "item": "craftbound:carving_knife"
+  },
+  "remove_per_pass": 0.5,
+  "path_interpolation": "supercover",
+  "removed_units_per_durability": 8
+}
+```
+
+パーツ側で素材プロファイルの値を上書きしない。異なる加工感が必要な特殊素材には、専用の素材プロファイルを追加する。
+
+### 6.2 非金属パーツ
+
+配置先は `blacksmith/non_metal_parts/<material_id>/<part_id>.json` とする。
+
+| 項目 | 必須 | 内容 |
+|---|---|---|
+| `schema_version` | 必須 | JSON形式のバージョン |
+| `material_profile` | 必須 | `non_metal_materials/` に定義した素材プロファイルID |
+| `ingredient` | 必須 | 素材として受け付けるアイテムまたはタグ |
+| `ingredient_count` | 必須 | 必要な素材数 |
+| `output` | 必須 | 完成パーツID |
+| `shape` | 必須 | パーツ種別ごとに `shapes/` へ定義した理想形状ID |
+| `base_grid_size` | 必須 | スキルなしで使用する解像度 |
+| `warning_at_or_below_retention` | 必須 | 危険通知を開始する理想形状の残存率 |
+| `destroy_at_or_below_retention` | 必須 | 素材消失となる理想形状の残存率 |
+| `shape_evaluator` | 必須 | 使用する形状評価関数のID |
 
 板材からピッケルの柄を作る定義の確定部分は以下のとおり。
 
 ```json
 {
   "schema_version": 1,
+  "material_profile": "craftbound:wood",
   "ingredient": {
     "tag": "minecraft:planks"
   },
   "ingredient_count": 1,
-  "tool": {
-    "item": "craftbound:carving_knife"
-  },
   "output": "craftbound:pickaxe_handle",
   "shape": "craftbound:pickaxe_handle",
   "base_grid_size": 16,
-  "carving": {
-    "remove_per_pass": 0.5,
-    "path_interpolation": "supercover",
-    "removed_units_per_durability": 8
-  },
   "warning_at_or_below_retention": 0.6,
   "destroy_at_or_below_retention": 0.5,
   "shape_evaluator": "craftbound:iou"
 }
 ```
 
-彫刻ナイフの最大耐久値は `128` とする。ドラッグ中は直前の入力位置から現在位置までの通過セルを補間し、通過セルごとに除去処理を行う。描画フレーム数は除去量と耐久消費へ影響させない。耐久消費に満たない累積除去量は加工状態へ保存する。
+加工道具の最大耐久値は[鍛冶素材仕様](./materials.md)で定義する。ドラッグ中は直前の入力位置から現在位置までの通過セルを補間し、通過セルごとに除去処理を行う。描画フレーム数は除去量と耐久消費へ影響させない。耐久消費に満たない累積除去量は加工状態へ保存する。
 
 入力座標は加工領域に対する `[0.0, 1.0)` の正規化座標とする。`supercover` は始点と終点を結ぶ線分が交差する全セルを列挙する。同じストロークIDの通信区間で重複したセルと、直前の通信区間の終点に相当する先頭セルは除外する。ストロークIDが変わった場合は重複履歴を破棄し、同じセルを再び加工できる。
 
@@ -593,6 +611,8 @@ JSON読込時に、少なくとも以下を検証する。
 - 最小破損回数が `1` 以上かつ通常の破損回数以下である
 - `failure_lump.count` と `failure_lump.units_per_item` がともに `1` 以上である
 - `failure_lump.count × failure_lump.units_per_item` が金属塊化後の回収量と一致する
+- 非金属パーツが参照する `material_profile` が存在する
+- 非金属素材プロファイルが使用可能な加工道具を参照する
 - `remove_per_pass` が `0` より大きく `1` 以下である
 - `removed_units_per_durability` が `0` より大きい
 - `path_interpolation` が `supercover` である
@@ -622,7 +642,7 @@ JSON読込時に、少なくとも以下を検証する。
 |---|---|
 | `data_version` | 保存形式のバージョン |
 | `part_id` | 対象パーツ種別ID |
-| `material` | 素材IDと素材量 |
+| `material` | 素材ID、素材プロファイルID、素材量 |
 | `heating_ticks` | 固定または進行中の加熱経過時間 |
 | `heating_score` | 鋳型へ流し込んだ時点で確定した加熱評価 |
 | `cooling_ticks` | 鋳型から取り出した時点の冷却時間 |
@@ -635,6 +655,8 @@ JSON読込時に、少なくとも以下を検証する。
 | `carving_removed_units` | 次の道具耐久消費までの累積除去量 |
 | `completed` | 工程が完了済みかどうか |
 | `final_quality` | 完成時に確定した品質 |
+| `processing_state` | `active`、`output_pending` など、設備の排他状態 |
+| `pending_outputs` | インベントリ満杯時に設備が保持する確定済み出力一覧 |
 | `definition_snapshot` | 工程開始時の評価関数ID、閾値、重み、その他必要な設定 |
 | `session_id` | 操作要求を加工状態へ関連付ける一意なID |
 | `last_sequence` | 最後に受理したクライアント要求の連番 |
@@ -645,6 +667,8 @@ JSON読込時に、少なくとも以下を検証する。
 | `last_drag_cell` | 通信区間をまたぐ重複処理を防ぐ直前セル |
 
 工程で使用しない項目は省略してよい。るつぼを溶鉱炉から取り出した場合は `heating_ticks` を進行させず、再投入時に同じ値から再開する。鋳型へ流し込んだ時点で加熱評価を確定し、その後は `heating_score` を更新しない。
+
+`pending_outputs` は作業台のBlock Entityだけに保存する。`processing_state` が `output_pending` の間は新しい素材投入と加工開始を拒否し、全出力をプレイヤーへ渡せた場合だけ一覧を空にして待機状態へ戻す。サーバー再起動後も保留出力を復元する。
 
 `definition_snapshot` は、加工の再開と採点に必要な定義を自己完結して保持する。データパック再読み込み後も開始済みの加工にはスナップショットを適用し、再読み込み後に開始した加工だけが新しい定義を使用する。
 
@@ -668,7 +692,7 @@ JSON読込時に、少なくとも以下を検証する。
 
 完成したパーツから加工途中コンポーネントを除去し、`craftbound:quality` だけを付与する。通常レシピ品やコンポーネントを持たない対象アイテムは、読取API上で品質 `30` を返す。読取のためだけに既存アイテムを書き換えない。
 
-操作セッションはアイテムコンポーネントへ保存せず、作業台のBlock Entityで管理する。Block EntityはセッションID、操作中プレイヤー、最後に受理した連番、最終生存通知ティック、リース期限を持つ。サーバー再起動時は加工データだけを復元し、操作中プレイヤーとリースを復元しない。
+操作セッションはアイテムコンポーネントへ保存せず、作業台のBlock Entityで管理する。Block EntityはセッションID、操作中プレイヤー、最後に受理した連番、最終生存通知ティック、リース期限、排他状態、保留出力を持つ。サーバー再起動時は加工データ、排他状態、保留出力だけを復元し、操作中プレイヤーとリースを復元しない。
 
 ---
 
