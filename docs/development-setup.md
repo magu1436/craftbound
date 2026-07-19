@@ -91,8 +91,15 @@ macOS、Linux、Git Bashでは次のコマンドを使用する。
 | Alex's Caves依存 | Citadel | 2.6.3 | `runtimeOnly` |
 | 任意連携 | Roaring | 0.3 | `runtimeOnly` |
 | Roaring依存 | GeckoLib | 4.8.4 | `runtimeOnly` |
+| Roaring依存 | Player Animator | 1.0.2-rc1+1.20 | `runtimeOnly` |
 
 読みやすいバージョンとダウンロードに使用する固定IDは `gradle.properties` で管理する。ModrinthのバージョンIDは同名バージョンや別ローダーのファイルを誤取得しないために使用する。
+
+これらのJARを `run/mods/` へ手動で配置する必要はない。`gradlew runClient` と `gradlew runServer` はGradleの実行時クラスパスから自動的にロードする。依存関係を変更した後にIntelliJ IDEAの既存の `runClient` 構成を使う場合は、Gradleプロジェクトを再読み込みし、次を実行して起動構成を再生成する。
+
+```powershell
+.\gradlew.bat genIntellijRuns
+```
 
 すべての任意連携MODが通常の `runClient` と `runServer` に入る構成は統合開発用である。任意依存の分離を検証するときは、対象JARを除いた最小構成を別途用意して起動する。
 

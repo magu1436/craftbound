@@ -191,6 +191,7 @@ dependencies {
 
     runtimeOnly fg.deobf("maven.modrinth:roaring:${roaring_modrinth_version}")
     runtimeOnly fg.deobf("maven.modrinth:geckolib:${geckolib_modrinth_version}")
+    runtimeOnly fg.deobf("maven.modrinth:playeranimator:${player_animator_modrinth_version}")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
