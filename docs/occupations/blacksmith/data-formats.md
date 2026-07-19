@@ -606,6 +606,8 @@ MVPでは以下の初期値を使用する。
 
 `precision_shaping` は、加工開始時点で取得済みの最上位段階から `grid_size` と `brush_radius` を組として確定する。`brush_radius` は現在のグリッドにおけるセル単位の円形半径であり、`0.5` は単一セル相当として扱う。
 
+取得済みスキルの解決結果からスキルが失われた場合、精密目盛は `base_mark_interval` へ即座に戻し、力量把握の表示を除去し、`strike_reference` のクライアント側基準線は破棄する。打撃基準を再取得しても破棄済みの線は復元しない。加工感覚、道具保全、素材理解、品質鑑定はそれぞれ次の危険判定、耐久消費要求、表示構築から無効にする。`precision_shaping` は開始済み加工へ保存した値を変更せず、新しく開始する加工だけで最新状態を解決する。
+
 `prevent_damage_chance` は `0.0～1.0`、`non_metal_ideal_remaining_ratio` は破損閾値より大きく `1.0` 以下でなければならない。`forging_remaining_hits` は1以上の整数とする。各配列では後段が前段より弱い、または同じ支援となる定義を無効とする。具体的には、精密目盛の間隔と精密成形のブラシ半径は段階ごとに減少し、グリッド解像度、耐久保全確率、危険通知の残り打撃回数と残存率は段階ごとに増加しなければならない。
 
 `material_understanding.display` は `tools_and_methods`、`qualitative_properties`、`numeric_public_properties` の順に累積して表示する。定性表示は `material_understanding_rules` の境界値から加工抵抗と道具負荷を算出する。具体表示へ含めてよいフィールドは `public_fields` のホワイトリストだけとし、未知のフィールド、適正値、破損閾値、理想形状、採点値は含めない。
@@ -678,12 +680,31 @@ data/craftbound/puffish_skills/categories/blacksmith/
   "non_metal_per_ingredient": 3,
   "assembly_per_quality_part": 1,
   "material_loss_failure": {
+    "basis": "committed_input",
     "multiplier": 0.25,
     "rounding": "floor",
     "minimum": 1
+  },
+  "feedback": {
+    "actionbar_translation": "message.craftbound.blacksmith.experience_gained",
+    "show_when_zero": false,
+    "use_puffish_level_up_feedback": true,
+    "custom_sound": false,
+    "custom_toast": false
   }
 }
 ```
+
+`material_loss_failure.basis` はMVPでは `committed_input` 固定とする。返却素材を差し引かず、失敗工程へ投入または使用した全量へ工程別の成功係数を適用し、その値へ失敗倍率、端数処理、最低値の順で適用する。
+
+```text
+成功時経験値 = 投入または使用した全素材量 × 工程別係数
+失敗経験値 = max(minimum, floor(成功時経験値 × multiplier))
+```
+
+鋳造失敗には `casting_per_consumed_unit`、鍛造失敗には `forging_per_material_unit`、非金属加工失敗には `non_metal_per_ingredient` を使用する。素材を恒久的に失わない結果には失敗経験値を適用しない。
+
+`feedback` は、Pufferfish's Skillsの経験値源が1以上を実際に受理した場合だけ、操作者のアクションバーへ `actionbar_translation` と付与量を1回送信する。経験値更新と同じ工程結果IDの処理内で送信し、すでに付与済みのID、再読み込み、再ログイン、サーバー再起動では再送しない。レベルアップとポイント獲得にはPufferfish's Skillsの標準表示を使用し、Craftbound独自の音とトーストを登録しない。
 
 カスタム経験値源へ渡す工程結果は、工程種別、結果を確定した操作者UUID、素材単位数または素材数、品質付きパーツ数、素材の恒久損失有無、および一意な工程結果IDを持つ。工程結果IDは、同じ完成要求、失敗、再送、再読み込みから経験値を二重付与しないために使用する。品質値、打撃回数、操作パケット数は経験値計算へ渡さない。
 
@@ -833,6 +854,8 @@ JSON読込時に、少なくとも以下を検証する。
 - 全19ノードのコストが1で、指定した6ノードだけがルートであり、排他接続が存在しない
 - 経験値源に `team_sharing` が存在しない
 - 経験値係数と最低失敗経験値が0以上で、失敗倍率が `0.0～1.0` である
+- 失敗経験値の基準が `committed_input` で、工程別の成功係数を参照する
+- 経験値表示が規定の翻訳キーを使用し、0では非表示、独自の音とトーストは無効である
 - 評価の重み合計が `1.0` である
 - 品質段階が `0～100` を重複なく覆う
 - グリッド解像度が実装上の上限を超えない
