@@ -13,6 +13,10 @@ out
 *.iml
 .idea
 
+# Visual Studio Code generated run configurations
+.vscode/launch.json
+.vscode/tasks.json
+
 # Gradle
 build
 .gradle
