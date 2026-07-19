@@ -1,3 +1,27 @@
+# Eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# IntelliJ IDEA
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# Visual Studio Code generated run configurations
+.vscode/launch.json
+.vscode/tasks.json
+
+# Gradle
+build
+.gradle
+
+# Maven
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -10,8 +34,9 @@ buildNumber.properties
 # https://maven.apache.org/tools/wrapper/#Usage_with_or_without_Binary_JAR
 .mvn/wrapper/maven-wrapper.jar
 
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
+# Development runtime directories
+eclipse
+run
+
+# Files from Forge MDK
+forge*changelog.txt
