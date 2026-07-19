@@ -74,6 +74,28 @@ macOS、Linux、Git Bashでは次のコマンドを使用する。
 
 開発用Minecraftのゲームデータは `run/` に保存される。このディレクトリはGit管理対象外である。
 
+### 連携MODの取得
+
+`runClient` と `runServer` は、`build.gradle` の開発用依存関係を解決し、次の固定バージョンを自動取得する。JARを通常のMinecraft環境からコピーする必要はない。
+
+| 用途 | MOD | 固定バージョン | Gradleでの扱い |
+|---|---|---:|---|
+| 必須API | Pufferfish's Skills | 0.18.1 | `implementation` |
+| 任意API | Jade | 11.13.2 | `compileOnly` + `runtimeOnly` |
+| 任意連携 | Create | 6.0.8 | `runtimeOnly` |
+| 任意連携 | L_Ender's Cataclysm | 3.31 | `runtimeOnly` |
+| Cataclysm依存 | Lionfish API | 3.0 | `runtimeOnly` |
+| Cataclysm依存 | Curios API | 5.14.1+1.20.1 | `runtimeOnly` |
+| 任意連携 | Twilight Forest | 4.3.2508 | `runtimeOnly` |
+| 任意連携 | Alex's Caves | 2.0.2 | `runtimeOnly` |
+| Alex's Caves依存 | Citadel | 2.6.3 | `runtimeOnly` |
+| 任意連携 | Roaring | 0.3 | `runtimeOnly` |
+| Roaring依存 | GeckoLib | 4.8.4 | `runtimeOnly` |
+
+読みやすいバージョンとダウンロードに使用する固定IDは `gradle.properties` で管理する。ModrinthのバージョンIDは同名バージョンや別ローダーのファイルを誤取得しないために使用する。
+
+すべての任意連携MODが通常の `runClient` と `runServer` に入る構成は統合開発用である。任意依存の分離を検証するときは、対象JARを除いた最小構成を別途用意して起動する。
+
 ## 4. ビルドする
 
 PowerShellで次のコマンドを実行する。

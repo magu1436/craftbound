@@ -62,6 +62,10 @@ minecraft {
         configureEach {
             workingDirectory project.file('run')
 
+            // Required by integration mods that ship mixins.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
@@ -115,6 +119,33 @@ repositories {
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
+    maven {
+        name = 'Create Maven'
+        url = 'https://maven.createmod.net'
+    }
+    maven {
+        name = 'Registrate Maven Mirror'
+        url = 'https://maven.ithundxr.dev/mirror'
+    }
+    maven {
+        name = 'ForgeConfigAPIPort Maven'
+        url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
+    }
+    maven {
+        name = 'Modrinth Maven'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://www.cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
     // flatDir {
@@ -129,6 +160,37 @@ dependencies {
     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Required integration: Craftbound uses the Pufferfish's Skills API.
+    implementation fg.deobf("maven.modrinth:skills:${puffish_skills_modrinth_version}")
+
+    // Optional API integration: available to compile and in development runs,
+    // without becoming a production hard dependency.
+    compileOnly fg.deobf("maven.modrinth:jade:${jade_modrinth_version}")
+    runtimeOnly fg.deobf("maven.modrinth:jade:${jade_modrinth_version}")
+
+    // Optional Create runtime and the companion artifacts corresponding to
+    // the public Create 6.0.8 release.
+    runtimeOnly(fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_maven_version}:slim") {
+        transitive = false
+    })
+    runtimeOnly fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
+    runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
+    runtimeOnly fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+    runtimeOnly "io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"
+
+    // Optional content integrations and their declared runtime libraries.
+    runtimeOnly fg.deobf("maven.modrinth:l_enders-cataclysm:${cataclysm_modrinth_version}")
+    runtimeOnly fg.deobf("maven.modrinth:lionfish-api:${lionfish_api_modrinth_version}")
+    runtimeOnly fg.deobf("maven.modrinth:curios:${curios_modrinth_version}")
+
+    runtimeOnly fg.deobf("curse.maven:the-twilight-forest-227639:${twilight_forest_curseforge_file_id}")
+
+    runtimeOnly fg.deobf("maven.modrinth:alexs-caves:${alexs_caves_modrinth_version}")
+    runtimeOnly fg.deobf("maven.modrinth:citadel:${citadel_modrinth_version}")
+
+    runtimeOnly fg.deobf("maven.modrinth:roaring:${roaring_modrinth_version}")
+    runtimeOnly fg.deobf("maven.modrinth:geckolib:${geckolib_modrinth_version}")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -155,6 +217,13 @@ tasks.named('processResources', ProcessResources).configure {
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
             forge_version: forge_version, forge_version_range: forge_version_range,
             loader_version_range: loader_version_range,
+            puffish_skills_version_range: puffish_skills_version_range,
+            jade_version_range: jade_version_range,
+            create_version_range: create_version_range,
+            cataclysm_version_range: cataclysm_version_range,
+            twilight_forest_version_range: twilight_forest_version_range,
+            alexs_caves_version_range: alexs_caves_version_range,
+            roaring_version_range: roaring_version_range,
             mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
             mod_authors: mod_authors, mod_description: mod_description,
     ]

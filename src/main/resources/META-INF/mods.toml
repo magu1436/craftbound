@@ -66,6 +66,58 @@ description='''${mod_description}'''
     ordering="NONE"
     side="BOTH"
 
+# Craftbound uses Pufferfish's Skills as the source of truth for skill state,
+# experience and points, so this is the only hard integration dependency.
+[[dependencies.${mod_id}]]
+    modId="puffish_skills"
+    mandatory=true
+    versionRange="${puffish_skills_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+# The following integrations activate only when the target mod is installed.
+[[dependencies.${mod_id}]]
+    modId="jade"
+    mandatory=false
+    versionRange="${jade_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="create"
+    mandatory=false
+    versionRange="${create_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="cataclysm"
+    mandatory=false
+    versionRange="${cataclysm_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="twilightforest"
+    mandatory=false
+    versionRange="${twilight_forest_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="alexscaves"
+    mandatory=false
+    versionRange="${alexs_caves_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="roaring"
+    mandatory=false
+    versionRange="${roaring_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for example.
