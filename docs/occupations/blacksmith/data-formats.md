@@ -44,7 +44,8 @@ data/<namespace>/blacksmith/
 ├─ integrations/
 │  └─ <mod_id>/
 ├─ quality.json
-└─ skill_assists.json
+├─ skill_assists.json
+└─ experience_rewards.json
 ```
 
 `settings.json` はパーツや金属へ依存しない共通設定を持つ。MVPの初期値は以下のとおりとする。
@@ -579,7 +580,12 @@ MVPでは以下の初期値を使用する。
   "processing_sense_audio": {
     "sound": "craftbound:processing_strain",
     "subtitle": "subtitle.craftbound.processing_strain",
+    "source": "blocks",
+    "volume": 0.5,
+    "recipient": "active_operator",
     "cooldown_ticks": 20,
+    "suppress_on_normal_warning": true,
+    "suppress_on_failure": true,
     "non_metal_danger_ratio": 0.65,
     "pitch": {
       "caution": 0.8,
@@ -604,7 +610,9 @@ MVPでは以下の初期値を使用する。
 
 `material_understanding.display` は `tools_and_methods`、`qualitative_properties`、`numeric_public_properties` の順に累積して表示する。定性表示は `material_understanding_rules` の境界値から加工抵抗と道具負荷を算出する。具体表示へ含めてよいフィールドは `public_fields` のホワイトリストだけとし、未知のフィールド、適正値、破損閾値、理想形状、採点値は含めない。
 
-`processing_sense_audio.cooldown_ticks` は1以上とし、時間経過だけでは音を再生しない。早期警告閾値を初めて越えた場合、または閾値内でさらに危険な操作を行い、前回再生からクールダウン以上経過している場合だけ再生する。`non_metal_danger_ratio` は通常警告閾値より大きく、各加工感覚段階の早期警告閾値以下でなければならない。非金属加工の非常に危険な音程へ切り替える境界には、パーツ定義の `warning_at_or_below_retention` を使用する。
+`processing_sense_audio.cooldown_ticks` は1以上とし、時間経過だけでは音を再生しない。早期警告閾値を初めて越えた場合、または閾値内でさらに危険な操作を行い、前回再生からクールダウン以上経過している場合だけ再生する。補助音は `recipient` が示す現在の操作者だけへ、加工対象位置を音源として `source: blocks`、音量 `0.5` で個別送信し、周囲のプレイヤーへは送信しない。
+
+同じ操作で通常警告または破損通知が発生する場合は、その通知を優先し、`suppress_on_normal_warning` または `suppress_on_failure` によって加工感覚の補助音を抑止する。加工感覚のクールダウンは通常警告と破損通知へ適用しない。`non_metal_danger_ratio` は通常警告閾値より大きく、各加工感覚段階の早期警告閾値以下でなければならない。非金属加工の非常に危険な音程へ切り替える境界には、パーツ定義の `warning_at_or_below_retention` を使用する。
 
 スキルIDは以下の形式を使用する。
 
@@ -622,6 +630,21 @@ Pufferfish's Skillsの鍛冶師カテゴリは、以下へ定義する。
 ```text
 data/craftbound/puffish_skills/categories/blacksmith/
 ```
+
+`category.json` の成長と取得に関する固定部分は以下とする。タイトル、アイコン、背景などの表示項目はこの抜粋へ含めない。
+
+```json
+{
+  "unlocked_by_default": true,
+  "starting_points": 0,
+  "spent_points_limit": 19,
+  "exclusive_root": false
+}
+```
+
+全19ノードの定義は `cost: 1` とする。`precision_marks_1`、`strike_reference`、`precision_shaping_1`、`tool_preservation_1`、`material_understanding_1`、`processing_sense_1` の6ノードだけを `root: true` とし、それ以外は `root: false` または省略とする。接続は通常接続だけを使用し、排他接続を定義しない。
+
+カテゴリの翻訳キーは `category.craftbound.blacksmith.title` と `category.craftbound.blacksmith.description` とする。各ノードは `skill.craftbound.blacksmith.<skill_id>.title`、`.description`、`.extra_description` を使用し、通常説明には取得時の増加量、追加説明には累計効果と反映時点を記載する。具体的な日本語文面、アイコンID、画面座標は固定バージョンのエディターで最終調整する。
 
 `experience.json` は最大レベル19と共通の必要経験値式を持ち、本MODが登録するカスタム経験値源 `craftbound:blacksmith_action` を使用する。
 
@@ -643,6 +666,8 @@ data/craftbound/puffish_skills/categories/blacksmith/
 }
 ```
 
+`sources` には `team_sharing` を定義しない。工程結果を確定した1人だけへ経験値を与え、Minecraftのチーム、パーティー、距離内の他プレイヤーへ共有しない。
+
 工程ごとの初期経験値は `blacksmith/experience_rewards.json` へ定義する。
 
 ```json
@@ -660,9 +685,13 @@ data/craftbound/puffish_skills/categories/blacksmith/
 }
 ```
 
-カスタム経験値源へ渡す工程結果は、工程種別、操作者UUID、素材単位数または素材数、品質付きパーツ数、素材の恒久損失有無、および一意な工程結果IDを持つ。工程結果IDは、同じ完成要求、失敗、再送、再読み込みから経験値を二重付与しないために使用する。品質値、打撃回数、操作パケット数は経験値計算へ渡さない。
+カスタム経験値源へ渡す工程結果は、工程種別、結果を確定した操作者UUID、素材単位数または素材数、品質付きパーツ数、素材の恒久損失有無、および一意な工程結果IDを持つ。工程結果IDは、同じ完成要求、失敗、再送、再読み込みから経験値を二重付与しないために使用する。品質値、打撃回数、操作パケット数は経験値計算へ渡さない。
 
-サーバーは工程結果を確定して出力を予約する処理と、経験値源を更新する処理を同じ排他区間で行う。工程結果IDと経験値付与済みフラグはBlock Entityの加工状態へ保存し、経験値更新後に同じ結果IDを処理した場合は0を返す。失敗時も次の工程を開始できる状態へ戻す前に同じ情報を永続化する。クリエイティブ、スペクテイター、操作者不明、外部自動処理、開発用処理の結果は経験値源を更新しない。
+操作者UUIDは、鋳造成功では有効な流し込み要求、鍛造と非金属加工の成功では完成要求、組み立てでは組み立て要求をサーバーへ確定させたプレイヤーとする。素材損失を伴う失敗では、失敗を確定させた最後の打撃、削り、または鋳造要求の送信者とする。同じ工程を別プレイヤーが再開しても過去の操作者へ分割せず、結果を確定した1人だけを記録する。要求がサーバーへ受理される前に切断した場合は、工程結果と経験値を確定しない。
+
+サーバーは工程結果を確定して出力を予約する処理と、経験値源を更新する処理を同じ排他区間で行う。工程結果ID、操作者UUID、経験値付与済みフラグはBlock Entityの加工状態へ保存し、経験値更新後に同じ結果IDを処理した場合は0を返す。失敗時も次の工程を開始できる状態へ戻す前に同じ情報を永続化する。クリエイティブ、スペクテイター、操作者不明、外部自動処理、開発用処理の結果は経験値源を更新しない。
+
+通常プレイヤー向けの振り直しデータ、UI、アイテム、レシピは定義しない。Pufferfish's Skillsが提供するスキルロック、全スキルリセット、カテゴリ初期化などのコマンドはサーバー管理者の復旧手段としてのみ扱う。
 
 ---
 
@@ -796,8 +825,13 @@ JSON読込時に、少なくとも以下を検証する。
 - 道具保全確率と加工感覚の早期警告閾値が段階ごとに単調増加する
 - 素材理解の加工抵抗と道具負荷の境界値が降順で、数値公開フィールドが許可済みの3項目だけである
 - 加工感覚の音クールダウンが1以上で、音程が注意、危険、非常に危険の順に単調増加する
+- 加工感覚の音源カテゴリが `blocks`、音量が `0.5`、送信先が現在の操作者だけである
+- 通常警告または破損通知と同じ操作で加工感覚の補助音を抑止する
 - 非金属加工の危険音境界が通常警告閾値より大きく、加工感覚Iの早期警告閾値以下である
 - 鍛冶師の最大レベルが19、必要経験値式が有効で、レベル0から19までの累計が679になる
+- 鍛冶師カテゴリが初期ポイント0、消費ポイント上限19、非排他ルートである
+- 全19ノードのコストが1で、指定した6ノードだけがルートであり、排他接続が存在しない
+- 経験値源に `team_sharing` が存在しない
 - 経験値係数と最低失敗経験値が0以上で、失敗倍率が `0.0～1.0` である
 - 評価の重み合計が `1.0` である
 - 品質段階が `0～100` を重複なく覆う
@@ -838,6 +872,7 @@ JSON読込時に、少なくとも以下を検証する。
 | `processing_state` | `active`、`output_pending` など、設備の排他状態 |
 | `pending_outputs` | インベントリ満杯時に設備が保持する確定済み出力一覧 |
 | `experience_result_id` | 確定済み工程結果を識別し、経験値の二重付与を防ぐ一意なID |
+| `experience_operator` | 対応する工程結果を確定し、経験値を受け取るプレイヤーUUID |
 | `experience_awarded` | 対応する工程結果の経験値を付与済みかどうか |
 | `definition_snapshot` | 工程開始時の評価関数ID、閾値、重み、その他必要な設定 |
 | `session_id` | 操作要求を加工状態へ関連付ける一意なID |
@@ -852,7 +887,7 @@ JSON読込時に、少なくとも以下を検証する。
 
 `pending_outputs` は作業台のBlock Entityだけに保存する。`processing_state` が `output_pending` の間は新しい素材投入と加工開始を拒否し、全出力をプレイヤーへ渡せた場合だけ一覧を空にして待機状態へ戻す。サーバー再起動後も保留出力を復元する。
 
-`experience_result_id` と `experience_awarded` は、完成出力または素材損失を伴う失敗を確定した設備のBlock Entityへ保存する。完成時は保留出力を解消するまで、失敗時は付与済み状態を永続化してから次工程用の新しい結果IDへ切り替えるまで保持する。同じIDへ付与済みの記録がある場合は、再読み込み後も経験値を付与しない。
+`experience_result_id`、`experience_operator`、`experience_awarded` は、完成出力または素材損失を伴う失敗を確定した設備のBlock Entityへ保存する。完成時は保留出力を解消するまで、失敗時は付与済み状態を永続化してから次工程用の新しい結果IDへ切り替えるまで保持する。同じIDへ付与済みの記録がある場合は、再読み込み後も経験値を付与しない。
 
 `definition_snapshot` は、加工の再開と採点に必要な定義を自己完結して保持する。データパック再読み込み後も開始済みの加工にはスナップショットを適用し、再読み込み後に開始した加工だけが新しい定義を使用する。
 
@@ -894,5 +929,6 @@ JSONはサーバー側を正とする。クライアント描画に必要なゲ�
 
 - Pufferfish's SkillsとJadeを開発へ導入する時点の具体的な固定バージョン
 - Pufferfish's Skillsエディターから出力する各ノードの具体的な画面座標
+- 各スキルノードの最終的なアイコンIDと日本語の説明文
 - 中・大の金属塊が表す素材量
 - 溶鉱炉から取り出した時点で冷却を開始する方式へ変更するか
