@@ -451,9 +451,9 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 配置先は `blacksmith/skill_assists.json` とする。
 
-スキル操作支援定義は、スキルレベルに応じて利用可能になるゲージ目盛り、削り幅、グリッド解像度を持つ。品質加点、採点基準の緩和、レシピ解放は定義しない。
+スキル操作支援定義は、取得済みスキルIDに応じて利用可能になるゲージ表示、非金属加工精度、道具耐久保全、公開素材情報、危険通知、および品質表示を持つ。独立したスキル系統を単一の総合段階へまとめず、効果ごとに取得済みの最上位段階を解決する。品質加点、採点基準の緩和、レシピ解放は定義しない。
 
-MVPでは以下の操作支援段階を使用する。スキルレベルと各段階の対応は未決定とする。
+MVPでは以下の初期値を使用する。
 
 ```json
 {
@@ -464,32 +464,126 @@ MVPでは以下の操作支援段階を使用する。スキルレベルと各�
     "cycle_ticks": 60,
     "waveform": "triangle",
     "initial_value": 0,
-    "initial_direction": "up"
+    "initial_direction": "up",
+    "base_mark_interval": 25
   },
-  "tiers": [
+  "precision_marks": [
     {
-      "id": "craftbound:base",
-      "gauge_mark_interval": 25,
-      "grid_size": 16,
-      "brush_radius": 1.5
+      "skill": "craftbound:blacksmith/precision_marks_1",
+      "mark_interval": 20
     },
     {
-      "id": "craftbound:intermediate",
-      "gauge_mark_interval": 10,
-      "grid_size": 24,
-      "brush_radius": 1.0
+      "skill": "craftbound:blacksmith/precision_marks_2",
+      "mark_interval": 10
     },
     {
-      "id": "craftbound:advanced",
-      "gauge_mark_interval": 5,
-      "grid_size": 32,
-      "brush_radius": 0.5
+      "skill": "craftbound:blacksmith/precision_marks_3",
+      "mark_interval": 5
+    },
+    {
+      "skill": "craftbound:blacksmith/precision_marks_4",
+      "mark_interval": 2
     }
-  ]
+  ],
+  "strength_awareness": {
+    "skill": "craftbound:blacksmith/strength_awareness",
+    "show_current_value": true
+  },
+  "strike_reference": {
+    "skill": "craftbound:blacksmith/strike_reference",
+    "max_markers": 1,
+    "persistence": "session"
+  },
+  "precision_shaping": {
+    "base_grid_size": 16,
+    "base_brush_radius": 1.5,
+    "levels": [
+      {
+        "skill": "craftbound:blacksmith/precision_shaping_1",
+        "grid_size": 24,
+        "brush_radius": 1.0
+      },
+      {
+        "skill": "craftbound:blacksmith/precision_shaping_2",
+        "grid_size": 32,
+        "brush_radius": 0.5
+      }
+    ]
+  },
+  "tool_preservation": [
+    {
+      "skill": "craftbound:blacksmith/tool_preservation_1",
+      "prevent_damage_chance": 0.05
+    },
+    {
+      "skill": "craftbound:blacksmith/tool_preservation_2",
+      "prevent_damage_chance": 0.10
+    },
+    {
+      "skill": "craftbound:blacksmith/tool_preservation_3",
+      "prevent_damage_chance": 0.15
+    },
+    {
+      "skill": "craftbound:blacksmith/tool_preservation_4",
+      "prevent_damage_chance": 0.20
+    }
+  ],
+  "material_understanding": [
+    {
+      "skill": "craftbound:blacksmith/material_understanding_1",
+      "display": "tools_and_methods"
+    },
+    {
+      "skill": "craftbound:blacksmith/material_understanding_2",
+      "display": "qualitative_properties"
+    },
+    {
+      "skill": "craftbound:blacksmith/material_understanding_3",
+      "display": "numeric_public_properties"
+    }
+  ],
+  "processing_sense": [
+    {
+      "skill": "craftbound:blacksmith/processing_sense_1",
+      "forging_remaining_hits": 3,
+      "non_metal_ideal_remaining_ratio": 0.70
+    },
+    {
+      "skill": "craftbound:blacksmith/processing_sense_2",
+      "forging_remaining_hits": 4,
+      "non_metal_ideal_remaining_ratio": 0.75
+    },
+    {
+      "skill": "craftbound:blacksmith/processing_sense_3",
+      "forging_remaining_hits": 5,
+      "non_metal_ideal_remaining_ratio": 0.80
+    }
+  ],
+  "quality_appraisal": {
+    "skill": "craftbound:blacksmith/quality_appraisal",
+    "show_internal_quality": true
+  }
 }
 ```
 
-ゲージは `0 → 100 → 0` を3秒（60ゲームティック）で往復する。内部値は連続値として進行し、`gauge_mark_interval` へ丸めない。`brush_radius` は現在のグリッドにおけるセル単位の円形半径であり、`0.5` は単一セル相当として扱う。
+ゲージは `0 → 100 → 0` を3秒（60ゲームティック）で往復する。内部値は連続値として進行し、目盛り間隔へ丸めない。精密目盛未取得時は `base_mark_interval`、取得時は取得済みの最上位 `precision_marks` の `mark_interval` を使用する。目盛り間隔は正の整数かつゲージ範囲を割り切れる値だけを許可する。
+
+`strike_reference.persistence` はMVPでは `session` だけを許可する。基準線の位置をサーバーまたは永続データへ保存する形式は定義しない。
+
+`precision_shaping` は、加工開始時点で取得済みの最上位段階から `grid_size` と `brush_radius` を組として確定する。`brush_radius` は現在のグリッドにおけるセル単位の円形半径であり、`0.5` は単一セル相当として扱う。
+
+`prevent_damage_chance` は `0.0～1.0`、`non_metal_ideal_remaining_ratio` は破損閾値より大きく `1.0` 以下でなければならない。`forging_remaining_hits` は1以上の整数とする。各配列では後段が前段より弱い、または同じ支援となる定義を無効とする。具体的には、精密目盛の間隔と精密成形のブラシ半径は段階ごとに減少し、グリッド解像度、耐久保全確率、危険通知の残り打撃回数と残存率は段階ごとに増加しなければならない。
+
+`material_understanding.display` は `tools_and_methods`、`qualitative_properties`、`numeric_public_properties` の順に累積して表示する。数値表示へ含めてよいフィールドは素材定義側で公開可能とされたものだけとし、適正値、破損閾値、理想形状、採点値は含めない。
+
+スキルIDは以下の形式を使用する。
+
+```text
+craftbound:blacksmith/<skill_name>
+craftbound:blacksmith/<skill_name>_<stage>
+```
+
+段階を持つスキルには末尾へ段階番号を付け、段階を持たないスキルには付けない。公開後は保存済み取得状態との互換性を守るため、原則として変更しない。
 
 ---
 
@@ -617,8 +711,10 @@ JSON読込時に、少なくとも以下を検証する。
 - `removed_units_per_durability` が `0` より大きい
 - `path_interpolation` が `supercover` である
 - `0 < destroy_at_or_below_retention < warning_at_or_below_retention <= 1` を満たす
-- 操作支援段階IDが重複しない
-- 操作支援段階が上がるにつれて、グリッド解像度は単調増加し、目盛り間隔とブラシ半径は単調減少する
+- スキルIDが重複せず、参照先がPufferfish's Skillsの鍛冶師カテゴリに存在する
+- 精密目盛の間隔が25、20、10、5、2の順に減少し、各値がゲージ範囲を割り切る
+- 精密成形の段階が上がるにつれて、グリッド解像度は単調増加し、ブラシ半径は単調減少する
+- 道具保全確率と加工感覚の早期警告閾値が段階ごとに単調増加する
 - 評価の重み合計が `1.0` である
 - 品質段階が `0～100` を重複なく覆う
 - グリッド解像度が実装上の上限を超えない
@@ -708,6 +804,7 @@ JSONはサーバー側を正とする。クライアント描画に必要なゲ�
 
 ## 17. 未決定事項
 
-- スキルレベルと操作支援の対応形式
+- 鍛冶師の最大レベル、経験値獲得条件、必要経験値、および19スキルポイントの供給方法
+- 道具保全と加工感覚の初期値を実プレイ後に調整するか
 - 中・大の金属塊が表す素材量
 - 溶鉱炉から取り出した時点で冷却を開始する方式へ変更するか
