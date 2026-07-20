@@ -100,6 +100,20 @@
 - 材料は1本分を示し、バッチ数に比例して消費する。
 - 材料、効果値、持続時間、および副作用は、処理へ直接埋め込まずデータ定義またはサーバー設定から変更可能にする。
 
+組み込み4薬品の表示仕様は次のとおりとする。
+
+| 薬品定義ID | 表示名 | 翻訳キー | 液体色 | 見た目の方向性 |
+|---|---|---|---:|---|
+| `craftbound:alchemist/berserker_draught` | 狂戦薬 | `craftbound.alchemist.potion.berserker_draught` | `#C92A2A` | 血や興奮剤を想起させる赤 |
+| `craftbound:alchemist/hardening_draught` | 硬化薬 | `craftbound.alchemist.potion.hardening_draught` | `#6F7F8F` | 防具と硬質化を想起させる鉄灰色 |
+| `craftbound:alchemist/antidote` | 耐毒薬 | `craftbound.alchemist.potion.antidote` | `#3CB371` | 毒そのものより澄んだ薬草色 |
+| `craftbound:alchemist/corrosive_flask` | 腐食薬 | `craftbound.alchemist.potion.corrosive_flask` | `#8A4FBF` | 酸、呪毒、および投擲デバフを想起させる紫 |
+
+- `耐毒薬`は使用時の解毒だけでなく、その後の毒・衰弱ダメージ軽減も行うため、表示名を`解毒薬`とはしない。
+- MVPでは飲用薬用とスプラッシュ薬用の共通瓶モデルをそれぞれ1つ使用し、薬品ごとの専用Itemモデルまたは専用Itemテクスチャを要求しない。
+- Itemの液体部分と錬金釜GUIの液体表示へ、薬品定義の`liquid_color`を適用する。品質によって液体色を変化させない。
+- 状態効果アイコンは各`MobEffect`の内容を識別できるものを用意する。主効果、副作用予告、および実際の副作用で同一アイコンを流用してよいが、有益・有害の枠色と表示名はMinecraft標準の分類に従う。
+
 ### 5.2 狂戦薬
 
 | 項目 | 内容 |
@@ -162,6 +176,20 @@ PvP、チーム、無敵状態、および他Modの保護規則は、通常の�
 ```
 
 錬金釜は、材料と水入り瓶の投入、バッチ数の選択、ミニゲーム、完成品の保管、および回収を1つのメニューで扱う。
+
+錬金釜の作成レシピは、レシピIDを`craftbound:alchemical_cauldron`とする定形レシピとして次の形で登録する。
+
+```text
+I I
+BGB
+BIB
+
+I = minecraft:iron_ingot
+B = minecraft:iron_block
+G = minecraft:glowstone
+```
+
+結果は`craftbound:alchemical_cauldron`を1個とする。空白は空スロットを表し、左右反転を含む別パターンは登録しない。
 
 ### 6.2 利用条件
 
@@ -769,19 +797,35 @@ craftbound:alchemical_splash_potion
 
 ### 13.1 サーバー設定
 
-少なくとも次の値をサーバー設定から変更可能にする。
+Craftboundが所有する運営調整値は`craftbound-server.toml`へ保存する。論理キーとMVP既定値は次のとおりとする。
 
-- 品質ごとの主効果倍率
-- 品質ごとの副作用時間倍率
-- 品質得点のしきい値
-- 1段階の品質劣化時間
-- 劣化薬の持続時間倍率
-- 基礎飲用時間
-- MVPの最大バッチ数
-- 温度の初期値、環境温度、通常操作量、および自然温度変化量
-- 各基本工程の時間と固定待ち時間
-- 品質ごとの経験値倍率
-- 錬金術機能全体の有効・無効
+| 論理キー | MVP既定値 | 内容 |
+|---|---|---|
+| `alchemist.enabled` | `true` | 錬金術機能全体の有効・無効 |
+| `alchemist.degradation_days_per_stage` | `10.0` | 品質が1段階低下する現実日数 |
+| `alchemist.quality.main_effect_multipliers` | `[0.70, 0.85, 1.00, 1.10, 1.20]` | 品質1～5の主効果倍率 |
+| `alchemist.quality.aftereffect_duration_multipliers` | `[1.50, 1.25, 1.00, 0.80, 0.60]` | 品質1～5の副作用時間倍率 |
+| `alchemist.quality.score_thresholds` | `[0, 40, 60, 80, 95]` | 品質1～5となる総合得点の下限 |
+| `alchemist.usage.base_drink_ticks` | `32` | 飲用薬の基礎使用時間 |
+| `alchemist.batch.max_base_size` | `3` | 大釜運用ランク0の最大バッチ数 |
+| `alchemist.temperature.initial` | `20.00` | バッチ開始時の温度 |
+| `alchemist.temperature.environment` | `20.00` | 自然温度変化が近づく環境温度 |
+| `alchemist.temperature.manual_delta_per_tick` | `0.60` | 通常の加熱・冷却1tickあたりの絶対変化量 |
+| `alchemist.temperature.natural_rate` | `0.01` | 環境温度との差へ乗じる自然変化率 |
+| `alchemist.temperature.natural_max_delta` | `0.20` | 自然温度変化1tickあたりの絶対上限 |
+| `alchemist.xp.quality_multipliers` | `[0.50, 0.75, 1.00, 1.15, 1.30]` | 品質1～5の経験値倍率 |
+| `alchemist.network.rate_limits.temperature_input_per_second` | `10` | 温度入力更新の送信上限 |
+| `alchemist.network.rate_limits.action_per_second` | `4` | 開始、素材投入、瓶詰めを合算した送信上限 |
+| `alchemist.network.rate_limits.state_request_per_second` | `2` | 状態再要求の送信上限 |
+| `alchemist.debug.enable_commands` | `false` | 13.5節の管理・検証コマンドを有効化するか |
+
+各スキルのランク別効果値は`alchemist.skill.<skill_id>.*`以下に置き、14節の既定値を使用する。配列値の検証と不正時のフォールバックは14.10節に従う。
+
+薬品の材料、主効果、副作用、基礎持続時間、劣化薬の挙動、液体色、および1本あたりの基礎経験値は薬品JSONを正本とし、サーバー設定へ重複して持たせない。薬品ごとの工程時間、目標温度帯、素材温度変化、および固定待ち時間はミニゲームプロファイルを正本とする。レベル0の必要経験値100とレベルごとの増加量25を含むレベル曲線はPufferfish's Skillsの定義を正本とし、`craftbound-server.toml`へ重複して持たせない。
+
+数値設定は起動時に有限値、範囲、および配列長を検証する。`max_base_size`は1～3、各レート制限は1以上、温度は0.00～100.00、倍率と自然変化率は0以上とする。不正な項目はその項目全体をMVP既定値へ戻して警告ログを出し、正常な他項目は維持する。サーバー稼働中の設定ファイル変更を自動反映することはMVPでは要求せず、再起動後に適用する。
+
+`alchemist.enabled`が`false`の場合、新しいバッチの開始と錬金術師製薬品の使用を拒否する。登録済みBlock、Item、およびMobEffectは削除せず、進行中バッチは停止状態で保存する。すでにEntityへ付与されている主効果、予告Effect、および副作用はMinecraft標準の残り時間どおり進行させる。再度有効化した後は、停止時点の進行中バッチから再開する。
 
 ### 13.2 薬品定義
 
@@ -799,6 +843,8 @@ data/<namespace>/alchemist/minigame_profiles/<path>.json
 | 項目 | 型 | 内容 |
 |---|---|---|
 | `data_version` | int | MVPでは`1` |
+| `translation_key` | string | 薬品名の翻訳キー |
+| `liquid_color` | string | `#RRGGBB`形式の液体色 |
 | `form` | string | `drinkable`または`splash` |
 | `base_container` | object | 1本あたりに消費する水入り瓶 |
 | `ingredients_per_bottle` | array | 1本あたりに消費する反応素材 |
@@ -854,6 +900,8 @@ data/<namespace>/alchemist/minigame_profiles/<path>.json
 ```json
 {
   "data_version": 1,
+  "translation_key": "craftbound.alchemist.potion.berserker_draught",
+  "liquid_color": "#C92A2A",
   "form": "drinkable",
   "base_container": {
     "ingredient": { "item": "minecraft:potion" },
@@ -913,6 +961,8 @@ data/<namespace>/alchemist/minigame_profiles/<path>.json
 ```json
 {
   "data_version": 1,
+  "translation_key": "craftbound.alchemist.potion.antidote",
+  "liquid_color": "#3CB371",
   "form": "drinkable",
   "base_container": {
     "ingredient": { "item": "minecraft:potion" },
@@ -1122,6 +1172,26 @@ craftbound:alchemist/hardening_slowness
 ```
 
 公開後の薬品定義ID、`MobEffect` ID、スキルID、および保存キーは原則として変更しない。変更が必要な場合は旧IDから新IDへの移行処理を用意する。
+
+### 13.5 管理・検証コマンド
+
+`alchemist.debug.enable_commands`が`true`の場合だけ、権限レベル2以上へ次のコマンドを公開する。`false`の場合は`/craftbound alchemist`以下の管理・検証用サブコマンドを登録しない。
+
+| コマンド | 用途 |
+|---|---|
+| `/craftbound alchemist give <player> <potion> <quality> [count]` | 指定した定義IDと品質1～5の薬品を直接付与する |
+| `/craftbound alchemist age <player> <slot> <days>` | 指定プレイヤーのインベントリスロットにある薬品の経過時間を進め、劣化を即時評価する |
+| `/craftbound alchemist xp add <player> <amount>` | Pufferfish's Skills連携を通して錬金術師経験値を付与する |
+| `/craftbound alchemist skill set <player> <skill> <rank>` | 対応するPufferfish's Skillsノードを検証用ランクへ設定する |
+| `/craftbound alchemist cauldron debug` | 実行者が見ている錬金釜の内部状態を表示する |
+
+- `<potion>`は13.4節と同じ薬品定義ID、`<quality>`は1～5、`<slot>`はプレイヤーインベントリの0始まりのスロット番号、`<days>`は0以上の有限小数、`<amount>`は1以上の整数とする。
+- `give`は劣化時刻を実行時刻から初期化し、通常の完成品と同じ保存形式を使用する。付与、劣化、経験値、またはスキル変更によって調合経験値を追加発生させない。
+- `give`は対象プレイヤーのインベントリへ全本数を格納できる場合だけ成功させ、空きが不足する場合は1本も生成せず失敗を返す。
+- `age`はサーバー時計を変更せず、対象薬品の保存時刻だけを指定日数分過去へ進めて10.3節の遅延評価を実行する。品質を回復させる負の値は拒否する。
+- `skill set`は指定ランクまでのノードを連続取得済みにし、それより上位の同一スキルノードを未取得へ戻す。スキルポイントの残量は検証コマンドでは変更しない。
+- `cauldron debug`は通常の視線判定で最初に交差する16ブロック以内の錬金釜を対象とし、BlockPos、バッチUUID、開始者UUID、工程、工程経過時間、現在温度、保持入力、予約出力数、得点、ランクスナップショット、および経験値付与状態を表示する。理想投入時刻は権限保有者へのコマンド出力に限って表示してよい。
+- すべての変更系コマンドは実行者、対象、変更前後の値、および成功・失敗をサーバーログへ記録する。不正なID、範囲外の値、対象不在、および無効な薬品はゲーム状態を変更せず失敗を返す。
 
 ---
 
@@ -1504,6 +1574,7 @@ Pufferfish's SkillsのAPI呼び出しとノード参照は錬金術処理へ直�
 ### 17.1 調合設備
 
 - サバイバルプレイヤーが錬金釜を開き、4種類の組み込み薬品を選択できる。
+- 6.1節の定形レシピから錬金釜を1個作成できる。
 - 未取得時は1～3本、大釜運用の取得後はランクに応じて最大6本のバッチを選択できる。
 - すべてのバッチで材料が本数に比例して消費される。
 - ホッパー、Create、FakePlayerから調合を開始または自動操作できない。
@@ -1559,6 +1630,7 @@ Pufferfish's SkillsのAPI呼び出しとノード参照は錬金術処理へ直�
 - ログアウトとサーバー再起動後も主効果と予告Effectの残り時間が対応し、期限切れ処理が重複しない。
 - 腐食薬はバニラ相当の着弾距離減衰を使用する。
 - 飲用薬の基礎使用時間は32tickである。
+- 組み込み4薬品が5.1節の表示名、翻訳キー、および液体色で表示され、品質によって液体色が変化しない。
 
 ### 17.4 劣化
 
@@ -1610,6 +1682,15 @@ Pufferfish's SkillsのAPI呼び出しとノード参照は錬金術処理へ直�
 - 不連続なランクノード取得状態では、ランク1から連続して取得済みの範囲だけが適用される。
 - Pufferfish's Skillsへの経験値加算に失敗した場合は`xp_awarded`が更新されず、同じバッチUUIDの未受領経験値を重複登録せずに、20tick以上空けて再試行される。
 
+### 17.8 設定・管理コマンド
+
+- 13.1節の各設定がMVP既定値で読み込まれ、不正な単一項目だけが既定値へ戻る。
+- 薬品、ミニゲームプロファイル、レベル曲線、およびCraftboundサーバー設定の正本が重複しない。
+- `alchemist.enabled`を無効化して再起動すると新規調合と薬品使用が拒否され、進行中バッチと既存状態効果が13.1節どおり保持・進行する。
+- `alchemist.debug.enable_commands`が`false`の場合、一般プレイヤーと権限保有者のどちらも管理・検証コマンドでゲーム状態を変更できない。
+- デバッグコマンドを有効化した場合、権限レベル2未満の実行を拒否する。
+- `give`、`age`、`xp add`、`skill set`、および`cauldron debug`が13.5節の入力検証、原子性、およびログ記録規則に従う。
+
 ---
 
 ## 18. 現時点のMVP対象外
@@ -1633,8 +1714,6 @@ Pufferfish's SkillsのAPI呼び出しとノード参照は錬金術処理へ直�
 
 現時点で未確定の事項は次のとおりとする。
 
-- 各組み込み薬品の最終表示名、アイコン、液体色の値、および8.7.1節で使用する演出用アセット
-- 錬金釜の作成レシピ
 - 通常プレイヤー向けのスキル振り直し手段
 - 副作用の踏み倒し防止を将来実装する場合の方式と、牛乳を正当な対策手段として残す範囲
 - 外部Mod素材を使用する追加薬品とレシピ
