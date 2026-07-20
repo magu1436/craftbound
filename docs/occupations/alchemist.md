@@ -594,8 +594,21 @@ craftbound:alchemical_splash_potion
 - 予告Effectは属性、ダメージ、移動、および他のゲーム結果を変更しない。
 - 予告Effectは粒子を表示せず、状態効果アイコンと名前を表示する。
 - 表示名または説明には、主効果終了後に副作用が発現することを明記する。
-- 予告Effectが自然終了したときだけ、サーバー側のForge `MobEffectEvent.Expired`から実際の副作用MobEffectをAmplifier 0で付与する。
+- 予告Effectが自然終了したときだけ、サーバー側のForge `MobEffectEvent.Expired`を起点として実際の副作用MobEffectをAmplifier 0で付与する。
 - `sleep`、`CompletableFuture`、別スレッドのタイマー、および再起動で失われる一時タスクを遅延付与に使用してはならない。
+
+`MobEffectEvent.Expired`は、MinecraftがEntityの有効な状態効果を反復処理している途中で発火する。イベントハンドラー内で状態効果を直接付与または削除すると、有効な状態効果マップを反復中に変更する可能性があるため、次の遅延キューを使用する。
+
+1. `MobEffectEvent.Expired`では、予告Effect、Amplifier、および対象Entityを検証し、副作用付与要求をサーバー内のキューへ登録するだけにする。
+2. Forgeのserver tick ENDでキューを処理し、その時点で対象Entity、主効果、および予告Effectの状態を再検証する。
+3. 主効果と予告Effectの両方が自然終了したことを確認できた場合だけ、実際の副作用を付与する。
+4. 同じ要求を処理済みキーで重複排除し、副作用を1回だけ付与する。
+
+キュー要素は、少なくともディメンションID、対象Entity UUID、予告Effect ID、付与する副作用Effect ID、副作用時間、期限切れを検出したserver `gameTime`、および重複排除キーを持つ。重複排除キーは、ディメンションID、対象Entity UUID、予告Effect ID、および期限切れ検出時のserver `gameTime`から構成する。
+
+主効果の途中解除に伴う予告Effectの削除も、削除イベント内で直接行わず、同じserver tick ENDの削除キューへ登録する。削除キュー処理時に対応する主効果が再付与されていた場合は、新しい予告Effectを誤って削除しない。副作用付与キューと削除キューが同じtickに競合した場合は削除を優先し、副作用を発生させない。
+
+これらのキューは1tick以内の状態効果マップ変更を安全に引き渡すための一時データであり、永続化しない。キュー登録後、server tick ENDより前にサーバーが異常終了した場合は、保存済み予告Effectが再読み込み後に改めて自然終了することで処理する。
 
 予告EffectのAmplifierには、使用時の品質と完成品へ保存された薬性安定ランクを次の式で符号化する。
 
@@ -683,7 +696,7 @@ craftbound:alchemical_splash_potion
 
 サーバー停止中はミニゲームの進行時間へ含めない。再起動後は保存した工程から再開する。一方、完成済み薬品の品質劣化にはサーバー停止中の現実時間を含める。
 
-バッチ完了時に開始者がオフラインの場合は、そのプレイヤーの永続データへ未受領経験値を保存し、次回ログイン時に1度だけ付与する。バッチUUIDと経験値付与済み状態によって、再読み込み、再接続、および完了処理の再実行による重複付与を防ぐ。
+バッチ完了時に開始者がオフラインの場合、またはPufferfish's Skillsへの経験値加算に失敗した場合は、そのプレイヤーの永続データへ未受領経験値を保存する。オンライン中は20tick以上空けて、オフライン中は次回ログイン後に再試行する。バッチUUIDと経験値付与済み状態によって、再読み込み、再接続、および完了処理の再実行による重複付与を防ぐ。未受領リストへの登録が完了したバッチは錬金釜を占有し続けず、通常の完了処理を終えてよい。
 
 ### 12.4 錬金釜のライフサイクル
 
@@ -705,6 +718,51 @@ craftbound:alchemical_splash_potion
 
 強制破壊による中止は管理操作として警告ログへ、錬金釜の位置、ディメンション、バッチUUID、開始者UUID、および実行者を記録する。
 
+### 12.5 GUI通信契約
+
+錬金釜GUIの独自通信にはForgeの`SimpleChannel`を使用する。MVPのプロトコルバージョンを`1`とし、クライアントとサーバーのバージョンが完全一致しない場合は接続を拒否する。パケットハンドラーはネットワークスレッド上でゲーム状態を変更せず、すべての処理を論理サーバーの実行キューへ移す。
+
+#### 12.5.1 クライアントからサーバー
+
+| パケット | 主なフィールド | 用途 |
+|---|---|---|
+| `StartBatch` | BlockPos、`containerId`、薬品定義ID、バッチ数、操作シーケンス番号 | バッチ開始要求 |
+| `SetTemperatureInput` | BlockPos、`containerId`、`NONE` / `HEAT` / `COOL`、通常 / 微調整、操作シーケンス番号 | 保持する温度操作の変更 |
+| `InsertIngredient` | BlockPos、`containerId`、バッチUUID、操作シーケンス番号 | 現在工程の素材投入 |
+| `Bottle` | BlockPos、`containerId`、バッチUUID、操作シーケンス番号 | 瓶詰め操作 |
+| `RequestState` | BlockPos、`containerId` | GUI再表示または同期ずれからの復旧 |
+
+- `InsertIngredient`は素材ID、スロット番号、個数、および得点時刻を送信しない。サーバーが現在工程と錬金釜のスロットから対象素材を決定する。
+- `Bottle`は瓶、完成品質、および得点を送信しない。サーバーが現在工程と保持状態から計算する。
+- 操作シーケンス番号はMenuを開くたびに0から開始する単調増加整数とし、処理済み以下の番号を持つパケットは再送として無視する。
+- `SetTemperatureInput`は押下、操作種別の切り替え、および解放時に送信する。保持中は10tickごとに新しい操作シーケンス番号で同じ状態を更新し、サーバー側で最後の有効な更新から20tick経過した入力を`NONE`へ戻す。
+- GUIを閉じた場合、切断した場合、対象ディメンションから移動した場合、およびMenuが無効になった場合は、期限を待たず温度入力を`NONE`へ戻す。
+- 1プレイヤーあたり、`SetTemperatureInput`は1秒間に10件、`StartBatch`、`InsertIngredient`、`Bottle`は合計1秒間に4件、`RequestState`は1秒間に2件を上限とする。上限超過分は状態を変更せず破棄する。
+
+#### 12.5.2 サーバーからクライアント
+
+| パケット | 主なフィールド | 用途 |
+|---|---|---|
+| `AlchemistState` | BlockPos、`containerId`、バッチUUID、現在工程、工程経過時間、現在温度、目標温度帯、保持入力、投入可能状態、観察表現、処理済み操作シーケンス番号、完了後の得点と品質 | GUI表示の正本を同期 |
+| `ActionResult` | `containerId`、対応する操作シーケンス番号、受理 / 拒否、拒否理由の翻訳キー | 操作結果の通知 |
+
+`AlchemistState`はMenuを開いた直後、工程遷移時、有効な操作の処理後、および通常時は2tickごとに、その錬金釜を開いているプレイヤーへ送信する。クライアントは受信間隔の表示を補間してよいが、補間値を入力判定または採点へ使用しない。
+
+開始者以外が進行中の錬金釜を開いた場合も`AlchemistState`を送信するが、操作部品を読み取り専用にする。サーバー側でも開始者以外の操作パケットを必ず拒否する。
+
+次の値は調合中のクライアントへ送信しない。
+
+- ランダム決定後の理想投入tick
+- 瓶詰めの理想tick
+- 工程別の途中得点
+- サーバー内部の成功判定または許容時間内であることを直接示す値
+
+泡、音、液体色、温度予測など、8.7.1節と反応解析で許可された観察情報だけを同期する。反応解析IIIを含め、理想投入時刻の前後または適正時刻そのものを識別できる追加情報は送信しない。
+
+#### 12.5.3 サーバー側の検証
+
+12.2節の検証に加え、各パケットについて`containerId`、BlockPos、バッチUUID、操作シーケンス番号、および要求された微調整モードに必要な保存済みスキルランクを検証する。不正な要求はゲーム状態を変更せず、必要に応じて`ActionResult`で翻訳可能な拒否理由を返す。
+
 ---
 
 ## 13. 設定とデータ定義
@@ -722,7 +780,6 @@ craftbound:alchemical_splash_potion
 - MVPの最大バッチ数
 - 温度の初期値、環境温度、通常操作量、および自然温度変化量
 - 各基本工程の時間と固定待ち時間
-- レベルごとの必要経験値を求める基礎値と増分
 - 品質ごとの経験値倍率
 - 錬金術機能全体の有効・無効
 
@@ -737,39 +794,247 @@ data/<namespace>/alchemist/minigame_profiles/<path>.json
 
 薬品定義IDとミニゲームプロファイルIDは、ファイルの名前空間と相対パスから、それぞれ`<namespace>:alchemist/<path>`として導出する。両者は別の定義集合として管理するため、同じIDを使用してよい。すべての定義はルートに`data_version`を持ち、MVPで読み書きする値は`1`とする。
 
-薬品定義は、少なくとも次の項目を持つ。
+薬品定義は次の共通項目を持つ。
 
-```text
-data_version
-form
-ingredients_per_bottle
-main_effects
-base_duration
-quality_scaled_fields
-effect_caps
-aftereffects
-degraded_behavior
-minigame_profile
-experience_per_bottle
+| 項目 | 型 | 内容 |
+|---|---|---|
+| `data_version` | int | MVPでは`1` |
+| `form` | string | `drinkable`または`splash` |
+| `base_container` | object | 1本あたりに消費する水入り瓶 |
+| `ingredients_per_bottle` | array | 1本あたりに消費する反応素材 |
+| `base_duration_ticks` | int | 持続型主効果の基礎時間 |
+| `main_effects` | array | 型付き主効果定義 |
+| `aftereffects` | array | 型付き副作用定義。副作用がなければ空配列 |
+| `degraded_behavior` | object | 劣化薬の持続時間倍率と即時効果の実行可否 |
+| `minigame_profile` | string | ミニゲームプロファイルのリソースID |
+| `experience_per_bottle` | int | 1本あたりの基礎経験値 |
+
+`base_container`はMVPでは次の値だけを受け付ける。ItemStackが`minecraft:potion`であり、保存されたPotionが`minecraft:water`であることをサーバー側で検証する。
+
+```json
+{
+  "ingredient": { "item": "minecraft:potion" },
+  "potion": "minecraft:water",
+  "count": 1
+}
 ```
 
-`minigame_profile`は文字列のリソースIDとし、対応するミニゲームプロファイルは、少なくとも次の項目を持つ。
+`ingredients_per_bottle`の各要素は、バニラのIngredient JSONと1～64の`count`を持つ。MVPでは`item`と`tag`を受け付け、NBT条件付きIngredientは対象外とする。消費した素材のクラフト残余物はItemの標準クラフト残余物から求め、薬品定義へ重複して記述しない。
 
-```text
-data_version
-preheat_limit
-phases
-- duration
-- scored_temperature
-- target_temperature
-- ideal_input_time
-- input_tolerance
-- ingredient_temperature_delta
-- bottling_time
-- fixed_wait
+```json
+{
+  "ingredient": { "item": "minecraft:nether_wart" },
+  "count": 1
+}
 ```
 
-`form` はMVPでは `drinkable` または `splash` とする。不明な形式、存在しないアイテムID、負の持続時間、NaN、無限大、および不正な上限値を含む定義は、その定義だけを無効化して警告ログを出す。
+`main_effects`は`type`を判別キーとする。MVPで受け付ける型は次のとおりとする。
+
+| `type` | 用途 | 必須項目 |
+|---|---|---|
+| `attribute_modifiers` | 登録済みMobEffectによる属性変更 | `effect`、`modifiers` |
+| `remove_mob_effects` | 使用時の即時状態効果解除 | `effects` |
+| `damage_reduction` | 登録済みMobEffectによる条件付きダメージ軽減 | `effect`、`base_reduction`、`maximum_reduction`、`conditions` |
+
+`attribute_modifiers.modifiers`の各要素は、`attribute`、`operation`、`base_amount`、および任意の`result_minimum`、`result_maximum`を持つ。`operation`は`addition`、`multiply_base`、`multiply_total`のいずれかとし、MinecraftのAttributeModifier演算へそれぞれ対応させる。`base_amount`には9.2節の主効果品質倍率を適用する。
+
+`damage_reduction.conditions`は次の判別型を受け付ける。
+
+- `damage_type`: 指定したDamageTypeと一致する。
+- `effect_and_damage_type`: 指定したDamageTypeと一致し、被ダメージEntityが指定MobEffectを持つ。`require_no_direct_entity`が`true`なら直接攻撃Entityが存在しないことも要求する。
+
+`remove_mob_effects`は品質倍率を適用しない。`damage_reduction.base_reduction`には品質倍率を適用した後、`maximum_reduction`を上限として適用する。これらの規則は処理種別ごとに固定し、旧案の`quality_scaled_fields`と`effect_caps`は設けない。
+
+`aftereffects`の各要素は、`pending_effect`、`effect`、`base_duration_ticks`、`type`、および型固有の項目を持つ。MVPの副作用型は`attribute_modifiers`だけとする。副作用の強度には品質倍率を適用せず、時間へ9.2節と14.8.1節の補正を適用する。
+
+`degraded_behavior.duration_multiplier`は持続型主効果へ適用する。`execute_instant_effects`が`false`の場合、劣化薬では`remove_mob_effects`を実行しない。MVP組み込み薬品はすべて`duration_multiplier: 0.15`、`execute_instant_effects: false`とする。
+
+狂戦薬の完全な定義例を次に示す。このJSONを組み込み定義の正とする。
+
+```json
+{
+  "data_version": 1,
+  "form": "drinkable",
+  "base_container": {
+    "ingredient": { "item": "minecraft:potion" },
+    "potion": "minecraft:water",
+    "count": 1
+  },
+  "ingredients_per_bottle": [
+    { "ingredient": { "item": "minecraft:nether_wart" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:blaze_powder" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:fermented_spider_eye" }, "count": 1 }
+  ],
+  "base_duration_ticks": 400,
+  "main_effects": [
+    {
+      "type": "attribute_modifiers",
+      "effect": "craftbound:alchemist/berserker",
+      "modifiers": [
+        {
+          "attribute": "minecraft:generic.attack_damage",
+          "operation": "multiply_total",
+          "base_amount": 0.25
+        },
+        {
+          "attribute": "minecraft:generic.attack_speed",
+          "operation": "multiply_total",
+          "base_amount": 0.15
+        }
+      ]
+    }
+  ],
+  "aftereffects": [
+    {
+      "type": "attribute_modifiers",
+      "pending_effect": "craftbound:alchemist/berserker_aftereffect_pending",
+      "effect": "craftbound:alchemist/berserker_fatigue",
+      "base_duration_ticks": 300,
+      "modifiers": [
+        {
+          "attribute": "minecraft:generic.attack_damage",
+          "operation": "multiply_total",
+          "base_amount": -0.15
+        }
+      ]
+    }
+  ],
+  "degraded_behavior": {
+    "duration_multiplier": 0.15,
+    "execute_instant_effects": false
+  },
+  "minigame_profile": "craftbound:alchemist/berserker_draught",
+  "experience_per_bottle": 30
+}
+```
+
+耐毒薬の完全な定義例を次に示す。このJSONを組み込み定義の正とする。
+
+```json
+{
+  "data_version": 1,
+  "form": "drinkable",
+  "base_container": {
+    "ingredient": { "item": "minecraft:potion" },
+    "potion": "minecraft:water",
+    "count": 1
+  },
+  "ingredients_per_bottle": [
+    { "ingredient": { "item": "minecraft:nether_wart" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:honey_bottle" }, "count": 1 },
+    { "ingredient": { "item": "minecraft:spider_eye" }, "count": 1 }
+  ],
+  "base_duration_ticks": 400,
+  "main_effects": [
+    {
+      "type": "remove_mob_effects",
+      "effects": ["minecraft:poison", "minecraft:wither"]
+    },
+    {
+      "type": "damage_reduction",
+      "effect": "craftbound:alchemist/poison_resistance",
+      "base_reduction": 0.75,
+      "maximum_reduction": 0.95,
+      "conditions": [
+        {
+          "type": "damage_type",
+          "damage_type": "minecraft:wither"
+        },
+        {
+          "type": "effect_and_damage_type",
+          "damage_type": "minecraft:magic",
+          "required_effect": "minecraft:poison",
+          "require_no_direct_entity": true
+        }
+      ]
+    }
+  ],
+  "aftereffects": [],
+  "degraded_behavior": {
+    "duration_multiplier": 0.15,
+    "execute_instant_effects": false
+  },
+  "minigame_profile": "craftbound:alchemist/antidote",
+  "experience_per_bottle": 20
+}
+```
+
+`minigame_profile`は文字列のリソースIDとする。対応するミニゲームプロファイルは、`data_version`、`preheat_limit_ticks`、および`phases`を持つ。温度はBlockEntityと同じ0～10000の整数、時間はすべてtickで記述し、浮動小数点の温度と秒単位の時間を受け付けない。
+
+各`phases`要素は、`id`、`duration_ticks`、`scored_temperature`、`target_temperature.minimum`、`target_temperature.maximum`、`input`、`ingredient_temperature_delta`、および`fixed_wait_ticks_after`を持つ。`input.type`は`ingredient`または`bottling`とする。`ingredient`は`ingredient_index`、`base_ideal_tick`、`random_offset_ticks`、`tolerance_ticks`を持ち、`bottling`は`base_ideal_tick`と`tolerance_ticks`を持つ。
+
+狂戦薬の完全なミニゲームプロファイルを次に示す。このJSONを組み込み定義の正とする。
+
+```json
+{
+  "data_version": 1,
+  "preheat_limit_ticks": 240,
+  "phases": [
+    {
+      "id": "reaction_1",
+      "duration_ticks": 100,
+      "scored_temperature": true,
+      "target_temperature": { "minimum": 5000, "maximum": 6000 },
+      "input": {
+        "type": "ingredient",
+        "ingredient_index": 0,
+        "base_ideal_tick": 50,
+        "random_offset_ticks": { "minimum": -10, "maximum": 10 },
+        "tolerance_ticks": 20
+      },
+      "ingredient_temperature_delta": -600,
+      "fixed_wait_ticks_after": 25
+    },
+    {
+      "id": "reaction_2",
+      "duration_ticks": 100,
+      "scored_temperature": true,
+      "target_temperature": { "minimum": 6000, "maximum": 7000 },
+      "input": {
+        "type": "ingredient",
+        "ingredient_index": 1,
+        "base_ideal_tick": 50,
+        "random_offset_ticks": { "minimum": -10, "maximum": 10 },
+        "tolerance_ticks": 20
+      },
+      "ingredient_temperature_delta": 1200,
+      "fixed_wait_ticks_after": 25
+    },
+    {
+      "id": "reaction_3",
+      "duration_ticks": 100,
+      "scored_temperature": true,
+      "target_temperature": { "minimum": 5200, "maximum": 6200 },
+      "input": {
+        "type": "ingredient",
+        "ingredient_index": 2,
+        "base_ideal_tick": 50,
+        "random_offset_ticks": { "minimum": -10, "maximum": 10 },
+        "tolerance_ticks": 20
+      },
+      "ingredient_temperature_delta": -1000,
+      "fixed_wait_ticks_after": 25
+    },
+    {
+      "id": "stabilization",
+      "duration_ticks": 80,
+      "scored_temperature": true,
+      "target_temperature": { "minimum": 5500, "maximum": 6500 },
+      "input": {
+        "type": "bottling",
+        "base_ideal_tick": 50,
+        "tolerance_ticks": 20
+      },
+      "ingredient_temperature_delta": 0,
+      "fixed_wait_ticks_after": 25
+    }
+  ]
+}
+```
+
+液体色、泡、音、および温度変化表示は8.7.1節の共通表現を使用し、ミニゲームプロファイルへ重複して持たせない。組み込み4薬品もJava定数ではなく、本節と同じJSONから読み込む。
+
+`form`の不明値、未知の`type`、存在しないItem、Tag、Attribute、MobEffect、DamageTypeまたは参照プロファイル、必須項目の欠落、不正なIngredient、負の持続時間、0～10000外の温度、工程外の理想時刻、NaN、無限大、および不正な上限値を含む定義は、その定義だけを無効化して警告ログを出す。未知のフィールドは将来互換のため無視する。
 
 薬品定義はサーバー起動時と`/reload`時に読み込む。有効な定義から新しいスナップショットを構築してから参照先を差し替え、読み込み途中の状態をゲーム処理へ公開しない。
 
@@ -816,7 +1081,7 @@ phases
   - xp_awarded: boolean
 ```
 
-開始者がオフラインの場合の未受領経験値は、プレイヤーの永続データへ、少なくとも`batch_id`と`experience`を持つリストとして保存する。同じ`batch_id`を重複登録せず、付与完了後にその要素を削除する。
+開始者がオフラインの場合、またはPufferfish's Skillsへの経験値加算に失敗した場合の未受領経験値は、プレイヤーの永続データへ、少なくとも`batch_id`と`experience`を持つリストとして保存する。同じ`batch_id`を重複登録せず、付与完了後にその要素を削除する。
 
 - スキル効果は計算済み倍率ではなく、調合開始時または完成時のランクを保存する。
 - `recipe_snapshot`は、開始済みバッチを完了するために必要な薬品定義とミニゲームプロファイルの値を保存する。
@@ -1117,6 +1382,8 @@ craftbound:alchemist/hardening_slowness
 
 レベル0から29までの累積必要経験値は13050とする。
 
+この必要経験値曲線、レベル、現在経験値、およびスキルポイントはPufferfish's Skillsの定義を正とする。CraftboundのJavaコードや薬品定義へ必要経験値曲線を重複して持たせない。Craftboundはバッチごとの獲得経験値を計算し、Pufferfish's Skillsへ加算する。
+
 バッチ完了時の獲得経験値は次の式で求め、小数点以下を切り捨てる。
 
 ```text
@@ -1147,6 +1414,40 @@ MVP組み込み薬品の1本あたり基礎経験値は次のとおりとする�
 - クリエイティブ、スペクテイター、アドベンチャー、ForgeのFakePlayer、NPC、自動化用プレイヤーEntity、および管理手段で生成・完了したバッチには経験値を付与しない。
 - 開始者がオフラインのまま完了した場合は12.3節の未受領経験値として保存し、次回ログイン時に付与する。
 - 通常プレイヤー向けのスキル振り直し手段は未確定とする。
+
+### 14.12 Pufferfish's Skills連携契約
+
+Pufferfish's Skills 0.18.1をMVPの必須依存Modとする。未導入または対応外バージョンの場合は、Forgeの依存関係検証によってCraftboundを読み込まず、独自の代替レベル、経験値、ポイント、またはスキル保存処理へフォールバックしない。
+
+連携に使用するリソースIDは次のとおりとする。
+
+| 対象 | リソースID |
+|---|---|
+| 錬金術師スキルツリー | `craftbound:alchemist` |
+| バッチ調合経験値源 | `craftbound:alchemist_batch` |
+| ランクノード | `craftbound:alchemist/<skill_id>_<rank>` |
+
+例えば精密火力ランク3のノードIDは`craftbound:alchemist/precision_heat_3`とする。14.2節のスキルIDを`<skill_id>`に使用し、`<rank>`は1からそのスキルの最大ランクまでの10進整数とする。表示名、翻訳文、ツリー上の配置を変更しても、公開済みのリソースIDは変更しない。
+
+責務は次のように分ける。
+
+- Pufferfish's Skillsは、錬金術師レベル、現在経験値、必要経験値曲線、スキルポイント、ノードの取得状態、および取得前提を管理する。
+- Craftboundは、経験値獲得条件、バッチごとの経験値量、バッチUUIDによる重複防止、スキル効果値、および調合開始時のランクスナップショットを管理する。
+- ランクごとの効果値は`craftbound-server.toml`を正とし、Pufferfish's Skillsのノード定義へ重複して持たせない。
+
+調合開始時はランク1から順に取得状態を確認し、連続して取得済みのノード数をそのスキルのランクとする。前提ランクが欠けた状態で上位ノードだけを取得していても、欠けたランク以降を適用しない。不連続な取得状態を検出した場合は、安全な連続ランクを使用して警告ログを出す。
+
+経験値付与は次の順序で行う。
+
+1. 14.11節の経験値獲得条件とバッチUUIDを検証する。
+2. 進行中バッチの`xp_awarded`が`false`であることを確認する。
+3. Pufferfish's Skillsへ`craftbound:alchemist_batch`を経験値源として経験値を加算する。
+4. 加算が正常に完了した場合だけ`xp_awarded`を`true`にし、錬金釜を保存対象としてマークする。
+5. 加算に失敗した場合は`xp_awarded`を変更せず、同じバッチUUIDを未受領経験値へ1件だけ登録する。オンライン中は20tick以上空けて未受領リストから再試行し、同じ原因のエラーログは60秒に1回までとする。
+
+開始者がオンラインかつ最大レベル到達済みの場合は経験値加算APIを呼び出さず、そのバッチを処理済みとして`xp_awarded`を`true`にする。開始者がオフラインの場合はレベル判定を先送りし、12.3節と13.3節の未受領経験値へ同じバッチUUIDを1件だけ登録する。ログイン時点で最大レベルなら加算せず該当要素を削除し、最大レベル未満なら同じ成功後更新規則で付与する。
+
+Pufferfish's SkillsのAPI呼び出しとノード参照は錬金術処理へ直接分散させず、連携専用サービスへ集約する。調合処理は、このサービスから返されたランクスナップショットと経験値付与結果だけを使用する。
 
 ---
 
@@ -1220,6 +1521,7 @@ MVP組み込み薬品の1本あたり基礎経験値は次のとおりとする�
 - 温度、素材投入、および瓶詰めがサーバー側で採点される。
 - 温度が0～10000の固定小数点整数として保持され、通常操作、自然温度変化、および材料温度変化が8.2節の順序で適用される。
 - 加熱と冷却の同時入力が無効となり、GUIを閉じた場合と切断時に保持入力が解除される。
+- 保持中の温度入力が10tickごとに更新され、最後の有効な更新から20tick経過するとサーバー側で解除される。
 - 予熱、反応、安定化、および固定待ち時間が8.3節の既定時間どおり進行する。
 - 各反応の理想投入時刻が50tickを基準に-10～+10tickで決定され、前後20tickの許容時間で採点される。
 - MVP組み込み4薬品の各工程が8.7節の目標温度帯、素材温度変化、および安定化温度帯を使用する。
@@ -1228,6 +1530,10 @@ MVP組み込み薬品の1本あたり基礎経験値は次のとおりとする�
 - 瓶詰めが安定化開始から50tickを理想時刻、前後20tickを許容時間として採点される。
 - 理想投入時刻との差に応じて泡が5段階で変化し、許容時間へ入ったときだけ共通音が1回再生される。
 - 同じクライアント入力の再送で得点や材料が重複しない。
+- 素材投入と瓶詰めのパケットが素材ID、個数、得点、および理想時刻をクライアントから申告しない。
+- `AlchemistState`がMenu表示直後、工程遷移時、操作処理後、および通常時は2tickごとに閲覧者へ同期される。
+- ランダム決定後の理想投入tick、瓶詰めの理想tick、および工程別の途中得点がクライアントへ同期されない。
+- 開始者以外には進行状態が読み取り専用で表示され、操作パケットはサーバー側でも拒否される。
 - 総合得点が定義どおり5段階の品質へ変換される。
 - 低得点でも選択本数分の粗悪品質薬品が完成する。
 - GUIを閉じたりログアウトしたりしても材料返却や得点再抽選が発生しない。
@@ -1245,6 +1551,8 @@ MVP組み込み薬品の1本あたり基礎経験値は次のとおりとする�
 - 狂戦薬と硬化薬は、主効果が自然終了した場合だけ副作用が発生する。
 - 副作用を持つ薬品の使用時に、持続時間が主効果と同じで、Amplifierが100～124の副作用予告Effectが表示される。
 - 副作用予告Effectは期限中にゲーム結果を変更せず、自然終了時に品質と薬性安定ランクを復号して副作用を1回だけ付与する。
+- 予告Effectの期限切れイベントと主効果の削除イベントでは状態効果を直接付与・削除せず、server tick ENDのキューで処理する。
+- 同じtickに副作用付与要求と予告Effect削除要求が競合した場合は削除が優先され、副作用が発生しない。
 - 同一主効果を再付与した場合、主効果と予告Effectの両方が標準更新規則で更新され、最終的な自然終了時だけ副作用が発生する。
 - 主効果を途中解除した場合に副作用が発生しないこと、および発生済み副作用を牛乳で解除できることをMVPでは許容する。
 - 牛乳、コマンド、死亡などで予告Effectが削除された場合は副作用が発生しない。
@@ -1267,6 +1575,9 @@ MVP組み込み薬品の1本あたり基礎経験値は次のとおりとする�
 - 薬品の品質と劣化時刻が死亡、ディメンション移動、ログアウト、および再起動で失われない。
 - 不正な薬品定義があっても、他の正常な定義を読み込める。
 - 薬品定義とミニゲームプロファイルを13.2節のパスから読み込み、`data_version: 1`を検証できる。
+- 組み込み4薬品がJava定数ではなく13.2節の型付きJSONから読み込まれる。
+- 狂戦薬、耐毒薬、および狂戦薬ミニゲームプロファイルのJSON例がCodecで読み込まれ、第5章と8.7節の値に一致する。
+- 未知の主効果または入力`type`を持つ定義だけを無効化し、スキーマに定義されていないフィールドは無視できる。
 - ItemStackと錬金釜BlockEntityが13.3節の保存形式で往復保存され、再読み込み後も同じ結果になる。
 - 欠落・不正な必須薬品データと解釈不能な新しい`data_version`を安全に無効化し、他の薬品やバッチをクラッシュさせない。
 - 未受領経験値へ同じバッチUUIDを重複登録せず、付与後に該当データを削除する。
@@ -1294,6 +1605,10 @@ MVP組み込み薬品の1本あたり基礎経験値は次のとおりとする�
 - 完了処理、チャンク再読み込み、サーバー再起動、および再ログインを繰り返しても、同じバッチUUIDから経験値を複数回取得できない。
 - 開始者がオフライン中に完了したバッチの経験値は、次回ログイン時に1度だけ付与される。
 - 最大レベル到達後の余剰経験値は蓄積されない。
+- Pufferfish's Skills 0.18.1が未導入または対応外の場合、Forgeの依存関係検証でCraftboundが読み込まれない。
+- スキルツリー、経験値源、および各ランクノードが14.12節のリソースIDで参照される。
+- 不連続なランクノード取得状態では、ランク1から連続して取得済みの範囲だけが適用される。
+- Pufferfish's Skillsへの経験値加算に失敗した場合は`xp_awarded`が更新されず、同じバッチUUIDの未受領経験値を重複登録せずに、20tick以上空けて再試行される。
 
 ---
 
