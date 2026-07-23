@@ -1,4 +1,4 @@
-package com.magu1436.craftbound.occupations.adventurer.rewards;
+package com.magu1436.craftbound.common;
 
 import java.util.Objects;
 import java.util.UUID;
