@@ -3,8 +3,6 @@ package com.magu1436.craftbound.common;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -66,38 +64,49 @@ public abstract class BasicAbilityReward implements Reward {
     /**
      * @return 変更する属性
      */
-    @Nonnull
     protected abstract Attribute getAttribute();
 
     /**
      * 
      * @return modifier の UUID
      */
-    @Nonnull
     protected abstract UUID getModifierId();
 
     /**
      * 
      * @return 報酬のID
      */
-    @Nonnull
     protected abstract String getRewardId();
 
     @Override
     public void update(RewardUpdateContext context) {
         int rewardCount = context.getCount();   // 同一報酬が取得された回数
 
-        AttributeInstance attr = Objects.requireNonNull(
-            context.getPlayer().getAttribute(this.getAttribute())
+        Attribute attribute = Objects.requireNonNull(
+            this.getAttribute(), 
+            "Attribute is null"
+        );
+        UUID modifierId = Objects.requireNonNull(
+            this.getModifierId(),
+            "UUID is null"
+        );
+        String rewardId = Objects.requireNonNull(
+            this.getRewardId(),
+            "rewardId is null"
         );
 
-        attr.removeModifier(this.getModifierId());  // 重複を防ぐために削除
+        AttributeInstance attr = Objects.requireNonNull(
+            context.getPlayer().getAttribute(attribute),
+            "AttributeInstance is null"
+        );
+
+        attr.removeModifier(modifierId);  // 重複を防ぐために削除
 
         if (rewardCount <= 0) return;
 
         AttributeModifier modifier = new AttributeModifier(
-            this.getModifierId(),
-            this.getRewardId(),
+            modifierId,
+            rewardId,
             this.amount * rewardCount,
             AttributeModifier.Operation.ADDITION
         );
@@ -108,11 +117,20 @@ public abstract class BasicAbilityReward implements Reward {
     @Override
     public void dispose(RewardDisposeContext context) {
         for (ServerPlayer player : context.getServer().getPlayerList().getPlayers()) {
+            Attribute attribute = Objects.requireNonNull(
+                this.getAttribute(),
+                "Attribute is null"
+            );
+            UUID modifierId = Objects.requireNonNull(
+                this.getModifierId(),
+                "UUID is null"
+            );
             Objects
                 .requireNonNull(
-                    player.getAttribute(this.getAttribute())
+                    player.getAttribute(attribute),
+                    "AttributeInstance is null"
                 )
-                .removeModifier(this.getModifierId());
+                .removeModifier(modifierId);
         }
     }
 }
