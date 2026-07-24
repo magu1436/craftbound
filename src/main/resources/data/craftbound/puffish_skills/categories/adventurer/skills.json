@@ -1,0 +1,8 @@
+{
+    "skill_1": {
+        "x": 0,
+        "y": 0,
+        "definition": "max_health_1",
+        "root": true
+    }
+}

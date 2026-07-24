@@ -1,0 +1,20 @@
+{
+    "max_health_1": {
+        "title": "体力増強I",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:regeneration"
+            }
+        },
+        "description": "最大体力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:max_health_reward",
+                "data": {
+                    "amount": 2.0
+                }
+            }
+        ]
+    }
+}
