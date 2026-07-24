@@ -1,0 +1,17 @@
+{
+  "title": {
+    "translate": "skill_category.craftbound.food_producer.title"
+  },
+  "description": {
+    "translate": "skill_category.craftbound.food_producer.description"
+  },
+  "icon": {
+    "type": "item",
+    "data": {
+      "item": "minecraft:wheat"
+    }
+  },
+  "background": "minecraft:textures/block/farmland.png",
+  "unlocked_by_default": true,
+  "exclusive_root": false
+}

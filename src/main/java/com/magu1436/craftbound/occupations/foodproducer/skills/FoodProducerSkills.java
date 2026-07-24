@@ -16,6 +16,7 @@ public final class FoodProducerSkills {
             "food_producer"
     );
 
+    public static final String ROOT = "food_producer_root";
     public static final String FARMLAND_DIAGNOSIS = "farmland_diagnosis";
     public static final List<String> GROWTH_MANAGEMENT = ranks("growth_management", 5);
     public static final List<String> YIELD_MANAGEMENT = ranks("yield_management", 5);

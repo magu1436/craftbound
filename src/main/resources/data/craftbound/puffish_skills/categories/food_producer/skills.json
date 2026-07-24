@@ -1,0 +1,46 @@
+{
+  "food_producer_root": {
+    "x": 0,
+    "y": 0,
+    "definition": "food_producer_root",
+    "root": true
+  },
+  "farmland_diagnosis": {
+    "x": 0,
+    "y": -48,
+    "definition": "farmland_diagnosis"
+  },
+  "growth_management_1": { "x": 0, "y": -88, "definition": "growth_management_1" },
+  "growth_management_2": { "x": 0, "y": -120, "definition": "growth_management_2" },
+  "growth_management_3": { "x": 0, "y": -152, "definition": "growth_management_3" },
+  "growth_management_4": { "x": 0, "y": -184, "definition": "growth_management_4" },
+  "growth_management_5": { "x": 0, "y": -216, "definition": "growth_management_5" },
+  "yield_management_1": { "x": -48, "y": -256, "definition": "yield_management_1" },
+  "yield_management_2": { "x": -48, "y": -288, "definition": "yield_management_2" },
+  "yield_management_3": { "x": -48, "y": -320, "definition": "yield_management_3" },
+  "yield_management_4": { "x": -48, "y": -352, "definition": "yield_management_4" },
+  "yield_management_5": { "x": -48, "y": -384, "definition": "yield_management_5" },
+  "quality_cultivation_1": { "x": 48, "y": -256, "definition": "quality_cultivation_1" },
+  "quality_cultivation_2": { "x": 48, "y": -288, "definition": "quality_cultivation_2" },
+  "quality_cultivation_3": { "x": 48, "y": -320, "definition": "quality_cultivation_3" },
+  "quality_cultivation_4": { "x": 48, "y": -352, "definition": "quality_cultivation_4" },
+  "quality_cultivation_5": { "x": 48, "y": -384, "definition": "quality_cultivation_5" },
+  "fertility_management_1": { "x": -64, "y": -80, "definition": "fertility_management_1" },
+  "fertility_management_2": { "x": -96, "y": -112, "definition": "fertility_management_2" },
+  "fertility_management_3": { "x": -128, "y": -144, "definition": "fertility_management_3" },
+  "ranch_management": {
+    "x": -64,
+    "y": 0,
+    "definition": "ranch_management"
+  },
+  "meat_processing_1": { "x": -104, "y": 32, "definition": "meat_processing_1" },
+  "meat_processing_2": { "x": -136, "y": 64, "definition": "meat_processing_2" },
+  "meat_processing_3": { "x": -168, "y": 96, "definition": "meat_processing_3" },
+  "meat_processing_4": { "x": -200, "y": 128, "definition": "meat_processing_4" },
+  "meat_processing_5": { "x": -232, "y": 160, "definition": "meat_processing_5" },
+  "basic_processing": {
+    "x": 64,
+    "y": 0,
+    "definition": "basic_processing"
+  }
+}

@@ -1,0 +1,33 @@
+[
+  ["food_producer_root", "farmland_diagnosis"],
+  ["food_producer_root", "ranch_management"],
+  ["food_producer_root", "basic_processing"],
+
+  ["farmland_diagnosis", "growth_management_1"],
+  ["growth_management_1", "growth_management_2"],
+  ["growth_management_2", "growth_management_3"],
+  ["growth_management_3", "growth_management_4"],
+  ["growth_management_4", "growth_management_5"],
+
+  ["growth_management_5", "yield_management_1"],
+  ["yield_management_1", "yield_management_2"],
+  ["yield_management_2", "yield_management_3"],
+  ["yield_management_3", "yield_management_4"],
+  ["yield_management_4", "yield_management_5"],
+
+  ["growth_management_5", "quality_cultivation_1"],
+  ["quality_cultivation_1", "quality_cultivation_2"],
+  ["quality_cultivation_2", "quality_cultivation_3"],
+  ["quality_cultivation_3", "quality_cultivation_4"],
+  ["quality_cultivation_4", "quality_cultivation_5"],
+
+  ["farmland_diagnosis", "fertility_management_1"],
+  ["fertility_management_1", "fertility_management_2"],
+  ["fertility_management_2", "fertility_management_3"],
+
+  ["ranch_management", "meat_processing_1"],
+  ["meat_processing_1", "meat_processing_2"],
+  ["meat_processing_2", "meat_processing_3"],
+  ["meat_processing_3", "meat_processing_4"],
+  ["meat_processing_4", "meat_processing_5"]
+]
