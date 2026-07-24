@@ -14,7 +14,7 @@ import net.puffish.skillsmod.api.util.Result;
 
 public class ExplosionDamageReductionReward extends BasicAbilityReward {
 
-    private static final String REWARD_ID = "explosion_reduction_reward";
+    private static final String REWARD_ID = "explosion_damage_reduction_reward";
 
     protected ExplosionDamageReductionReward(
         double amount,
