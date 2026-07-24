@@ -2,6 +2,7 @@ package com.magu1436.craftbound;
 
 import com.magu1436.craftbound.occupations.adventurer.rewards.AttackDamageReward;
 import com.magu1436.craftbound.occupations.adventurer.rewards.MaxHealthReward;
+import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -85,6 +86,10 @@ public class Craftbound
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
+        // Attributes の登録
+        CraftboundAttributes.register(modEventBus);
+
+        // 報酬の登録
         AttackDamageReward.register();
         MaxHealthReward.register();
     }
