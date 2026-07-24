@@ -68,4 +68,15 @@ public final class FoodQualityItems {
     public static boolean isQualityTarget(ItemStack stack) {
         return category(stack).isPresent();
     }
+
+    /** 固定規則を優先し、取得経路不明の既存品は標準品質とする. */
+    public static FoodQuality initialQualityForUntracked(ItemStack stack) {
+        if (stack.is(Items.EGG) || stack.is(Items.MILK_BUCKET)) {
+            return FoodQuality.HIGH;
+        }
+        if (stack.is(Items.MUSHROOM_STEW)) {
+            return FoodQuality.LOW;
+        }
+        return FoodQuality.STANDARD;
+    }
 }
