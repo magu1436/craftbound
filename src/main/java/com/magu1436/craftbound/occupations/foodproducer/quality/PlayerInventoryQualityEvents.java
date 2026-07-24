@@ -2,11 +2,12 @@ package com.magu1436.craftbound.occupations.foodproducer.quality;
 
 import com.magu1436.craftbound.Craftbound;
 
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -63,9 +64,24 @@ public final class PlayerInventoryQualityEvents {
     @SubscribeEvent
     public static void onItemToss(ItemTossEvent event) {
         if (event.getPlayer() instanceof ServerPlayer player) {
+            ItemStack stack = event.getEntity().getItem();
+            long gameTime = player.serverLevel().getGameTime();
             FoodQualityData.advanceLoadedTime(
-                    event.getEntity().getItem(),
-                    player.serverLevel().getGameTime(),
+                    stack,
+                    gameTime,
+                    PLAYER_INVENTORY_MULTIPLIER
+            );
+            FoodQualityData.pauseClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER);
+        }
+    }
+
+    /** 地面上のアイテムは品質劣化の対象外とし、次の管理先へ入るまで時計を停止する. */
+    @SubscribeEvent
+    public static void onItemEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof ItemEntity itemEntity) {
+            FoodQualityData.pauseClock(
+                    itemEntity.getItem(),
+                    event.getLevel().getGameTime(),
                     PLAYER_INVENTORY_MULTIPLIER
             );
         }

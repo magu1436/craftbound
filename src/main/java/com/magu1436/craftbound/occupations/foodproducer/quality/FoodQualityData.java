@@ -17,6 +17,7 @@ public final class FoodQualityData {
     private static final String REMAINING_TICKS_TAG = "remaining_base_ticks";
     private static final String LAST_UPDATE_TAG = "last_update_game_time";
     private static final String PRESERVATION_MULTIPLIER_TAG = "preservation_multiplier";
+    private static final String CLOCK_RUNNING_TAG = "clock_running";
 
     private FoodQualityData() {
     }
@@ -61,6 +62,7 @@ public final class FoodQualityData {
         tag.putDouble(REMAINING_TICKS_TAG, Math.max(0.0D, remainingBaseTicks));
         tag.putLong(LAST_UPDATE_TAG, gameTime);
         tag.putDouble(PRESERVATION_MULTIPLIER_TAG, Math.max(1.0D, preservationMultiplier));
+        tag.putBoolean(CLOCK_RUNNING_TAG, true);
     }
 
     /**
@@ -81,10 +83,16 @@ public final class FoodQualityData {
         FoodQualityCategory category = readCategory(tag, stack);
         double currentMultiplier = Math.max(1.0D, preservationMultiplier);
 
+        if (tag.contains(CLOCK_RUNNING_TAG, Tag.TAG_BYTE) && !tag.getBoolean(CLOCK_RUNNING_TAG)) {
+            resetClock(stack, gameTime, currentMultiplier);
+            return 0;
+        }
+
         if (quality == FoodQuality.SPOILED) {
             tag.putDouble(REMAINING_TICKS_TAG, 0.0D);
             tag.putLong(LAST_UPDATE_TAG, gameTime);
             tag.putDouble(PRESERVATION_MULTIPLIER_TAG, currentMultiplier);
+            tag.putBoolean(CLOCK_RUNNING_TAG, true);
             return 0;
         }
 
@@ -119,6 +127,7 @@ public final class FoodQualityData {
         tag.putDouble(REMAINING_TICKS_TAG, remaining);
         tag.putLong(LAST_UPDATE_TAG, gameTime);
         tag.putDouble(PRESERVATION_MULTIPLIER_TAG, currentMultiplier);
+        tag.putBoolean(CLOCK_RUNNING_TAG, true);
         return degradedStages;
     }
 
@@ -134,6 +143,21 @@ public final class FoodQualityData {
         CompoundTag tag = stack.getOrCreateTagElement(ROOT_TAG);
         tag.putLong(LAST_UPDATE_TAG, gameTime);
         tag.putDouble(PRESERVATION_MULTIPLIER_TAG, Math.max(1.0D, preservationMultiplier));
+        tag.putBoolean(CLOCK_RUNNING_TAG, true);
+    }
+
+    /** 読み込まれていない場所や地面上で経過時間を加算しないよう、品質時計を停止する. */
+    public static void pauseClock(ItemStack stack, long gameTime, double preservationMultiplier) {
+        if (!FoodQualityItems.isQualityTarget(stack)) {
+            return;
+        }
+        if (!hasQuality(stack)) {
+            initialize(stack, FoodQualityItems.initialQualityForUntracked(stack), gameTime);
+        }
+        CompoundTag tag = stack.getOrCreateTagElement(ROOT_TAG);
+        tag.putLong(LAST_UPDATE_TAG, gameTime);
+        tag.putDouble(PRESERVATION_MULTIPLIER_TAG, Math.max(1.0D, preservationMultiplier));
+        tag.putBoolean(CLOCK_RUNNING_TAG, false);
     }
 
     public static double getRemainingBaseTicks(ItemStack stack) {
