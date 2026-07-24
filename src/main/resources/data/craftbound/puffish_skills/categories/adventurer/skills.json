@@ -16,5 +16,29 @@
         "y": 40,
         "definition": "max_health_3",
         "root": true
+    },
+    "attack_damage_1": {
+        "x": 80,
+        "y": 0,
+        "definition": "attack_damage_1",
+        "root": true
+    },
+    "attack_damage_2": {
+        "x": 100,
+        "y": 20,
+        "definition": "attack_damage_2",
+        "root": true
+    },
+    "attack_damage_3": {
+        "x": 120,
+        "y": 40,
+        "definition": "attack_damage_3",
+        "root": true
+    },
+    "attack_damage_4": {
+        "x": 140,
+        "y": 60,
+        "definition": "attack_damage_4",
+        "root": true
     }
 }

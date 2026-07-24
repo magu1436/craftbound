@@ -55,5 +55,81 @@
                 }
             }
         ]
+    },
+    "attack_damage_1": {
+        "title": "攻撃力増強I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "基礎攻撃力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_damage_reward",
+                "data": {
+                    "amount": 0.5,
+                    "modifier_uuid": "d4138e14-ff47-41c6-aade-8d07c2394d37"
+                }
+            }
+        ]
+    },
+    "attack_damage_2": {
+        "title": "攻撃力増強II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "基礎攻撃力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_damage_reward",
+                "data": {
+                    "amount": 0.5,
+                    "modifier_uuid": "c8274cd7-67a4-43ec-ac9e-7e08fb48f56a"
+                }
+            }
+        ]
+    },
+    "attack_damage_3": {
+        "title": "攻撃力増強III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "基礎攻撃力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_damage_reward",
+                "data": {
+                    "amount": 0.5,
+                    "modifier_uuid": "76870371-184e-49e4-9374-b4dec2fe0884"
+                }
+            }
+        ]
+    },
+    "attack_damage_4": {
+        "title": "攻撃力増強IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "基礎攻撃力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_damage_reward",
+                "data": {
+                    "amount": 0.5,
+                    "modifier_uuid": "d20289bd-5f61-4d71-aeac-62788e69ed47"
+                }
+            }
+        ]
     }
 }
