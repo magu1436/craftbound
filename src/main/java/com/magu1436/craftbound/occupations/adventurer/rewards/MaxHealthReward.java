@@ -5,8 +5,10 @@ import java.util.UUID;
 import net.puffish.skillsmod.api.SkillsAPI;
 import net.puffish.skillsmod.api.reward.RewardDisposeContext;
 import net.puffish.skillsmod.api.reward.RewardUpdateContext;
+import net.puffish.skillsmod.api.util.Problem;
 import net.puffish.skillsmod.api.util.Result;
 
+import com.magu1436.craftbound.common.AbilityRewardParsedValues;
 import com.magu1436.craftbound.common.BasicAbilityReward;
 import com.magu1436.craftbound.common.CraftboundUtilities;
 
@@ -16,24 +18,22 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 
 public class MaxHealthReward extends BasicAbilityReward {
 
-    private static final UUID MODIFIER_UUID = UUID.fromString("26868140-2951-e221-72e3-a56e7bf6b222");
     private static final String REWARD_ID = "max_health_reward";
 
-    protected MaxHealthReward(double amount) {
-        super(amount);
+    protected MaxHealthReward(double amount, UUID modifierId) {
+        super(amount, modifierId);
     }
 
     public static void register() {
         SkillsAPI.registerReward(
             CraftboundUtilities.createResourceLocation(REWARD_ID),
-            context -> Result.success(
-                new MaxHealthReward(
-                    MaxHealthReward
-                        .parseJson(context)
-                        .getSuccessOrElse(null)
-                        .doubleValue()
-                )
-            )
+            context -> {
+                AbilityRewardParsedValues jsonValues = MaxHealthReward
+                    .parseJson(context)
+                    .getSuccessOrElse(null);
+                if (jsonValues == null) return Result.failure(Problem.message("json is null"));
+                return Result.success(new MaxHealthReward(jsonValues.amount(), jsonValues.modifierId()));
+            }
         );
     }
 
@@ -65,11 +65,6 @@ public class MaxHealthReward extends BasicAbilityReward {
     @Override
     protected Attribute getAttribute() {
         return Attributes.MAX_HEALTH;
-    }
-
-    @Override
-    protected UUID getModifierId() {
-        return MODIFIER_UUID;
     }
 
     @Override

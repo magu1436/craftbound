@@ -20,12 +20,16 @@ import net.puffish.skillsmod.api.util.Result;
  */
 public abstract class BasicAbilityReward implements Reward {
     private static final String AMOUNT_KEY = "amount";
+    private static final String MODIFIER_ID_KEY = "modifier_uuid";
     private final double amount;
+    private final UUID modifierId;
 
     protected BasicAbilityReward(
-        double amount
+        double amount,
+        UUID modifierId
     ) {
         this.amount = amount;
+        this.modifierId = modifierId;
     };
 
     /**
@@ -33,7 +37,7 @@ public abstract class BasicAbilityReward implements Reward {
      * @param context 報酬の設定情報
      * @return 報酬量を含む {@code Result}
      */
-    protected static Result<Double, Problem> parseJson( RewardConfigContext context ) {
+    protected static Result<AbilityRewardParsedValues, Problem> parseJson( RewardConfigContext context ) {
         JsonElement result = context.getData()
             .getSuccess()
             .orElse(null);
@@ -53,24 +57,22 @@ public abstract class BasicAbilityReward implements Reward {
         Double amount = json
             .getDouble(AMOUNT_KEY)
             .getSuccessOrElse(null);
+        UUID modifierId = UUID.fromString(json
+            .getString(MODIFIER_ID_KEY)
+            .getSuccessOrElse(null)
+        );
 
         if (amount == null) {
             return Result.failure(Problem.message("Some error happened on parsing json. CODE: 2"));
         }
 
-        return Result.success(amount);
+        return Result.success(new AbilityRewardParsedValues(amount, modifierId) );
     }
 
     /**
      * @return 変更する属性
      */
     protected abstract Attribute getAttribute();
-
-    /**
-     * 
-     * @return modifier の UUID
-     */
-    protected abstract UUID getModifierId();
 
     /**
      * 
@@ -87,7 +89,7 @@ public abstract class BasicAbilityReward implements Reward {
             "Attribute is null"
         );
         UUID modifierId = Objects.requireNonNull(
-            this.getModifierId(),
+            this.modifierId,
             "UUID is null"
         );
         String rewardId = Objects.requireNonNull(
@@ -122,7 +124,7 @@ public abstract class BasicAbilityReward implements Reward {
                 "Attribute is null"
             );
             UUID modifierId = Objects.requireNonNull(
-                this.getModifierId(),
+                this.modifierId,
                 "UUID is null"
             );
             Objects

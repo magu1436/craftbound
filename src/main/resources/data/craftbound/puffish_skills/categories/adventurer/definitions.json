@@ -12,7 +12,46 @@
             {
                 "type": "craftbound:max_health_reward",
                 "data": {
-                    "amount": 2.0
+                    "amount": 2.0,
+                    "modifier_uuid": "4ca56cb6-7a7f-386f-e397-57d7d217e1d2"
+                }
+            }
+        ]
+    },
+    "max_health_2": {
+        "title": "体力増強II",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:regeneration"
+            }
+        },
+        "description": "最大体力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:max_health_reward",
+                "data": {
+                    "amount": 2.0,
+                    "modifier_uuid": "c57df5a4-d07a-f5eb-1b81-e48138551c00"
+                }
+            }
+        ]
+    }, 
+    "max_health_3": {
+        "title": "体力増強III",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:regeneration"
+            }
+        },
+        "description": "最大体力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:max_health_reward",
+                "data": {
+                    "amount": 2.0,
+                    "modifier_uuid": "6c76d129-7ba8-ee6f-3209-185b12c3532b"
                 }
             }
         ]

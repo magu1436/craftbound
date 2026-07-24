@@ -4,5 +4,17 @@
         "y": 0,
         "definition": "max_health_1",
         "root": true
+    },
+    "max_health_2": {
+        "x": 20,
+        "y": 20,
+        "definition": "max_health_2",
+        "root": true
+    },
+    "max_health_3": {
+        "x": 40,
+        "y": 40,
+        "definition": "max_health_3",
+        "root": true
     }
 }
