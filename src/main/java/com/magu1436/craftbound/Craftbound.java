@@ -1,6 +1,8 @@
 package com.magu1436.craftbound;
 
 import com.mojang.logging.LogUtils;
+import com.magu1436.craftbound.occupations.foodproducer.farming.AgriculturalFertilizerItem;
+import com.magu1436.craftbound.occupations.foodproducer.loot.FoodProducerLootModifiers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
@@ -52,6 +54,15 @@ public class Craftbound
     public static final RegistryObject<Item> EXAMPLE_ITEM = ITEMS.register("example_item", () -> new Item(new Item.Properties().food(new FoodProperties.Builder()
             .alwaysEat().nutrition(1).saturationMod(2f).build())));
 
+    public static final RegistryObject<Item> AGRICULTURAL_FERTILIZER = ITEMS.register(
+            "agricultural_fertilizer",
+            () -> new AgriculturalFertilizerItem(new Item.Properties())
+    );
+    public static final RegistryObject<Item> COMPOST = ITEMS.register(
+            "compost",
+            () -> new Item(new Item.Properties())
+    );
+
     // Creates a creative tab with the id "craftbound:example_tab" for the example item, that is placed after the combat tab
     public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.COMBAT)
@@ -73,6 +84,7 @@ public class Craftbound
         ITEMS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
+        FoodProducerLootModifiers.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -102,6 +114,11 @@ public class Craftbound
     {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
             event.accept(EXAMPLE_BLOCK_ITEM);
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
+        {
+            event.accept(COMPOST);
+            event.accept(AGRICULTURAL_FERTILIZER);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
