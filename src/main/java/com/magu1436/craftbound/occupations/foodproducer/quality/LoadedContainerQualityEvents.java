@@ -42,11 +42,16 @@ public final class LoadedContainerQualityEvents {
             return;
         }
 
-        long gameTime = level.getGameTime();
         for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-            if (blockEntity instanceof Container container) {
-                resetContainerClock(container, gameTime);
-                schedule(level, blockEntity.getBlockPos(), gameTime + UPDATE_INTERVAL_TICKS);
+            if (blockEntity instanceof Container) {
+                // Do not access container contents while the chunk is becoming FULL.
+                // Randomizable containers may generate their loot and call setChanged(),
+                // which would wait for this same chunk and deadlock world generation.
+                schedule(
+                        level,
+                        blockEntity.getBlockPos(),
+                        level.getGameTime() + UPDATE_INTERVAL_TICKS
+                );
             }
         }
     }
@@ -182,12 +187,6 @@ public final class LoadedContainerQualityEvents {
         }
         if (changed) {
             blockEntity.setChanged();
-        }
-    }
-
-    private static void resetContainerClock(Container container, long gameTime) {
-        for (int slot = 0; slot < container.getContainerSize(); slot++) {
-            FoodQualityData.resetClock(container.getItem(slot), gameTime, NORMAL_CONTAINER_MULTIPLIER);
         }
     }
 
