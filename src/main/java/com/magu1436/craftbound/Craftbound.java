@@ -1,6 +1,7 @@
 package com.magu1436.craftbound;
 
 import com.magu1436.craftbound.occupations.adventurer.rewards.AttackDamageReward;
+import com.magu1436.craftbound.occupations.adventurer.rewards.ExplosionDamageReductionReward;
 import com.magu1436.craftbound.occupations.adventurer.rewards.MaxHealthReward;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.mojang.logging.LogUtils;
@@ -92,6 +93,7 @@ public class Craftbound
         // 報酬の登録
         AttackDamageReward.register();
         MaxHealthReward.register();
+        ExplosionDamageReductionReward.register();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
