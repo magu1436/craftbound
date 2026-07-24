@@ -131,5 +131,24 @@
                 }
             }
         ]
+    },
+    "explosion_damage_reduction_1": {
+        "title": "爆発ダメージ軽減I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_ingot"
+            }
+        },
+        "description": "爆発ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:explosion_damage_reduction_reward",
+                "data": {
+                    "amount": 0.5,
+                    "modifier_uuid": "7e5af1a2-097a-1c12-e4c5-0784af95bc82"
+                }
+            }
+        ]
     }
 }

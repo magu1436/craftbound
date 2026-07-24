@@ -40,5 +40,11 @@
         "y": 60,
         "definition": "attack_damage_4",
         "root": true
+    },
+    "explosion_damage_reduction_1": {
+        "x": 160,
+        "y": 0,
+        "definition": "explosion_damage_reduction_1",
+        "root": true
     }
 }
