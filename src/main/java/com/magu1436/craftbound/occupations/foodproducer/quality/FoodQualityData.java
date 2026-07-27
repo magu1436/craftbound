@@ -168,6 +168,26 @@ public final class FoodQualityData {
         return Math.max(0.0D, tag.getDouble(REMAINING_TICKS_TAG));
     }
 
+    /** 現在の保存倍率を反映した、画面表示用の残り実時間をtick単位で返す. */
+    public static double getRemainingRealTicks(ItemStack stack) {
+        return getRemainingBaseTicks(stack) * getPreservationMultiplier(stack);
+    }
+
+    public static double getPreservationMultiplier(ItemStack stack) {
+        CompoundTag tag = stack.getTagElement(ROOT_TAG);
+        if (tag == null || !tag.contains(PRESERVATION_MULTIPLIER_TAG, Tag.TAG_ANY_NUMERIC)) {
+            return 1.0D;
+        }
+        return Math.max(1.0D, tag.getDouble(PRESERVATION_MULTIPLIER_TAG));
+    }
+
+    public static boolean isClockRunning(ItemStack stack) {
+        CompoundTag tag = stack.getTagElement(ROOT_TAG);
+        return tag == null
+                || !tag.contains(CLOCK_RUNNING_TAG, Tag.TAG_BYTE)
+                || tag.getBoolean(CLOCK_RUNNING_TAG);
+    }
+
     /** 品質対象材料の最低品質を出力へ継承する. */
     public static boolean inheritMinimum(Collection<ItemStack> inputs, ItemStack output, long gameTime) {
         Optional<FoodQuality> minimum = inputs.stream()
