@@ -188,6 +188,47 @@ public final class FoodQualityData {
                 || tag.getBoolean(CLOCK_RUNNING_TAG);
     }
 
+    /**
+     * 品質時計だけが異なる2スタックを、バニラの統合判定より広い意味で比較する.
+     * 品質、分類、その他MODのNBTおよびCapabilityは一致していなければならない.
+     */
+    public static boolean isMergeCompatible(ItemStack first, ItemStack second) {
+        if (first.isEmpty() || second.isEmpty() || !hasQuality(first) || !hasQuality(second)) {
+            return false;
+        }
+
+        ItemStack normalizedFirst = first.copy();
+        ItemStack normalizedSecond = second.copy();
+        removeClockData(normalizedFirst);
+        removeClockData(normalizedSecond);
+        return ItemStack.isSameItemSameTags(normalizedFirst, normalizedSecond);
+    }
+
+    /**
+     * 2スタックを現在時刻まで精算し、統合可能なら短い方の残り時間へ揃える.
+     * 戻り値がtrueの場合、直後のバニラ統合判定でも同じNBTとして扱える.
+     */
+    public static boolean prepareForMerge(
+            ItemStack first,
+            ItemStack second,
+            long gameTime,
+            double preservationMultiplier
+    ) {
+        advanceLoadedTime(first, gameTime, preservationMultiplier);
+        advanceLoadedTime(second, gameTime, preservationMultiplier);
+        if (!isMergeCompatible(first, second)) {
+            return false;
+        }
+
+        CompoundTag firstTag = first.getOrCreateTagElement(ROOT_TAG);
+        FoodQuality quality = FoodQuality.fromValue(firstTag.getInt(QUALITY_TAG));
+        FoodQualityCategory category = readCategory(firstTag, first);
+        double remaining = Math.min(getRemainingBaseTicks(first), getRemainingBaseTicks(second));
+        set(first, quality, category, remaining, gameTime, preservationMultiplier);
+        set(second, quality, category, remaining, gameTime, preservationMultiplier);
+        return true;
+    }
+
     /** 品質対象材料の最低品質を出力へ継承する. */
     public static boolean inheritMinimum(Collection<ItemStack> inputs, ItemStack output, long gameTime) {
         Optional<FoodQuality> minimum = inputs.stream()
@@ -209,5 +250,16 @@ public final class FoodQualityData {
             }
         }
         return FoodQualityItems.category(stack).orElse(FoodQualityCategory.MATERIAL);
+    }
+
+    private static void removeClockData(ItemStack stack) {
+        CompoundTag root = stack.getTagElement(ROOT_TAG);
+        if (root == null) {
+            return;
+        }
+        root.remove(REMAINING_TICKS_TAG);
+        root.remove(LAST_UPDATE_TAG);
+        root.remove(PRESERVATION_MULTIPLIER_TAG);
+        root.remove(CLOCK_RUNNING_TAG);
     }
 }

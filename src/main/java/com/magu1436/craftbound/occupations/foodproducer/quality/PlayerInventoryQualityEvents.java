@@ -52,11 +52,7 @@ public final class PlayerInventoryQualityEvents {
     @SubscribeEvent
     public static void onItemPickup(EntityItemPickupEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            FoodQualityData.resetClock(
-                    event.getItem().getItem(),
-                    player.serverLevel().getGameTime(),
-                    PLAYER_INVENTORY_MULTIPLIER
-            );
+            preparePickedUpStack(player, event.getItem().getItem());
         }
     }
 
@@ -103,5 +99,40 @@ public final class PlayerInventoryQualityEvents {
         inventory.items.forEach(action);
         inventory.armor.forEach(action);
         inventory.offhand.forEach(action);
+    }
+
+    /** 拾得前に統合先と時計を揃え、空きスロットがなくてもバニラ回収を成立させる. */
+    private static void preparePickedUpStack(ServerPlayer player, ItemStack pickedUp) {
+        long gameTime = player.serverLevel().getGameTime();
+        Inventory inventory = player.getInventory();
+        for (ItemStack existing : inventory.items) {
+            if (prepareExistingStack(existing, pickedUp, inventory, gameTime)) {
+                return;
+            }
+        }
+        for (ItemStack existing : inventory.offhand) {
+            if (prepareExistingStack(existing, pickedUp, inventory, gameTime)) {
+                return;
+            }
+        }
+        FoodQualityData.resetClock(pickedUp, gameTime, PLAYER_INVENTORY_MULTIPLIER);
+    }
+
+    private static boolean prepareExistingStack(
+            ItemStack existing,
+            ItemStack pickedUp,
+            Inventory inventory,
+            long gameTime
+    ) {
+        int limit = Math.min(inventory.getMaxStackSize(), existing.getMaxStackSize());
+        return !existing.isEmpty()
+                && existing.getCount() < limit
+                && FoodQualityData.isMergeCompatible(existing, pickedUp)
+                && FoodQualityData.prepareForMerge(
+                        existing,
+                        pickedUp,
+                        gameTime,
+                        PLAYER_INVENTORY_MULTIPLIER
+                );
     }
 }
