@@ -17,6 +17,10 @@ public class AdventurerDamageEventService {
             new DamageReductionRule(
                     DamageTypeTags.IS_EXPLOSION,
                     CraftboundAttributes.EXPLOSION_DAMAGE_REDUCTION
+            ),
+            new DamageReductionRule(
+                    DamageTypeTags.IS_PROJECTILE,
+                    CraftboundAttributes.PROJECTILE_DAMAGE_REDUCTION
             )
     );
     
