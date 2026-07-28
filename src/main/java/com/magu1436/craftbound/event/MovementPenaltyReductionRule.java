@@ -32,4 +32,16 @@ public record MovementPenaltyReductionRule(
             );
         }
     }
+
+    public boolean matches(ItemStack itemStack) {
+        Objects.requireNonNull(itemStack, "itemStack must not be null");
+
+        if (itemStack.is(excludedItems)) {
+            return false;
+        }
+        if (itemStack.is(targetItems)) {
+            return true;
+        }
+        return defaultMatcher.test(itemStack);
+    }
 }
