@@ -4,5 +4,6 @@
     "attribute.name.craftbound.attack_speed_bonus": "攻撃速度補正",
     "attribute.name.craftbound.physical_resistance": "肉体耐性",
     "attribute.name.craftbound.action_resistance": "行動耐性",
-    "attribute.name.craftbound.sensory_resistance": "感覚耐性"
+    "attribute.name.craftbound.sensory_resistance": "感覚耐性",
+    "attribute.name.craftbound.shield_footwork": "盾歩法"
 }
