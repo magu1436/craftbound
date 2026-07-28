@@ -5,7 +5,10 @@
             ["attack_speed_1", "attack_speed_2"],
             ["attack_speed_2", "attack_speed_3"],
             ["attack_speed_3", "attack_speed_4"],
-            ["attack_speed_4", "attack_speed_5"]
+            ["attack_speed_4", "attack_speed_5"],
+            ["shield_footwork_1", "shield_footwork_2"],
+            ["shield_footwork_2", "shield_footwork_3"],
+            ["shield_footwork_3", "shield_footwork_4"]
         ]
     }
 }
