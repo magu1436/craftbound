@@ -145,8 +145,65 @@
             {
                 "type": "craftbound:explosion_damage_reduction_reward",
                 "data": {
-                    "amount": 0.5,
+                    "amount": 0.05,
                     "modifier_uuid": "7e5af1a2-097a-1c12-e4c5-0784af95bc82"
+                }
+            }
+        ]
+    },
+    "explosion_damage_reduction_2": {
+        "title": "爆発ダメージ軽減II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_ingot"
+            }
+        },
+        "description": "爆発ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:explosion_damage_reduction_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "fc8b80cc-0809-4691-b098-36a117383dba"
+                }
+            }
+        ]
+    },
+    "explosion_damage_reduction_3": {
+        "title": "爆発ダメージ軽減III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_ingot"
+            }
+        },
+        "description": "爆発ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:explosion_damage_reduction_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "5d4f3033-172e-4467-8c3c-eb36f6b341c1"
+                }
+            }
+        ]
+    },
+    "explosion_damage_reduction_4": {
+        "title": "爆発ダメージ軽減IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_ingot"
+            }
+        },
+        "description": "爆発ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:explosion_damage_reduction_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "f41dbaee-4c3e-4ee4-87f8-0e683a58932a"
                 }
             }
         ]

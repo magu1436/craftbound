@@ -46,5 +46,23 @@
         "y": 0,
         "definition": "explosion_damage_reduction_1",
         "root": true
+    },
+    "explosion_damage_reduction_2": {
+        "x": 180,
+        "y": 20,
+        "definition": "explosion_damage_reduction_2",
+        "root": true
+    },
+    "explosion_damage_reduction_3": {
+        "x": 200,
+        "y": 40,
+        "definition": "explosion_damage_reduction_3",
+        "root": true
+    },
+    "explosion_damage_reduction_4": {
+        "x": 220,
+        "y": 60,
+        "definition": "explosion_damage_reduction_4",
+        "root": true
     }
 }
