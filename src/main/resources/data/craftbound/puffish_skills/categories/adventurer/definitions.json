@@ -132,6 +132,82 @@
             }
         ]
     },
+    "armor_1": {
+        "title": "防御力増強I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_chestplate"
+            }
+        },
+        "description": "防御力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:armor_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "68d737a2-895c-419a-bfa6-eb697a472fc9"
+                }
+            }
+        ]
+    },
+    "armor_2": {
+        "title": "防御力増強II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_chestplate"
+            }
+        },
+        "description": "防御力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:armor_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "1be0dfc7-dc86-46e8-a6da-de67a1c43854"
+                }
+            }
+        ]
+    },
+    "armor_3": {
+        "title": "防御力増強III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_chestplate"
+            }
+        },
+        "description": "防御力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:armor_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "a7311cab-48f4-4033-913d-5ed1a5aab8a8"
+                }
+            }
+        ]
+    },
+    "armor_4": {
+        "title": "防御力増強IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_chestplate"
+            }
+        },
+        "description": "防御力を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:armor_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "d14a1953-ae31-45ba-a753-4ec7464dc0ab"
+                }
+            }
+        ]
+    },
     "explosion_damage_reduction_1": {
         "title": "爆発ダメージ軽減I",
         "icon": {

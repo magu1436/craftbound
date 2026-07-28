@@ -41,6 +41,30 @@
         "definition": "attack_damage_4",
         "root": true
     },
+    "armor_1": {
+        "x": 80,
+        "y": 80,
+        "definition": "armor_1",
+        "root": true
+    },
+    "armor_2": {
+        "x": 100,
+        "y": 100,
+        "definition": "armor_2",
+        "root": true
+    },
+    "armor_3": {
+        "x": 120,
+        "y": 120,
+        "definition": "armor_3",
+        "root": true
+    },
+    "armor_4": {
+        "x": 140,
+        "y": 140,
+        "definition": "armor_4",
+        "root": true
+    },
     "explosion_damage_reduction_1": {
         "x": 160,
         "y": 0,
