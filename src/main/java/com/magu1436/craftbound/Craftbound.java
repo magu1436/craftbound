@@ -1,5 +1,8 @@
 package com.magu1436.craftbound;
 
+import com.magu1436.craftbound.client.event.CraftboundMovementPenaltyEventHandler;
+import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyRules;
+import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyService;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.mojang.logging.LogUtils;
@@ -130,6 +133,24 @@ public class Craftbound
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+
+            event.enqueueWork(
+                ClientModEvents::registerMovementPenaltyEventHandler
+            );
+        }
+
+        private static void registerMovementPenaltyEventHandler()
+        {
+            AdventurerMovementPenaltyService adventurerService =
+                new AdventurerMovementPenaltyService(
+                    AdventurerMovementPenaltyRules.create()
+                );
+
+            MinecraftForge.EVENT_BUS.register(
+                new CraftboundMovementPenaltyEventHandler(
+                    adventurerService
+                )
+            );
         }
     }
 }
