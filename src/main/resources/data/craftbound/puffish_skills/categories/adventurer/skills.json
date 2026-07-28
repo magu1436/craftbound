@@ -106,5 +106,29 @@
         "y": 60,
         "definition": "explosion_damage_reduction_4",
         "root": true
+    },
+    "projectile_damage_reduction_1": {
+        "x": 320,
+        "y": 0,
+        "definition": "projectile_damage_reduction_1",
+        "root": true
+    },
+    "projectile_damage_reduction_2": {
+        "x": 340,
+        "y": 20,
+        "definition": "projectile_damage_reduction_2",
+        "root": true
+    },
+    "projectile_damage_reduction_3": {
+        "x": 360,
+        "y": 40,
+        "definition": "projectile_damage_reduction_3",
+        "root": true
+    },
+    "projectile_damage_reduction_4": {
+        "x": 380,
+        "y": 60,
+        "definition": "projectile_damage_reduction_4",
+        "root": true
     }
 }
