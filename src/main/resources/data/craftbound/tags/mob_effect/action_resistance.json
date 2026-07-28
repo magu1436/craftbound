@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:slowness",
+    "minecraft:weakness",
+    "minecraft:mining_fatigue",
+    "minecraft:levitation"
+  ]
+}
