@@ -41,6 +41,31 @@
         "definition": "attack_damage_4",
         "root": true
     },
+    "attack_speed_1": {
+        "x": 120,
+        "y": 0,
+        "definition": "attack_speed_1"
+    },
+    "attack_speed_2": {
+        "x": 140,
+        "y": 0,
+        "definition": "attack_speed_2"
+    },
+    "attack_speed_3": {
+        "x": 160,
+        "y": 0,
+        "definition": "attack_speed_3"
+    },
+    "attack_speed_4": {
+        "x": 180,
+        "y": 0,
+        "definition": "attack_speed_4"
+    },
+    "attack_speed_5": {
+        "x": 200,
+        "y": 0,
+        "definition": "attack_speed_5"
+    },
     "armor_1": {
         "x": 80,
         "y": 80,

@@ -16,6 +16,7 @@ import net.minecraftforge.registries.RegistryObject;
 public final class CraftboundAttributes {
 
     private static final String EXPLOSION_DAMAGE_REDUCTION_NAME = "explosion_damage_reduction";
+    private static final String ATTACK_SPEED_BONUS_NAME = "attack_speed_bonus";
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = 
         DeferredRegister.create(
@@ -36,6 +37,20 @@ public final class CraftboundAttributes {
                 1.0D    // 最大値
             ).setSyncable(true)
         );
+
+    /**
+     * 攻撃速度の割合補正
+     */
+    public static final RegistryObject<Attribute> ATTACK_SPEED_BONUS =
+        ATTRIBUTES.register(
+            ATTACK_SPEED_BONUS_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(ATTACK_SPEED_BONUS_NAME),
+                0.0D,
+                0.0D,
+                1.0D
+            ).setSyncable(true)
+        );
     
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
@@ -51,6 +66,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 EXPLOSION_DAMAGE_REDUCTION.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                ATTACK_SPEED_BONUS.get()
         );
     }
 
