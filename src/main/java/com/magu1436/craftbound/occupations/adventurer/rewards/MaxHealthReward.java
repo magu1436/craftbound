@@ -34,7 +34,18 @@ public class MaxHealthReward extends AttributeReward {
     }
 
     public static void register() {
-        AttributeReward.register(REWARD_ID, ATTRIBUTE, Operation.ADDITION);
+        AttributeReward.register(
+            REWARD_ID,
+            ATTRIBUTE,
+            Operation.ADDITION,
+            (modifierId, amount) -> new MaxHealthReward(
+                REWARD_ID,
+                ATTRIBUTE,
+                modifierId,
+                amount,
+                Operation.ADDITION
+            )
+        );
     }
 
     /**

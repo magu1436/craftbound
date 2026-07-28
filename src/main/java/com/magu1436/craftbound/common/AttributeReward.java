@@ -48,6 +48,26 @@ public class AttributeReward implements Reward {
         Supplier<? extends Attribute> attribute,
         Operation operation
     ) {
+        register(
+            rewardId,
+            attribute,
+            operation,
+            (modifierId, amount) -> new AttributeReward(
+                rewardId,
+                attribute,
+                modifierId,
+                amount,
+                operation
+            )
+        );
+    }
+
+    protected static void register(
+        String rewardId,
+        Supplier<? extends Attribute> attribute,
+        Operation operation,
+        RewardCreator creator
+    ) {
         if (rewardId == null) throw new NullPointerException("reward id is null");
         SkillsAPI.registerReward(
             CraftboundUtilities.createResourceLocation(rewardId),
@@ -56,7 +76,7 @@ public class AttributeReward implements Reward {
                     .parseJson(context)
                     .getSuccessOrElse(null);
                 if (values == null) return Result.failure(Problem.message("parse json failed"));
-                return Result.success(new AttributeReward(rewardId, attribute, values.modifierId, values.amount, operation));
+                return Result.success(creator.create(values.modifierId, values.amount));
             }
         );
     }
@@ -179,5 +199,10 @@ public class AttributeReward implements Reward {
         double amount,
         UUID modifierId
     ) {}
+
+    @FunctionalInterface
+    protected interface RewardCreator {
+        AttributeReward create(UUID modifierId, double amount);
+    }
 
 }
