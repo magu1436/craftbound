@@ -1,4 +1,5 @@
 {
     "attribute.name.craftbound.explosion_damage_reduction": "爆発ダメージ軽減",
-    "attribute.name.craftbound.projectile_damage_reduction": "飛び道具ダメージ軽減"
+    "attribute.name.craftbound.projectile_damage_reduction": "飛び道具ダメージ軽減",
+    "attribute.name.craftbound.attack_speed_bonus": "攻撃速度補正"
 }

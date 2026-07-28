@@ -132,6 +132,101 @@
             }
         ]
     },
+    "attack_speed_1": {
+        "title": "攻撃速度増強I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "最終攻撃速度を2%増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_speed_reward",
+                "data": {
+                    "amount": 0.02,
+                    "modifier_uuid": "4d21831e-e25e-45bd-b451-e6bddae67c39"
+                }
+            }
+        ]
+    },
+    "attack_speed_2": {
+        "title": "攻撃速度増強II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "最終攻撃速度を2%増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_speed_reward",
+                "data": {
+                    "amount": 0.02,
+                    "modifier_uuid": "eeb8782a-8a44-433f-8174-1431fbffa58f"
+                }
+            }
+        ]
+    },
+    "attack_speed_3": {
+        "title": "攻撃速度増強III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "最終攻撃速度を2%増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_speed_reward",
+                "data": {
+                    "amount": 0.02,
+                    "modifier_uuid": "91cc0e7f-a08e-44b5-8786-0084a17e443e"
+                }
+            }
+        ]
+    },
+    "attack_speed_4": {
+        "title": "攻撃速度増強IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "最終攻撃速度を2%増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_speed_reward",
+                "data": {
+                    "amount": 0.02,
+                    "modifier_uuid": "60e42242-5bff-4bf3-857b-21efd413558e"
+                }
+            }
+        ]
+    },
+    "attack_speed_5": {
+        "title": "攻撃速度増強V",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:iron_sword"
+            }
+        },
+        "description": "最終攻撃速度を2%増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:attack_speed_reward",
+                "data": {
+                    "amount": 0.02,
+                    "modifier_uuid": "ae92ae5e-2fc0-4762-8ab8-a3a6b8a1c85c"
+                }
+            }
+        ]
+    },
     "armor_1": {
         "title": "?????I",
         "icon": {
