@@ -155,5 +155,26 @@
         "y": 60,
         "definition": "projectile_damage_reduction_4",
         "root": true
+    },
+    "physical_resistance_1": {
+        "x": 400,
+        "y": 0,
+        "definition": "physical_resistance_1",
+        "root": true
+    },
+    "physical_resistance_2": {
+        "x": 420,
+        "y": 20,
+        "definition": "physical_resistance_2"
+    },
+    "physical_resistance_3": {
+        "x": 440,
+        "y": 40,
+        "definition": "physical_resistance_3"
+    },
+    "physical_resistance_4": {
+        "x": 460,
+        "y": 60,
+        "definition": "physical_resistance_4"
     }
 }

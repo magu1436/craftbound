@@ -5,7 +5,10 @@
             ["attack_speed_1", "attack_speed_2"],
             ["attack_speed_2", "attack_speed_3"],
             ["attack_speed_3", "attack_speed_4"],
-            ["attack_speed_4", "attack_speed_5"]
+            ["attack_speed_4", "attack_speed_5"],
+            ["physical_resistance_1", "physical_resistance_2"],
+            ["physical_resistance_2", "physical_resistance_3"],
+            ["physical_resistance_3", "physical_resistance_4"]
         ]
     }
 }
