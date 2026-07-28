@@ -132,6 +132,63 @@
             }
         ]
     },
+    "knockback_resistance_1": {
+        "title": "ノックバック耐性I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:shield"
+            }
+        },
+        "description": "ノックバック耐性を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:knockback_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "1b82f4e8-bf6e-449b-9f51-3f50be510f11"
+                }
+            }
+        ]
+    },
+    "knockback_resistance_2": {
+        "title": "ノックバック耐性II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:shield"
+            }
+        },
+        "description": "ノックバック耐性を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:knockback_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "6822d890-cda6-47fa-85cb-285a8b1bf5fa"
+                }
+            }
+        ]
+    },
+    "knockback_resistance_3": {
+        "title": "ノックバック耐性III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:shield"
+            }
+        },
+        "description": "ノックバック耐性を増加させる",
+        "rewards": [
+            {
+                "type": "craftbound:knockback_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "d498a8a0-f0b5-4d29-bab3-af45f5783ecb"
+                }
+            }
+        ]
+    },
     "explosion_damage_reduction_1": {
         "title": "爆発ダメージ軽減I",
         "icon": {

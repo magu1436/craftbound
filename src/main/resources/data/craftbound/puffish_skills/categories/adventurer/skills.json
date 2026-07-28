@@ -41,6 +41,24 @@
         "definition": "attack_damage_4",
         "root": true
     },
+    "knockback_resistance_1": {
+        "x": 240,
+        "y": 0,
+        "definition": "knockback_resistance_1",
+        "root": true
+    },
+    "knockback_resistance_2": {
+        "x": 260,
+        "y": 20,
+        "definition": "knockback_resistance_2",
+        "root": true
+    },
+    "knockback_resistance_3": {
+        "x": 280,
+        "y": 40,
+        "definition": "knockback_resistance_3",
+        "root": true
+    },
     "explosion_damage_reduction_1": {
         "x": 160,
         "y": 0,
