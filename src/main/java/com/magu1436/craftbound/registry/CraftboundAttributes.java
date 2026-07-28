@@ -18,6 +18,7 @@ public final class CraftboundAttributes {
     private static final String EXPLOSION_DAMAGE_REDUCTION_NAME = "explosion_damage_reduction";
     private static final String PROJECTILE_DAMAGE_REDUCTION_NAME = "projectile_damage_reduction";
     private static final String ATTACK_SPEED_BONUS_NAME = "attack_speed_bonus";
+    private static final String SHIELD_FOOTWORK_NAME = "shield_footwork";
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = 
         DeferredRegister.create(
@@ -66,6 +67,20 @@ public final class CraftboundAttributes {
                 1.0D
             ).setSyncable(true)
         );
+
+    /**
+     * 盾歩法の取得段階
+     */
+    public static final RegistryObject<Attribute> SHIELD_FOOTWORK =
+        ATTRIBUTES.register(
+            SHIELD_FOOTWORK_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(SHIELD_FOOTWORK_NAME),
+                0.0D,
+                0.0D,
+                4.0D
+            ).setSyncable(true)
+        );
     
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
@@ -89,6 +104,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 ATTACK_SPEED_BONUS.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                SHIELD_FOOTWORK.get()
         );
     }
 

@@ -1,5 +1,6 @@
 {
   "attribute.name.craftbound.explosion_damage_reduction": "Explosion Damage Reduction",
   "attribute.name.craftbound.projectile_damage_reduction": "Projectile Damage Reduction",
-  "attribute.name.craftbound.attack_speed_bonus": "Attack Speed Bonus"
+  "attribute.name.craftbound.attack_speed_bonus": "Attack Speed Bonus",
+  "attribute.name.craftbound.shield_footwork": "Shield Footwork"
 }
