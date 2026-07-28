@@ -1,5 +1,8 @@
 {
   "attribute.name.craftbound.explosion_damage_reduction": "Explosion Damage Reduction",
   "attribute.name.craftbound.projectile_damage_reduction": "Projectile Damage Reduction",
-  "attribute.name.craftbound.attack_speed_bonus": "Attack Speed Bonus"
+  "attribute.name.craftbound.attack_speed_bonus": "Attack Speed Bonus",
+  "attribute.name.craftbound.physical_resistance": "Physical Resistance",
+  "attribute.name.craftbound.action_resistance": "Action Resistance",
+  "attribute.name.craftbound.sensory_resistance": "Sensory Resistance"
 }

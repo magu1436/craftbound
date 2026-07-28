@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.magu1436.craftbound.event.MobEffectDurationReductionRule;
+import com.magu1436.craftbound.registry.CraftboundAttributes;
+import com.magu1436.craftbound.registry.CraftboundMobEffectTags;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -17,7 +19,20 @@ public final class AdventurerResistanceEventService {
 
     private static final double MAX_REDUCTION_RATE = 0.4D;
 
-    private static final List<MobEffectDurationReductionRule> RULES = List.of();
+    private static final List<MobEffectDurationReductionRule> RULES = List.of(
+            new MobEffectDurationReductionRule(
+                    CraftboundMobEffectTags.PHYSICAL_RESISTANCE,
+                    CraftboundAttributes.PHYSICAL_RESISTANCE
+            ),
+            new MobEffectDurationReductionRule(
+                    CraftboundMobEffectTags.ACTION_RESISTANCE,
+                    CraftboundAttributes.ACTION_RESISTANCE
+            ),
+            new MobEffectDurationReductionRule(
+                    CraftboundMobEffectTags.SENSORY_RESISTANCE,
+                    CraftboundAttributes.SENSORY_RESISTANCE
+            )
+    );
 
     private AdventurerResistanceEventService() {
     }
