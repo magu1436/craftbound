@@ -1,3 +1,4 @@
 {
-  "attribute.name.craftbound.explosion_damage_reduction": "Explosion Damage Reduction"
+  "attribute.name.craftbound.explosion_damage_reduction": "Explosion Damage Reduction",
+  "attribute.name.craftbound.projectile_damage_reduction": "Projectile Damage Reduction"
 }

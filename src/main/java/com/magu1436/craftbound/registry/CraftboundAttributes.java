@@ -16,6 +16,7 @@ import net.minecraftforge.registries.RegistryObject;
 public final class CraftboundAttributes {
 
     private static final String EXPLOSION_DAMAGE_REDUCTION_NAME = "explosion_damage_reduction";
+    private static final String PROJECTILE_DAMAGE_REDUCTION_NAME = "projectile_damage_reduction";
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = 
         DeferredRegister.create(
@@ -36,6 +37,20 @@ public final class CraftboundAttributes {
                 1.0D    // 最大値
             ).setSyncable(true)
         );
+
+    /**
+     * 飛び道具ダメージの軽減
+     */
+    public static final RegistryObject<Attribute> PROJECTILE_DAMAGE_REDUCTION =
+        ATTRIBUTES.register(
+            PROJECTILE_DAMAGE_REDUCTION_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(PROJECTILE_DAMAGE_REDUCTION_NAME),
+                0.0D,   // デフォルト値
+                0.0D,   // 最小値
+                1.0D    // 最大値
+            ).setSyncable(true)
+        );
     
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
@@ -51,6 +66,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 EXPLOSION_DAMAGE_REDUCTION.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                PROJECTILE_DAMAGE_REDUCTION.get()
         );
     }
 

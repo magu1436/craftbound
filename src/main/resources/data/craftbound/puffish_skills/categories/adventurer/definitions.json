@@ -340,5 +340,81 @@
                 }
             }
         ]
+    },
+    "projectile_damage_reduction_1": {
+        "title": "飛び道具ダメージ軽減I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "飛び道具ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:projectile_damage_reduction_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "33daf600-d323-430f-aad7-80b38e490a86"
+                }
+            }
+        ]
+    },
+    "projectile_damage_reduction_2": {
+        "title": "飛び道具ダメージ軽減II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "飛び道具ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:projectile_damage_reduction_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "92338834-7ff1-4ddb-ab10-e0c08aeeee07"
+                }
+            }
+        ]
+    },
+    "projectile_damage_reduction_3": {
+        "title": "飛び道具ダメージ軽減III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "飛び道具ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:projectile_damage_reduction_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "053614dd-de00-4279-81e0-0e63e2c4dee3"
+                }
+            }
+        ]
+    },
+    "projectile_damage_reduction_4": {
+        "title": "飛び道具ダメージ軽減IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "飛び道具ダメージを軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:projectile_damage_reduction_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "f2fd864f-94c2-4c4e-81af-29024ae972c1"
+                }
+            }
+        ]
     }
 }
