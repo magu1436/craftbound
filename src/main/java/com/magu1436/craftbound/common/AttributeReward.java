@@ -2,11 +2,15 @@ package com.magu1436.craftbound.common;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.puffish.skillsmod.api.SkillsAPI;
 import net.puffish.skillsmod.api.json.JsonElement;
 import net.puffish.skillsmod.api.reward.Reward;
 import net.puffish.skillsmod.api.reward.RewardConfigContext;
@@ -15,29 +19,54 @@ import net.puffish.skillsmod.api.reward.RewardUpdateContext;
 import net.puffish.skillsmod.api.util.Problem;
 import net.puffish.skillsmod.api.util.Result;
 
-/**
- * プレイヤーの基礎能力を変更する報酬の基底クラス
- */
-public abstract class BasicAbilityReward implements Reward {
+public class AttributeReward implements Reward {
     private static final String AMOUNT_KEY = "amount";
     private static final String MODIFIER_ID_KEY = "modifier_uuid";
-    private final double amount;
-    private final UUID modifierId;
 
-    protected BasicAbilityReward(
+    private final String rewardId;
+    private final UUID modifierId;
+    private final Supplier<? extends Attribute> attribute;
+    private final double amount;
+    private final Operation operation;
+
+    protected AttributeReward(
+        String rewardId,
+        Supplier<? extends Attribute> attribute,
+        UUID modifierId,
         double amount,
-        UUID modifierId
+        Operation operation
     ) {
+        this.rewardId = rewardId;
+        this.attribute = attribute;
         this.amount = amount;
         this.modifierId = modifierId;
-    };
+        this.operation = operation;
+    }
+
+    public static void register(
+        String rewardId,
+        Supplier<? extends Attribute> attribute,
+        Operation operation
+    ) {
+        if (rewardId == null) throw new NullPointerException("reward id is null");
+        SkillsAPI.registerReward(
+            CraftboundUtilities.createResourceLocation(rewardId),
+            context -> {
+                ParsedJsonValues values = AttributeReward
+                    .parseJson(context)
+                    .getSuccessOrElse(null);
+                if (values == null) return Result.failure(Problem.message("parse json failed"));
+                return Result.success(new AttributeReward(rewardId, attribute, values.modifierId, values.amount, operation));
+            }
+        );
+    }
 
     /**
      * {@code RewardConfigContext} から報酬量 {@code amount} を取得するためのユーティリティメソッド
      * @param context 報酬の設定情報
      * @return 報酬量を含む {@code Result}
      */
-    protected static Result<AbilityRewardParsedValues, Problem> parseJson( RewardConfigContext context ) {
+    protected static Result<ParsedJsonValues, Problem> parseJson( RewardConfigContext context ) {
         JsonElement result = context.getData()
             .getSuccess()
             .orElse(null);
@@ -66,26 +95,15 @@ public abstract class BasicAbilityReward implements Reward {
             return Result.failure(Problem.message("Some error happened on parsing json. CODE: 2"));
         }
 
-        return Result.success(new AbilityRewardParsedValues(amount, modifierId) );
+        return Result.success(new ParsedJsonValues(amount, modifierId) );
     }
-
-    /**
-     * @return 変更する属性
-     */
-    protected abstract Attribute getAttribute();
-
-    /**
-     * 
-     * @return 報酬のID
-     */
-    protected abstract String getRewardId();
 
     @Override
     public void update(RewardUpdateContext context) {
         int rewardCount = context.getCount();   // 同一報酬が取得された回数
 
         Attribute attribute = Objects.requireNonNull(
-            this.getAttribute(), 
+            this.attribute.get(),
             "Attribute is null"
         );
         UUID modifierId = Objects.requireNonNull(
@@ -93,7 +111,7 @@ public abstract class BasicAbilityReward implements Reward {
             "UUID is null"
         );
         String rewardId = Objects.requireNonNull(
-            this.getRewardId(),
+            this.rewardId,
             "rewardId is null"
         );
 
@@ -110,7 +128,7 @@ public abstract class BasicAbilityReward implements Reward {
             modifierId,
             rewardId,
             this.amount * rewardCount,
-            AttributeModifier.Operation.ADDITION
+            operation.toAttributeOperation()
         );
 
         attr.addTransientModifier(modifier);
@@ -120,7 +138,7 @@ public abstract class BasicAbilityReward implements Reward {
     public void dispose(RewardDisposeContext context) {
         for (ServerPlayer player : context.getServer().getPlayerList().getPlayers()) {
             Attribute attribute = Objects.requireNonNull(
-                this.getAttribute(),
+                this.attribute.get(),
                 "Attribute is null"
             );
             UUID modifierId = Objects.requireNonNull(
@@ -135,4 +153,31 @@ public abstract class BasicAbilityReward implements Reward {
                 .removeModifier(modifierId);
         }
     }
+
+    public enum Operation {
+        
+        ADDITION,
+        MULTIPLY_BASE,
+        MULTIPLY_TOTAL;
+
+        @Nonnull
+        private AttributeModifier.Operation toAttributeOperation() {
+            switch (this) {
+                case ADDITION:
+                    return AttributeModifier.Operation.ADDITION;
+                case MULTIPLY_BASE:
+                    return AttributeModifier.Operation.MULTIPLY_BASE;
+                case MULTIPLY_TOTAL:
+                    return AttributeModifier.Operation.MULTIPLY_TOTAL;
+            }
+            throw new NullPointerException("Operation is null");
+        }
+
+    }
+
+    protected record ParsedJsonValues(
+        double amount,
+        UUID modifierId
+    ) {}
+
 }

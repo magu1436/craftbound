@@ -1,40 +1,40 @@
 package com.magu1436.craftbound.occupations.adventurer.rewards;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
-import net.puffish.skillsmod.api.SkillsAPI;
 import net.puffish.skillsmod.api.reward.RewardDisposeContext;
 import net.puffish.skillsmod.api.reward.RewardUpdateContext;
-import net.puffish.skillsmod.api.util.Problem;
-import net.puffish.skillsmod.api.util.Result;
 
-import com.magu1436.craftbound.common.AbilityRewardParsedValues;
-import com.magu1436.craftbound.common.BasicAbilityReward;
-import com.magu1436.craftbound.common.CraftboundUtilities;
+import com.magu1436.craftbound.common.AttributeReward;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
-public class MaxHealthReward extends BasicAbilityReward {
+public class MaxHealthReward extends AttributeReward {
 
     private static final String REWARD_ID = "max_health_reward";
+    private static final Supplier<? extends Attribute> ATTRIBUTE = () -> Attributes.MAX_HEALTH;
 
-    protected MaxHealthReward(double amount, UUID modifierId) {
-        super(amount, modifierId);
+    protected MaxHealthReward(
+        String rewardId,
+        Supplier<? extends Attribute> attribute,
+        UUID modifierId,
+        double amount,
+        Operation operation
+    ) {
+        super(
+            rewardId,
+            attribute,
+            modifierId,
+            amount,
+            operation
+        );
     }
 
     public static void register() {
-        SkillsAPI.registerReward(
-            CraftboundUtilities.createResourceLocation(REWARD_ID),
-            context -> {
-                AbilityRewardParsedValues jsonValues = MaxHealthReward
-                    .parseJson(context)
-                    .getSuccessOrElse(null);
-                if (jsonValues == null) return Result.failure(Problem.message("json is null"));
-                return Result.success(new MaxHealthReward(jsonValues.amount(), jsonValues.modifierId()));
-            }
-        );
+        AttributeReward.register(REWARD_ID, ATTRIBUTE, Operation.ADDITION);
     }
 
     /**
@@ -60,15 +60,5 @@ public class MaxHealthReward extends BasicAbilityReward {
         for (ServerPlayer player : context.getServer().getPlayerList().getPlayers()) {
             this.adjustHP(player);
         }
-    }
-
-    @Override
-    protected Attribute getAttribute() {
-        return Attributes.MAX_HEALTH;
-    }
-
-    @Override
-    protected String getRewardId() {
-        return REWARD_ID;
     }
 }

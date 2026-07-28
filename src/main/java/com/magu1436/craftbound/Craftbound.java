@@ -1,8 +1,6 @@
 package com.magu1436.craftbound;
 
-import com.magu1436.craftbound.occupations.adventurer.rewards.AttackDamageReward;
-import com.magu1436.craftbound.occupations.adventurer.rewards.ExplosionDamageReductionReward;
-import com.magu1436.craftbound.occupations.adventurer.rewards.MaxHealthReward;
+import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
@@ -91,9 +89,7 @@ public class Craftbound
         CraftboundAttributes.register(modEventBus);
 
         // 報酬の登録
-        AttackDamageReward.register();
-        MaxHealthReward.register();
-        ExplosionDamageReductionReward.register();
+        AdventurerRewardsFactory.registerRewards();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
