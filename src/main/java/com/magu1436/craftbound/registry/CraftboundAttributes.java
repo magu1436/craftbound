@@ -18,6 +18,9 @@ public final class CraftboundAttributes {
     private static final String EXPLOSION_DAMAGE_REDUCTION_NAME = "explosion_damage_reduction";
     private static final String PROJECTILE_DAMAGE_REDUCTION_NAME = "projectile_damage_reduction";
     private static final String ATTACK_SPEED_BONUS_NAME = "attack_speed_bonus";
+    private static final String PHYSICAL_RESISTANCE_NAME = "physical_resistance";
+    private static final String ACTION_RESISTANCE_NAME = "action_resistance";
+    private static final String SENSORY_RESISTANCE_NAME = "sensory_resistance";
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = 
         DeferredRegister.create(
@@ -66,6 +69,39 @@ public final class CraftboundAttributes {
                 1.0D
             ).setSyncable(true)
         );
+
+    public static final RegistryObject<Attribute> PHYSICAL_RESISTANCE =
+        ATTRIBUTES.register(
+            PHYSICAL_RESISTANCE_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(PHYSICAL_RESISTANCE_NAME),
+                0.0D,
+                0.0D,
+                0.4D
+            ).setSyncable(true)
+        );
+
+    public static final RegistryObject<Attribute> ACTION_RESISTANCE =
+        ATTRIBUTES.register(
+            ACTION_RESISTANCE_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(ACTION_RESISTANCE_NAME),
+                0.0D,
+                0.0D,
+                0.4D
+            ).setSyncable(true)
+        );
+
+    public static final RegistryObject<Attribute> SENSORY_RESISTANCE =
+        ATTRIBUTES.register(
+            SENSORY_RESISTANCE_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(SENSORY_RESISTANCE_NAME),
+                0.0D,
+                0.0D,
+                0.4D
+            ).setSyncable(true)
+        );
     
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
@@ -89,6 +125,18 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 ATTACK_SPEED_BONUS.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                PHYSICAL_RESISTANCE.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                ACTION_RESISTANCE.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                SENSORY_RESISTANCE.get()
         );
     }
 
