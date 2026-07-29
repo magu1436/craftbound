@@ -1,16 +1,15 @@
 package com.magu1436.craftbound.common;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
-
-import javax.annotation.Nullable;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraftforge.common.util.NonNullSupplier;
 import net.puffish.skillsmod.api.SkillsAPI;
 import net.puffish.skillsmod.api.reward.Reward;
 import net.puffish.skillsmod.api.reward.RewardConfigContext;
@@ -27,13 +26,13 @@ public class AttributeReward implements Reward {
 
     private final String rewardId;
     private final UUID modifierId;
-    private final Supplier<? extends Attribute> attribute;
+    private final NonNullSupplier<? extends Attribute> attribute;
     private final double amount;
     private final Operation operation;
 
     protected AttributeReward(
         String rewardId,
-        Supplier<? extends Attribute> attribute,
+        NonNullSupplier<? extends Attribute> attribute,
         UUID modifierId,
         double amount,
         Operation operation
@@ -59,7 +58,7 @@ public class AttributeReward implements Reward {
 
     public static void register(
         String rewardId,
-        Supplier<? extends Attribute> attribute,
+        NonNullSupplier<? extends Attribute> attribute,
         Operation operation
     ) {
         register(
@@ -78,7 +77,7 @@ public class AttributeReward implements Reward {
 
     protected static void register(
         String rewardId,
-        Supplier<? extends Attribute> attribute,
+        NonNullSupplier<? extends Attribute> attribute,
         Operation operation,
         RewardCreator creator
     ) {
@@ -136,58 +135,46 @@ public class AttributeReward implements Reward {
     @Override
     public void update(RewardUpdateContext context) {
         int rewardCount = context.getCount();
-        AttributeInstance attributeInstance = getAttributeInstance(
-            context.getPlayer()
-        );
+        getAttributeInstance(context.getPlayer()).ifPresent(
+            attributeInstance -> {
+                attributeInstance.removeModifier(modifierId);
 
-        if (attributeInstance == null) {
-            return;
-        }
+                if (rewardCount <= 0) {
+                    return;
+                }
 
-        attributeInstance.removeModifier(modifierId);
-
-        if (rewardCount <= 0) {
-            return;
-        }
-
-        attributeInstance.addTransientModifier(
-            new AttributeModifier(
-                modifierId,
-                rewardId,
-                amount * rewardCount,
-                operation.toAttributeOperation()
-            )
+                attributeInstance.addTransientModifier(
+                    new AttributeModifier(
+                        modifierId,
+                        rewardId,
+                        amount * rewardCount,
+                        operation.toAttributeOperation()
+                    )
+                );
+            }
         );
     }
 
     @Override
     public void dispose(RewardDisposeContext context) {
         for (ServerPlayer player : context.getServer().getPlayerList().getPlayers()) {
-            AttributeInstance attributeInstance = getAttributeInstance(player);
-
-            if (attributeInstance != null) {
-                attributeInstance.removeModifier(modifierId);
-            }
+            getAttributeInstance(player).ifPresent(
+                attributeInstance -> attributeInstance.removeModifier(
+                    modifierId
+                )
+            );
         }
     }
 
-    @Nullable
-    private AttributeInstance getAttributeInstance(ServerPlayer player) {
+    private Optional<AttributeInstance> getAttributeInstance(
+        ServerPlayer player
+    ) {
         Attribute resolvedAttribute = attribute.get();
-
-        if (resolvedAttribute == null) {
-            LOGGER.error(
-                "Cannot apply reward '{}': attribute supplier returned null",
-                rewardId
-            );
-            return null;
-        }
-
-        AttributeInstance attributeInstance = player.getAttribute(
-            resolvedAttribute
+        Optional<AttributeInstance> attributeInstance = Optional.ofNullable(
+            player.getAttribute(resolvedAttribute)
         );
 
-        if (attributeInstance == null) {
+        if (attributeInstance.isEmpty()) {
             LOGGER.error(
                 "Cannot apply reward '{}' to player '{}': attribute '{}' is unavailable",
                 rewardId,

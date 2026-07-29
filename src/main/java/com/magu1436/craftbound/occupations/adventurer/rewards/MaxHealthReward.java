@@ -1,7 +1,6 @@
 package com.magu1436.craftbound.occupations.adventurer.rewards;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import net.puffish.skillsmod.api.reward.RewardDisposeContext;
 import net.puffish.skillsmod.api.reward.RewardUpdateContext;
@@ -11,15 +10,17 @@ import com.magu1436.craftbound.common.AttributeReward;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 public class MaxHealthReward extends AttributeReward {
 
     private static final String REWARD_ID = "max_health_reward";
-    private static final Supplier<? extends Attribute> ATTRIBUTE = () -> Attributes.MAX_HEALTH;
+    private static final NonNullSupplier<? extends Attribute> ATTRIBUTE =
+        () -> Attributes.MAX_HEALTH;
 
     protected MaxHealthReward(
         String rewardId,
-        Supplier<? extends Attribute> attribute,
+        NonNullSupplier<? extends Attribute> attribute,
         UUID modifierId,
         double amount,
         Operation operation
