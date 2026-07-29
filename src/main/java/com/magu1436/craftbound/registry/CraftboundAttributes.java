@@ -21,6 +21,7 @@ public final class CraftboundAttributes {
     private static final String PHYSICAL_RESISTANCE_NAME = "physical_resistance";
     private static final String ACTION_RESISTANCE_NAME = "action_resistance";
     private static final String SENSORY_RESISTANCE_NAME = "sensory_resistance";
+    private static final String BURNING_RESISTANCE_NAME = "burning_resistance";
     private static final String SHIELD_FOOTWORK_NAME = "shield_footwork";
     private static final String RANGED_FOOTWORK_NAME = "ranged_footwork";
     private static final String FIELD_RESUPPLY_NAME = "field_resupply";
@@ -106,6 +107,17 @@ public final class CraftboundAttributes {
             ).setSyncable(true)
         );
 
+    public static final RegistryObject<Attribute> BURNING_RESISTANCE =
+        ATTRIBUTES.register(
+            BURNING_RESISTANCE_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(BURNING_RESISTANCE_NAME),
+                0.0D,
+                0.0D,
+                0.4D
+            ).setSyncable(true)
+        );
+
     /**
      * 盾歩法の取得段階
      */
@@ -182,6 +194,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 SENSORY_RESISTANCE.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                BURNING_RESISTANCE.get()
         );
         event.add(
                 EntityType.PLAYER,

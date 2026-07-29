@@ -5,6 +5,7 @@
   "attribute.name.craftbound.physical_resistance": "Physical Resistance",
   "attribute.name.craftbound.action_resistance": "Action Resistance",
   "attribute.name.craftbound.sensory_resistance": "Sensory Resistance",
+  "attribute.name.craftbound.burning_resistance": "Burning Duration Reduction",
   "attribute.name.craftbound.shield_footwork": "Shield Footwork",
   "attribute.name.craftbound.ranged_footwork": "Ranged Footwork",
   "attribute.name.craftbound.field_resupply": "Field Resupply",
