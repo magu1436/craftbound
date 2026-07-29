@@ -15,6 +15,9 @@
             ["ranged_footwork_1", "ranged_footwork_2"],
             ["ranged_footwork_2", "ranged_footwork_3"],
             ["ranged_footwork_3", "ranged_footwork_4"],
+            ["action_resistance_1", "action_resistance_2"],
+            ["action_resistance_2", "action_resistance_3"],
+            ["action_resistance_3", "action_resistance_4"],
             ["field_resupply_1", "field_resupply_2"],
             ["field_resupply_2", "field_resupply_3"],
             ["field_resupply_3", "field_resupply_4"]
