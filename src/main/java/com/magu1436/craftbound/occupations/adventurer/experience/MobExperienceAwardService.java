@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.magu1436.craftbound.common.CraftboundUtilities;
+import com.magu1436.craftbound.occupations.adventurer.AdventurerConfig;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -21,7 +22,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 public final class MobExperienceAwardService {
     private static final ResourceLocation ADVENTURER_CATEGORY_ID =
         CraftboundUtilities.createResourceLocation("adventurer");
-    private static final int NORMAL_MOB_LEVEL_LIMIT = 10;
 
     private MobExperienceAwardService() {
     }
@@ -106,7 +106,11 @@ public final class MobExperienceAwardService {
             return true;
         }
 
+        if (!AdventurerConfig.isNormalMobExperienceEnabled()) {
+            return false;
+        }
+
         return experience.getLevel(player)
-            < NORMAL_MOB_LEVEL_LIMIT;
+            < AdventurerConfig.getNormalMobExperienceLevelLimit();
     }
 }

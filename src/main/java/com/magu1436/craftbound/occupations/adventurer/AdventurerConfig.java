@@ -16,6 +16,9 @@ public final class AdventurerConfig {
     private static final DeathlineCrossingConfigValues DEATHLINE_CROSSING =
         defineDeathlineCrossingConfig();
 
+    private static final MobExperienceConfigValues MOB_EXPERIENCE =
+        defineMobExperienceConfig();
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private AdventurerConfig() {
@@ -45,6 +48,14 @@ public final class AdventurerConfig {
 
     public static boolean shouldDeathlineCrossingRestoreAir() {
         return DEATHLINE_CROSSING.restoreAir().get();
+    }
+
+    public static boolean isNormalMobExperienceEnabled() {
+        return MOB_EXPERIENCE.normalMobExperienceEnabled().get();
+    }
+
+    public static int getNormalMobExperienceLevelLimit() {
+        return MOB_EXPERIENCE.normalMobExperienceLevelLimit().get();
     }
 
     private static EmergencyEvasionConfigValues defineEmergencyEvasionConfig() {
@@ -161,6 +172,37 @@ public final class AdventurerConfig {
         );
     }
 
+    private static MobExperienceConfigValues defineMobExperienceConfig() {
+        BUILDER.push("mobExperience");
+
+        ForgeConfigSpec.BooleanValue normalMobExperienceEnabled =
+            BUILDER
+                .comment(
+                    "Whether normal mobs grant Adventurer experience."
+                )
+                .define("normalMobExperienceEnabled", true);
+
+        ForgeConfigSpec.IntValue normalMobExperienceLevelLimit =
+            BUILDER
+                .comment(
+                    "Players at this level or above do not receive "
+                        + "Adventurer experience from normal mobs."
+                )
+                .defineInRange(
+                    "normalMobExperienceLevelLimit",
+                    10,
+                    0,
+                    60
+                );
+
+        BUILDER.pop();
+
+        return new MobExperienceConfigValues(
+            normalMobExperienceEnabled,
+            normalMobExperienceLevelLimit
+        );
+    }
+
     private static int getEmergencyEvasionStageIndex(int stage) {
         if (stage < 1 || stage > 4) {
             throw new IllegalArgumentException(
@@ -181,6 +223,12 @@ public final class AdventurerConfig {
         ForgeConfigSpec.IntValue protectionTicks,
         ForgeConfigSpec.BooleanValue clearFire,
         ForgeConfigSpec.BooleanValue restoreAir
+    ) {
+    }
+
+    private record MobExperienceConfigValues(
+        ForgeConfigSpec.BooleanValue normalMobExperienceEnabled,
+        ForgeConfigSpec.IntValue normalMobExperienceLevelLimit
     ) {
     }
 }
