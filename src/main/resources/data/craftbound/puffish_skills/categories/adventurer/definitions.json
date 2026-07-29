@@ -977,6 +977,7 @@
             }
         },
         "description": "約1.25ブロック前方へ緊急回避する。クールダウンは16秒",
+        "required_skills": 3,
         "rewards": [
             {
                 "type": "craftbound:emergency_evasion_level_reward",
@@ -995,6 +996,7 @@
             }
         },
         "description": "緊急回避の移動距離を約1.5ブロック、クールダウンを14秒に強化する",
+        "required_skills": 4,
         "rewards": [
             {
                 "type": "craftbound:emergency_evasion_level_reward",
@@ -1013,6 +1015,7 @@
             }
         },
         "description": "緊急回避の移動距離を約1.75ブロック、クールダウンを12秒に強化する",
+        "required_skills": 4,
         "rewards": [
             {
                 "type": "craftbound:emergency_evasion_level_reward",
@@ -1031,6 +1034,7 @@
             }
         },
         "description": "緊急回避の移動距離を約2ブロック、クールダウンを10秒に強化する",
+        "required_skills": 4,
         "rewards": [
             {
                 "type": "craftbound:emergency_evasion_level_reward",

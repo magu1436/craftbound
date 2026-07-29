@@ -8,14 +8,12 @@
     "max_health_2": {
         "x": 20,
         "y": 20,
-        "definition": "max_health_2",
-        "root": true
+        "definition": "max_health_2"
     },
     "max_health_3": {
         "x": 40,
         "y": 40,
-        "definition": "max_health_3",
-        "root": true
+        "definition": "max_health_3"
     },
     "attack_damage_1": {
         "x": 80,
@@ -26,20 +24,17 @@
     "attack_damage_2": {
         "x": 100,
         "y": 20,
-        "definition": "attack_damage_2",
-        "root": true
+        "definition": "attack_damage_2"
     },
     "attack_damage_3": {
         "x": 120,
         "y": 40,
-        "definition": "attack_damage_3",
-        "root": true
+        "definition": "attack_damage_3"
     },
     "attack_damage_4": {
         "x": 140,
         "y": 60,
-        "definition": "attack_damage_4",
-        "root": true
+        "definition": "attack_damage_4"
     },
     "attack_speed_1": {
         "x": 120,
@@ -75,38 +70,32 @@
     "armor_2": {
         "x": 100,
         "y": 100,
-        "definition": "armor_2",
-        "root": true
+        "definition": "armor_2"
     },
     "armor_3": {
         "x": 120,
         "y": 120,
-        "definition": "armor_3",
-        "root": true
+        "definition": "armor_3"
     },
     "armor_4": {
         "x": 140,
         "y": 140,
-        "definition": "armor_4",
-        "root": true
+        "definition": "armor_4"
     },
     "knockback_resistance_1": {
         "x": 240,
         "y": 0,
-        "definition": "knockback_resistance_1",
-        "root": true
+        "definition": "knockback_resistance_1"
     },
     "knockback_resistance_2": {
         "x": 260,
         "y": 20,
-        "definition": "knockback_resistance_2",
-        "root": true
+        "definition": "knockback_resistance_2"
     },
     "knockback_resistance_3": {
         "x": 280,
         "y": 40,
-        "definition": "knockback_resistance_3",
-        "root": true
+        "definition": "knockback_resistance_3"
     },
     "explosion_damage_reduction_1": {
         "x": 160,
@@ -279,8 +268,7 @@
     "emergency_evasion_1": {
         "x": 880,
         "y": 0,
-        "definition": "emergency_evasion_1",
-        "root": true
+        "definition": "emergency_evasion_1"
     },
     "emergency_evasion_2": {
         "x": 900,
