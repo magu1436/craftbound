@@ -5,6 +5,7 @@
     "attribute.name.craftbound.physical_resistance": "肉体耐性",
     "attribute.name.craftbound.action_resistance": "行動耐性",
     "attribute.name.craftbound.sensory_resistance": "感覚耐性",
+    "attribute.name.craftbound.burning_resistance": "炎上時間短縮",
     "attribute.name.craftbound.shield_footwork": "盾歩法",
     "attribute.name.craftbound.ranged_footwork": "射撃歩法",
     "attribute.name.craftbound.field_resupply": "戦地補給"
