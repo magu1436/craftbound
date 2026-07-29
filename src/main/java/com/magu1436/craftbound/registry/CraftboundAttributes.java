@@ -23,6 +23,7 @@ public final class CraftboundAttributes {
     private static final String SENSORY_RESISTANCE_NAME = "sensory_resistance";
     private static final String SHIELD_FOOTWORK_NAME = "shield_footwork";
     private static final String RANGED_FOOTWORK_NAME = "ranged_footwork";
+    private static final String FIELD_RESUPPLY_NAME = "field_resupply";
 
     private static final DeferredRegister<Attribute> ATTRIBUTES =
         DeferredRegister.create(
@@ -133,6 +134,20 @@ public final class CraftboundAttributes {
             ).setSyncable(true)
         );
 
+    /**
+     * 戦地補給の取得段階
+     */
+    public static final RegistryObject<Attribute> FIELD_RESUPPLY =
+        ATTRIBUTES.register(
+            FIELD_RESUPPLY_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(FIELD_RESUPPLY_NAME),
+                0.0D,
+                0.0D,
+                4.0D
+            ).setSyncable(true)
+        );
+
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
         modEventBus.addListener(CraftboundAttributes::addAttributesToEntities);
@@ -175,6 +190,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 RANGED_FOOTWORK.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                FIELD_RESUPPLY.get()
         );
     }
 
