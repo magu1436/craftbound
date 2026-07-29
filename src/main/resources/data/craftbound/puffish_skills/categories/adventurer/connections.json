@@ -17,7 +17,10 @@
             ["ranged_footwork_3", "ranged_footwork_4"],
             ["action_resistance_1", "action_resistance_2"],
             ["action_resistance_2", "action_resistance_3"],
-            ["action_resistance_3", "action_resistance_4"]
+            ["action_resistance_3", "action_resistance_4"],
+            ["sensory_resistance_1", "sensory_resistance_2"],
+            ["sensory_resistance_2", "sensory_resistance_3"],
+            ["sensory_resistance_3", "sensory_resistance_4"]
         ]
     }
 }
