@@ -663,5 +663,81 @@
                 }
             }
         ]
+    },
+    "action_resistance_1": {
+        "title": "行動耐性I",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:slowness"
+            }
+        },
+        "description": "鈍足、弱体化、採掘速度低下、浮遊などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:action_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "6cc571db-5412-454d-ab81-57ca483a4e84"
+                }
+            }
+        ]
+    },
+    "action_resistance_2": {
+        "title": "行動耐性II",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:slowness"
+            }
+        },
+        "description": "鈍足、弱体化、採掘速度低下、浮遊などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:action_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "83893bf1-84ba-43fb-83f7-17730eb87a4d"
+                }
+            }
+        ]
+    },
+    "action_resistance_3": {
+        "title": "行動耐性III",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:slowness"
+            }
+        },
+        "description": "鈍足、弱体化、採掘速度低下、浮遊などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:action_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "0fd2f143-2239-471a-a31e-69e5f9a4fdb4"
+                }
+            }
+        ]
+    },
+    "action_resistance_4": {
+        "title": "行動耐性IV",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:slowness"
+            }
+        },
+        "description": "鈍足、弱体化、採掘速度低下、浮遊などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:action_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "29024119-f7e2-4332-af8c-45a5b0d6f366"
+                }
+            }
+        ]
     }
 }

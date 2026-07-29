@@ -197,5 +197,26 @@
         "x": 540,
         "y": 60,
         "definition": "physical_resistance_4"
+    },
+    "action_resistance_1": {
+        "x": 560,
+        "y": 0,
+        "definition": "action_resistance_1",
+        "root": true
+    },
+    "action_resistance_2": {
+        "x": 580,
+        "y": 20,
+        "definition": "action_resistance_2"
+    },
+    "action_resistance_3": {
+        "x": 600,
+        "y": 40,
+        "definition": "action_resistance_3"
+    },
+    "action_resistance_4": {
+        "x": 620,
+        "y": 60,
+        "definition": "action_resistance_4"
     }
 }

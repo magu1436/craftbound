@@ -11,7 +11,10 @@
             ["shield_footwork_3", "shield_footwork_4"],
             ["physical_resistance_1", "physical_resistance_2"],
             ["physical_resistance_2", "physical_resistance_3"],
-            ["physical_resistance_3", "physical_resistance_4"]
+            ["physical_resistance_3", "physical_resistance_4"],
+            ["action_resistance_1", "action_resistance_2"],
+            ["action_resistance_2", "action_resistance_3"],
+            ["action_resistance_3", "action_resistance_4"]
         ]
     }
 }
