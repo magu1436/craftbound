@@ -2,8 +2,10 @@ package com.magu1436.craftbound.event;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.adventurer.experience.MobExperienceAwardService;
+import com.magu1436.craftbound.occupations.adventurer.experience.MobExperienceParticipantCleanupService;
 import com.magu1436.craftbound.occupations.adventurer.experience.MobExperienceParticipationService;
 
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -29,5 +31,14 @@ public final class CraftboundMobExperienceEventHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDeath(LivingDeathEvent event) {
         MobExperienceAwardService.awardParticipants(event);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onEntityLeaveLevel(
+        EntityLeaveLevelEvent event
+    ) {
+        MobExperienceParticipantCleanupService.clearIfDestroyed(
+            event
+        );
     }
 }
