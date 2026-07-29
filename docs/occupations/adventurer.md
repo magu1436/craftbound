@@ -445,7 +445,7 @@ MVPでの方針は以下のとおり。
 
 | 用途 | 保存場所 | 主なフィールド |
 | --- | --- | --- |
-| Mob経験値 | `data/<namespace>/craftbound/adventurer/mob_experience/<name>.json` | `entity`、`category`、`experience` |
+| Mob経験値 | `data/<namespace>/craftbound/adventurer/mob_experience/<name>.json` | `entries`と、各要素の`entity`、`category`、`experience` |
 | 状態異常分類 | `data/<namespace>/craftbound/adventurer/status_resistances/<name>.json` | `effect`、`category` |
 | 死線踏破の解除対象 | `data/<namespace>/craftbound/adventurer/deathline_clear_effects/<name>.json` | `effect` |
 | 死線踏破の対象外ダメージ | `data/<namespace>/craftbound/adventurer/deathline_excluded_damage/<name>.json` | `damage_type`または`damage_tag` |
@@ -454,9 +454,18 @@ Mob経験値と状態異常分類の定義例を以下に示す。
 
 ```json
 {
-  "entity": "examplemod:ancient_golem",
-  "category": "boss",
-  "experience": 200
+  "entries": [
+    {
+      "entity": "examplemod:ancient_golem",
+      "category": "boss",
+      "experience": 200
+    },
+    {
+      "entity": "examplemod:cave_crawler",
+      "category": "hostile",
+      "experience": 2
+    }
+  ]
 }
 ```
 
@@ -467,7 +476,7 @@ Mob経験値と状態異常分類の定義例を以下に示す。
 }
 ```
 
-Mob経験値の`category`には、4章の区分に対応する`passive`、`hostile`、`dangerous`、`strong`、`elite`、`minor_boss`、`boss`、`high_difficulty_boss`、`final_boss`のいずれかを指定する。`experience`には0以上の整数を指定する。状態異常分類の`category`には`physical`、`action`、`sensory`のいずれかを指定する。
+Mob経験値は1つのJSONの`entries`配列へ複数定義でき、JSONファイル自体も複数配置できる。各要素の`category`には、4章の区分に対応する`passive`、`hostile`、`dangerous`、`strong`、`elite`、`minor_boss`、`boss`、`high_difficulty_boss`、`final_boss`のいずれかを指定する。`experience`には0以上の整数を指定する。状態異常分類の`category`には`physical`、`action`、`sensory`のいずれかを指定する。
 
 死線踏破の対象外ダメージ定義では、`damage_type`と`damage_tag`のどちらか一方だけを指定する。両方またはどちらも指定されていない定義は無効とする。
 
@@ -486,7 +495,9 @@ Mob経験値の`category`には、4章の区分に対応する`passive`、`hosti
 - データ定義はサーバー起動時と`/reload`時に読み込む
 - 同じ対象IDに複数の定義がある場合、データパック優先度が高い定義で上書きする
 - 同じ優先度で同じ対象IDが重複した場合、その対象の定義を無効化して警告ログを出す
-- JSON形式、必須フィールド、列挙値、数値範囲が不正なファイルは、そのファイルだけを除外して警告ログを出す
+- Mob経験値JSONのルート要素または`entries`が不正な場合は、そのファイル全体を除外して警告ログを出す
+- Mob経験値JSON内の個別要素で必須フィールド、列挙値、数値範囲が不正な場合は、その要素だけを除外して警告ログを出す
+- その他のデータ定義でJSON形式、必須フィールド、列挙値、数値範囲が不正なファイルは、そのファイルだけを除外して警告ログを出す
 - 存在しないMob、状態異常、ダメージタイプのIDは、その定義だけを除外して警告ログを出す
 - 経験値定義が存在しないMobの討伐経験値は0とする
 - 再読み込み時は有効な定義から新しいスナップショットを構築してから差し替え、読み込み途中の状態をゲーム処理から参照させない

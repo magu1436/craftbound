@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
@@ -108,27 +107,29 @@ public final class MobExperienceReloadListener
             > resourceEntry : resourceStacks.entrySet()
         ) {
             for (Resource resource : resourceEntry.getValue()) {
-                loadCandidate(
-                    resourceEntry.getKey(),
-                    resource,
-                    packPriorities
-                ).ifPresent(candidates::add);
+                candidates.addAll(
+                    loadResourceCandidates(
+                        resourceEntry.getKey(),
+                        resource,
+                        packPriorities
+                    )
+                );
             }
         }
 
         return candidates;
     }
 
-    private static Optional<Candidate> loadCandidate(
+    private static List<Candidate> loadResourceCandidates(
         ResourceLocation resourceId,
         Resource resource,
         Map<String, Integer> packPriorities
     ) {
         String packId = resource.sourcePackId();
-        Integer priority = packPriorities.get(packId);
+        Integer configuredPriority = packPriorities.get(packId);
 
-        if (priority == null) {
-            priority = UNKNOWN_PACK_PRIORITY;
+        if (configuredPriority == null) {
+            configuredPriority = UNKNOWN_PACK_PRIORITY;
             LOGGER.warn(
                 "Could not determine data pack priority for {} from {}",
                 resourceId,
@@ -136,31 +137,56 @@ public final class MobExperienceReloadListener
             );
         }
 
+        int packPriority = configuredPriority;
+
         try (Reader reader = resource.openAsReader()) {
             JsonElement root = JsonParser.parseReader(reader);
-            MobExperienceDefinition definition =
+            MobExperienceDefinitionParser.ParseResult result =
                 MobExperienceDefinitionParser.parse(root);
+            List<Candidate> candidates = new ArrayList<>();
 
-            return Optional.of(
-                new Candidate(
+            for (
+                MobExperienceDefinitionParser.EntryError error
+                    : result.errors()
+            ) {
+                LOGGER.warn(
+                    "Skipping invalid mob experience entry "
+                        + "{}#entries[{}] from {}: {}",
                     resourceId,
+                    error.entryIndex(),
                     packId,
-                    priority,
-                    definition
-                )
-            );
+                    error.message()
+                );
+            }
+
+            for (
+                MobExperienceDefinitionParser.ParsedDefinition parsed
+                    : result.definitions()
+            ) {
+                candidates.add(
+                    new Candidate(
+                        resourceId,
+                        parsed.entryIndex(),
+                        packId,
+                        packPriority,
+                        parsed.definition()
+                    )
+                );
+            }
+
+            return candidates;
         } catch (
             IOException
                 | JsonParseException
                 | IllegalArgumentException exception
         ) {
             LOGGER.warn(
-                "Skipping invalid mob experience definition {} from {}: {}",
+                "Skipping invalid mob experience file {} from {}: {}",
                 resourceId,
                 packId,
                 exception.getMessage()
             );
-            return Optional.empty();
+            return List.of();
         }
     }
 
@@ -226,7 +252,10 @@ public final class MobExperienceReloadListener
         Candidate first = candidates.get(0);
         String resources = candidates.stream()
             .map(candidate ->
-                candidate.resourceId().toString()
+                candidate.resourceId()
+                    + "#entries["
+                    + candidate.entryIndex()
+                    + "]"
             )
             .collect(Collectors.joining(", "));
 
@@ -242,6 +271,7 @@ public final class MobExperienceReloadListener
 
     private record Candidate(
         ResourceLocation resourceId,
+        int entryIndex,
         String packId,
         int packPriority,
         MobExperienceDefinition definition

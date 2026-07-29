@@ -1,0 +1,174 @@
+{
+  "entries": [
+    {
+      "entity": "minecraft:blaze",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:cave_spider",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:creeper",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:drowned",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:elder_guardian",
+      "category": "minor_boss",
+      "experience": 100
+    },
+    {
+      "entity": "minecraft:ender_dragon",
+      "category": "boss",
+      "experience": 200
+    },
+    {
+      "entity": "minecraft:enderman",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:endermite",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:evoker",
+      "category": "strong",
+      "experience": 25
+    },
+    {
+      "entity": "minecraft:ghast",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:guardian",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:hoglin",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:husk",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:magma_cube",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:phantom",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:piglin_brute",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:pillager",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:ravager",
+      "category": "strong",
+      "experience": 25
+    },
+    {
+      "entity": "minecraft:shulker",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:silverfish",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:skeleton",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:slime",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:spider",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:stray",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:vex",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:vindicator",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:warden",
+      "category": "high_difficulty_boss",
+      "experience": 400
+    },
+    {
+      "entity": "minecraft:witch",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:wither",
+      "category": "boss",
+      "experience": 200
+    },
+    {
+      "entity": "minecraft:wither_skeleton",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:zoglin",
+      "category": "dangerous",
+      "experience": 5
+    },
+    {
+      "entity": "minecraft:zombie",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:zombie_villager",
+      "category": "hostile",
+      "experience": 2
+    },
+    {
+      "entity": "minecraft:zombified_piglin",
+      "category": "dangerous",
+      "experience": 5
+    }
+  ]
+}

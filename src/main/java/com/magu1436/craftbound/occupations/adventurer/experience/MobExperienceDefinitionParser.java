@@ -1,6 +1,8 @@
 package com.magu1436.craftbound.occupations.adventurer.experience;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,6 +18,7 @@ import net.minecraftforge.registries.ForgeRegistries;
  * Mob経験値JSONを検証して定義へ変換する。
  */
 final class MobExperienceDefinitionParser {
+    private static final String ENTRIES_KEY = "entries";
     private static final String ENTITY_KEY = "entity";
     private static final String CATEGORY_KEY = "category";
     private static final String EXPERIENCE_KEY = "experience";
@@ -23,7 +26,7 @@ final class MobExperienceDefinitionParser {
     private MobExperienceDefinitionParser() {
     }
 
-    public static MobExperienceDefinition parse(JsonElement root) {
+    public static ParseResult parse(JsonElement root) {
         if (root == null || !root.isJsonObject()) {
             throw new JsonParseException(
                 "root element must be an object"
@@ -31,6 +34,60 @@ final class MobExperienceDefinitionParser {
         }
 
         JsonObject object = root.getAsJsonObject();
+        JsonElement entriesElement = object.get(ENTRIES_KEY);
+
+        if (
+            entriesElement == null
+                || !entriesElement.isJsonArray()
+        ) {
+            throw new JsonParseException(
+                ENTRIES_KEY + " must be an array"
+            );
+        }
+
+        List<ParsedDefinition> definitions = new ArrayList<>();
+        List<EntryError> errors = new ArrayList<>();
+        int entryIndex = 0;
+
+        for (JsonElement entry : entriesElement.getAsJsonArray()) {
+            try {
+                definitions.add(
+                    new ParsedDefinition(
+                        entryIndex,
+                        parseEntry(entry)
+                    )
+                );
+            } catch (
+                JsonParseException
+                    | IllegalArgumentException exception
+            ) {
+                errors.add(
+                    new EntryError(
+                        entryIndex,
+                        exception.getMessage()
+                    )
+                );
+            }
+
+            entryIndex++;
+        }
+
+        return new ParseResult(
+            List.copyOf(definitions),
+            List.copyOf(errors)
+        );
+    }
+
+    private static MobExperienceDefinition parseEntry(
+        JsonElement entry
+    ) {
+        if (entry == null || !entry.isJsonObject()) {
+            throw new JsonParseException(
+                "entry must be an object"
+            );
+        }
+
+        JsonObject object = entry.getAsJsonObject();
         ResourceLocation entityId = parseEntityId(object);
         EntityType<?> entityType =
             ForgeRegistries.ENTITY_TYPES.getValue(entityId);
@@ -158,5 +215,23 @@ final class MobExperienceDefinitionParser {
         }
 
         return integerValue;
+    }
+
+    record ParseResult(
+        List<ParsedDefinition> definitions,
+        List<EntryError> errors
+    ) {
+    }
+
+    record ParsedDefinition(
+        int entryIndex,
+        MobExperienceDefinition definition
+    ) {
+    }
+
+    record EntryError(
+        int entryIndex,
+        String message
+    ) {
     }
 }
