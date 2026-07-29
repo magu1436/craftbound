@@ -13,6 +13,8 @@ public final class AdventurerConfig {
 
     private static final EmergencyEvasionConfigValues EMERGENCY_EVASION =
         defineEmergencyEvasionConfig();
+    private static final DeathlineCrossingConfigValues DEATHLINE_CROSSING =
+        defineDeathlineCrossingConfig();
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
@@ -31,6 +33,18 @@ public final class AdventurerConfig {
             .cooldownTicks()
             .get(getEmergencyEvasionStageIndex(stage))
             .get();
+    }
+
+    public static int getDeathlineCrossingProtectionTicks() {
+        return DEATHLINE_CROSSING.protectionTicks().get();
+    }
+
+    public static boolean shouldDeathlineCrossingClearFire() {
+        return DEATHLINE_CROSSING.clearFire().get();
+    }
+
+    public static boolean shouldDeathlineCrossingRestoreAir() {
+        return DEATHLINE_CROSSING.restoreAir().get();
     }
 
     private static EmergencyEvasionConfigValues defineEmergencyEvasionConfig() {
@@ -114,6 +128,39 @@ public final class AdventurerConfig {
         );
     }
 
+    private static DeathlineCrossingConfigValues defineDeathlineCrossingConfig() {
+        BUILDER.push("deathlineCrossing");
+
+        ForgeConfigSpec.IntValue protectionTicks = BUILDER
+            .comment("Protection ticks after Deathline Crossing activates.")
+            .defineInRange(
+                "protectionTicks",
+                60,
+                0,
+                72000
+            );
+        ForgeConfigSpec.BooleanValue clearFire = BUILDER
+            .comment("Whether Deathline Crossing clears fire.")
+            .define(
+                "clearFire",
+                true
+            );
+        ForgeConfigSpec.BooleanValue restoreAir = BUILDER
+            .comment("Whether Deathline Crossing restores air supply.")
+            .define(
+                "restoreAir",
+                true
+            );
+
+        BUILDER.pop();
+
+        return new DeathlineCrossingConfigValues(
+            protectionTicks,
+            clearFire,
+            restoreAir
+        );
+    }
+
     private static int getEmergencyEvasionStageIndex(int stage) {
         if (stage < 1 || stage > 4) {
             throw new IllegalArgumentException(
@@ -127,6 +174,13 @@ public final class AdventurerConfig {
     private record EmergencyEvasionConfigValues(
         List<ForgeConfigSpec.DoubleValue> horizontalSpeeds,
         List<ForgeConfigSpec.IntValue> cooldownTicks
+    ) {
+    }
+
+    private record DeathlineCrossingConfigValues(
+        ForgeConfigSpec.IntValue protectionTicks,
+        ForgeConfigSpec.BooleanValue clearFire,
+        ForgeConfigSpec.BooleanValue restoreAir
     ) {
     }
 }
