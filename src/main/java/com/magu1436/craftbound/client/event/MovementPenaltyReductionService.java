@@ -20,6 +20,8 @@ public final class MovementPenaltyReductionService {
     private MovementPenaltyReductionService() {
     }
 
+    // TODO: クライアント入力の補正だけでなく、サーバー側でも補正後の
+    // 移動量が不正な移動にならない範囲内か検証する共通処理を追加する。
     public static void reduceMovementPenalty(
         MovementInputUpdateEvent event,
         List<MovementPenaltyReductionRule> rules
