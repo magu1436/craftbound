@@ -15,6 +15,16 @@ public interface IAdventurerData
         return getEmergencyEvasionLevelState().getLevel();
     }
 
+    SkillLevelState getDeathlineCrossingLevelState();
+
+    default int getDeathlineCrossingLevel() {
+        return getDeathlineCrossingLevelState().getLevel();
+    }
+
+    default boolean hasDeathlineCrossing() {
+        return getDeathlineCrossingLevelState().isStageActive(1);
+    }
+
     long getEmergencyEvasionCooldownEndTick();
 
     boolean isEmergencyEvasionOnCooldown(long currentTick);
@@ -22,5 +32,20 @@ public interface IAdventurerData
     void startEmergencyEvasionCooldown(
         long currentTick,
         int cooldownTicks
+    );
+
+    long getLastDeathlineCrossingActivationDay();
+
+    boolean canActivateDeathlineCrossing(long currentDay);
+
+    void recordDeathlineCrossingActivation(long currentDay);
+
+    long getDeathlineCrossingProtectionEndTick();
+
+    boolean isDeathlineCrossingProtected(long currentTick);
+
+    void startDeathlineCrossingProtection(
+        long currentTick,
+        int protectionTicks
     );
 }
