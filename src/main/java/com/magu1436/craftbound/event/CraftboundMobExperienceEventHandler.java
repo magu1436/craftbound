@@ -1,9 +1,11 @@
 package com.magu1436.craftbound.event;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.adventurer.experience.MobExperienceAwardService;
 import com.magu1436.craftbound.occupations.adventurer.experience.MobExperienceParticipationService;
 
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,5 +24,10 @@ public final class CraftboundMobExperienceEventHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDamage(LivingDamageEvent event) {
         MobExperienceParticipationService.recordParticipant(event);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLivingDeath(LivingDeathEvent event) {
+        MobExperienceAwardService.awardParticipants(event);
     }
 }
