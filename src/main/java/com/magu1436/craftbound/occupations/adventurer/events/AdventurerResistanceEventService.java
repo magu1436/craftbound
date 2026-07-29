@@ -3,12 +3,12 @@ package com.magu1436.craftbound.occupations.adventurer.events;
 import java.util.List;
 import java.util.Objects;
 
+import com.magu1436.craftbound.common.DurationReductionCalculator;
 import com.magu1436.craftbound.event.MobEffectDurationReductionRule;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.magu1436.craftbound.registry.CraftboundMobEffectTags;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
@@ -71,22 +71,14 @@ public final class AdventurerResistanceEventService {
                 .max()
                 .orElse(0.0D);
 
-        reductionRate = Mth.clamp(
-                reductionRate,
-                0.0D,
-                MAX_REDUCTION_RATE
-        );
-
         if (reductionRate <= 0.0D) {
             return;
         }
 
-        effectInstance.duration = Math.max(
-                1,
-                Mth.ceil(
-                        effectInstance.getDuration()
-                                * (1.0D - reductionRate)
-                )
+        effectInstance.duration = DurationReductionCalculator.reduce(
+                effectInstance.getDuration(),
+                reductionRate,
+                MAX_REDUCTION_RATE
         );
     }
 }

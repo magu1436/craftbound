@@ -32,7 +32,10 @@
             ["sensory_resistance_3", "sensory_resistance_4"],
             ["emergency_evasion_1", "emergency_evasion_2"],
             ["emergency_evasion_2", "emergency_evasion_3"],
-            ["emergency_evasion_3", "emergency_evasion_4"]
+            ["emergency_evasion_3", "emergency_evasion_4"],
+            ["burning_resistance_1", "burning_resistance_2"],
+            ["burning_resistance_2", "burning_resistance_3"],
+            ["burning_resistance_3", "burning_resistance_4"]
         ]
     }
 }

@@ -296,5 +296,26 @@
         "x": 940,
         "y": 60,
         "definition": "emergency_evasion_4"
+    },
+    "burning_resistance_1": {
+        "x": 960,
+        "y": 0,
+        "definition": "burning_resistance_1",
+        "root": true
+    },
+    "burning_resistance_2": {
+        "x": 980,
+        "y": 20,
+        "definition": "burning_resistance_2"
+    },
+    "burning_resistance_3": {
+        "x": 1000,
+        "y": 40,
+        "definition": "burning_resistance_3"
+    },
+    "burning_resistance_4": {
+        "x": 1020,
+        "y": 60,
+        "definition": "burning_resistance_4"
     }
 }
