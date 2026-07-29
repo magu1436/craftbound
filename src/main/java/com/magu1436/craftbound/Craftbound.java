@@ -4,6 +4,7 @@ import com.magu1436.craftbound.client.event.CraftboundMovementPenaltyEventHandle
 import com.magu1436.craftbound.occupations.adventurer.AdventurerConfig;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyRules;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyService;
+import com.magu1436.craftbound.occupations.adventurer.experience.AdventurerMobKillExperienceSource;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
@@ -97,6 +98,9 @@ public class Craftbound
 
         // Attributes の登録
         CraftboundAttributes.register(modEventBus);
+
+        // 経験値源の登録
+        AdventurerMobKillExperienceSource.register();
 
         // 報酬の登録
         AdventurerRewardsFactory.registerRewards();

@@ -1,0 +1,15 @@
+{
+	"level_limit": 60,
+	"experience_per_level": {
+		"type": "expression",
+		"data": {
+			"expression": "floor(min(level ^ 1.432 + 10, 200))"
+		}
+	},
+	"sources": [
+		{
+			"type": "craftbound:adventurer_mob_kill",
+			"data": {}
+		}
+	]
+}
