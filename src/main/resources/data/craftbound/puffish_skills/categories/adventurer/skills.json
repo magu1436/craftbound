@@ -1,314 +1,362 @@
 {
-    "max_health_1": {
-        "x": 0,
-        "y": 0,
-        "definition": "max_health_1",
-        "root": true
-    },
-    "max_health_2": {
-        "x": 20,
-        "y": 20,
-        "definition": "max_health_2"
-    },
-    "max_health_3": {
-        "x": 40,
-        "y": 40,
-        "definition": "max_health_3"
-    },
-    "attack_damage_1": {
-        "x": 80,
-        "y": 0,
-        "definition": "attack_damage_1",
-        "root": true
-    },
-    "attack_damage_2": {
-        "x": 100,
-        "y": 20,
-        "definition": "attack_damage_2"
-    },
-    "attack_damage_3": {
-        "x": 120,
-        "y": 40,
-        "definition": "attack_damage_3"
-    },
-    "attack_damage_4": {
-        "x": 140,
-        "y": 60,
-        "definition": "attack_damage_4"
-    },
-    "attack_speed_1": {
-        "x": 120,
-        "y": 0,
-        "definition": "attack_speed_1"
-    },
-    "attack_speed_2": {
-        "x": 140,
-        "y": 0,
-        "definition": "attack_speed_2"
-    },
-    "attack_speed_3": {
-        "x": 160,
-        "y": 0,
-        "definition": "attack_speed_3"
-    },
-    "attack_speed_4": {
-        "x": 180,
-        "y": 0,
-        "definition": "attack_speed_4"
-    },
-    "attack_speed_5": {
-        "x": 200,
-        "y": 0,
-        "definition": "attack_speed_5"
-    },
-    "armor_1": {
-        "x": 80,
-        "y": 80,
-        "definition": "armor_1",
-        "root": true
-    },
-    "armor_2": {
-        "x": 100,
-        "y": 100,
-        "definition": "armor_2"
-    },
-    "armor_3": {
-        "x": 120,
-        "y": 120,
-        "definition": "armor_3"
-    },
-    "armor_4": {
-        "x": 140,
-        "y": 140,
-        "definition": "armor_4"
-    },
-    "knockback_resistance_1": {
-        "x": 240,
-        "y": 0,
-        "definition": "knockback_resistance_1"
-    },
-    "knockback_resistance_2": {
-        "x": 260,
-        "y": 20,
-        "definition": "knockback_resistance_2"
-    },
-    "knockback_resistance_3": {
-        "x": 280,
-        "y": 40,
-        "definition": "knockback_resistance_3"
-    },
-    "explosion_damage_reduction_1": {
-        "x": 160,
-        "y": 0,
-        "definition": "explosion_damage_reduction_1",
-        "root": true
-    },
-    "explosion_damage_reduction_2": {
-        "x": 180,
-        "y": 20,
-        "definition": "explosion_damage_reduction_2"
-    },
-    "explosion_damage_reduction_3": {
-        "x": 200,
-        "y": 40,
-        "definition": "explosion_damage_reduction_3"
-    },
-    "explosion_damage_reduction_4": {
-        "x": 220,
-        "y": 60,
-        "definition": "explosion_damage_reduction_4"
-    },
-    "projectile_damage_reduction_1": {
-        "x": 320,
-        "y": 0,
-        "definition": "projectile_damage_reduction_1",
-        "root": true
-    },
-    "projectile_damage_reduction_2": {
-        "x": 340,
-        "y": 20,
-        "definition": "projectile_damage_reduction_2"
-    },
-    "projectile_damage_reduction_3": {
-        "x": 360,
-        "y": 40,
-        "definition": "projectile_damage_reduction_3"
-    },
-    "projectile_damage_reduction_4": {
-        "x": 380,
-        "y": 60,
-        "definition": "projectile_damage_reduction_4"
-    },
-    "shield_footwork_1": {
-        "x": 400,
-        "y": 0,
-        "definition": "shield_footwork_1",
-        "root": true
-    },
-    "shield_footwork_2": {
-        "x": 420,
-        "y": 20,
-        "definition": "shield_footwork_2"
-    },
-    "shield_footwork_3": {
-        "x": 440,
-        "y": 40,
-        "definition": "shield_footwork_3"
-    },
-    "shield_footwork_4": {
-        "x": 460,
-        "y": 60,
-        "definition": "shield_footwork_4"
-    },
-    "physical_resistance_1": {
-        "x": 480,
-        "y": 0,
-        "definition": "physical_resistance_1",
-        "root": true
-    },
-    "physical_resistance_2": {
-        "x": 500,
-        "y": 20,
-        "definition": "physical_resistance_2"
-    },
-    "physical_resistance_3": {
-        "x": 520,
-        "y": 40,
-        "definition": "physical_resistance_3"
-    },
-    "physical_resistance_4": {
-        "x": 540,
-        "y": 60,
-        "definition": "physical_resistance_4"
-    },
-    "ranged_footwork_1": {
-        "x": 560,
-        "y": 0,
-        "definition": "ranged_footwork_1",
-        "root": true
-    },
-    "ranged_footwork_2": {
-        "x": 580,
-        "y": 20,
-        "definition": "ranged_footwork_2"
-    },
-    "ranged_footwork_3": {
-        "x": 600,
-        "y": 40,
-        "definition": "ranged_footwork_3"
-    },
-    "ranged_footwork_4": {
-        "x": 620,
-        "y": 60,
-        "definition": "ranged_footwork_4"
-    },
-    "action_resistance_1": {
-        "x": 640,
-        "y": 0,
-        "definition": "action_resistance_1",
-        "root": true
-    },
-    "action_resistance_2": {
-        "x": 660,
-        "y": 20,
-        "definition": "action_resistance_2"
-    },
-    "action_resistance_3": {
-        "x": 680,
-        "y": 40,
-        "definition": "action_resistance_3"
-    },
-    "action_resistance_4": {
-        "x": 700,
-        "y": 60,
-        "definition": "action_resistance_4"
-    },
-    "field_resupply_1": {
-        "x": 720,
-        "y": 0,
-        "definition": "field_resupply_1",
-        "root": true
-    },
-    "field_resupply_2": {
-        "x": 740,
-        "y": 20,
-        "definition": "field_resupply_2"
-    },
-    "field_resupply_3": {
-        "x": 760,
-        "y": 40,
-        "definition": "field_resupply_3"
-    },
-    "field_resupply_4": {
-        "x": 780,
-        "y": 60,
-        "definition": "field_resupply_4"
-    },
-    "sensory_resistance_1": {
-        "x": 800,
-        "y": 0,
-        "definition": "sensory_resistance_1",
-        "root": true
-    },
-    "sensory_resistance_2": {
-        "x": 820,
-        "y": 20,
-        "definition": "sensory_resistance_2"
-    },
-    "sensory_resistance_3": {
-        "x": 840,
-        "y": 40,
-        "definition": "sensory_resistance_3"
-    },
-    "sensory_resistance_4": {
-        "x": 860,
-        "y": 60,
-        "definition": "sensory_resistance_4"
-    },
-    "emergency_evasion_1": {
-        "x": 880,
-        "y": 0,
-        "definition": "emergency_evasion_1"
-    },
-    "emergency_evasion_2": {
-        "x": 900,
-        "y": 20,
-        "definition": "emergency_evasion_2"
-    },
-    "emergency_evasion_3": {
-        "x": 920,
-        "y": 40,
-        "definition": "emergency_evasion_3"
-    },
-    "emergency_evasion_4": {
-        "x": 940,
-        "y": 60,
-        "definition": "emergency_evasion_4"
-    },
-    "burning_resistance_1": {
-        "x": 960,
-        "y": 0,
-        "definition": "burning_resistance_1",
-        "root": true
-    },
-    "burning_resistance_2": {
-        "x": 980,
-        "y": 20,
-        "definition": "burning_resistance_2"
-    },
-    "burning_resistance_3": {
-        "x": 1000,
-        "y": 40,
-        "definition": "burning_resistance_3"
-    },
-    "burning_resistance_4": {
-        "x": 1020,
-        "y": 60,
-        "definition": "burning_resistance_4"
-    },
-    "deathline_crossing": {
-        "x": 620,
-        "y": 120,
-        "definition": "deathline_crossing"
-    }
+	"max_health_1": {
+		"definition": "max_health_1",
+		"x": -416,
+		"y": -224,
+		"root": true
+	},
+	"max_health_2": {
+		"definition": "max_health_2",
+		"x": -352,
+		"y": -224,
+		"root": false
+	},
+	"max_health_3": {
+		"definition": "max_health_3",
+		"x": -288,
+		"y": -224,
+		"root": false
+	},
+	"attack_damage_1": {
+		"definition": "attack_damage_1",
+		"x": -416,
+		"y": -160,
+		"root": true
+	},
+	"attack_damage_2": {
+		"definition": "attack_damage_2",
+		"x": -352,
+		"y": -160,
+		"root": false
+	},
+	"attack_damage_3": {
+		"definition": "attack_damage_3",
+		"x": -288,
+		"y": -160,
+		"root": false
+	},
+	"attack_damage_4": {
+		"definition": "attack_damage_4",
+		"x": -224,
+		"y": -160,
+		"root": false
+	},
+	"attack_speed_1": {
+		"definition": "attack_speed_1",
+		"x": -352,
+		"y": -96,
+		"root": false
+	},
+	"attack_speed_2": {
+		"definition": "attack_speed_2",
+		"x": -288,
+		"y": -96,
+		"root": false
+	},
+	"attack_speed_3": {
+		"definition": "attack_speed_3",
+		"x": -224,
+		"y": -96,
+		"root": false
+	},
+	"attack_speed_4": {
+		"definition": "attack_speed_4",
+		"x": -160,
+		"y": -96,
+		"root": false
+	},
+	"attack_speed_5": {
+		"definition": "attack_speed_5",
+		"x": -96,
+		"y": -96,
+		"root": false
+	},
+	"armor_1": {
+		"definition": "armor_1",
+		"x": -416,
+		"y": -32,
+		"root": true
+	},
+	"armor_2": {
+		"definition": "armor_2",
+		"x": -352,
+		"y": -32,
+		"root": false
+	},
+	"armor_3": {
+		"definition": "armor_3",
+		"x": -288,
+		"y": -32,
+		"root": false
+	},
+	"armor_4": {
+		"definition": "armor_4",
+		"x": -224,
+		"y": -32,
+		"root": false
+	},
+	"knockback_resistance_1": {
+		"definition": "knockback_resistance_1",
+		"x": -352,
+		"y": 32,
+		"root": false
+	},
+	"knockback_resistance_2": {
+		"definition": "knockback_resistance_2",
+		"x": -288,
+		"y": 32,
+		"root": false
+	},
+	"knockback_resistance_3": {
+		"definition": "knockback_resistance_3",
+		"x": -224,
+		"y": 32,
+		"root": false
+	},
+	"explosion_damage_reduction_1": {
+		"definition": "explosion_damage_reduction_1",
+		"x": -416,
+		"y": 224,
+		"root": true
+	},
+	"explosion_damage_reduction_2": {
+		"definition": "explosion_damage_reduction_2",
+		"x": -352,
+		"y": 224,
+		"root": false
+	},
+	"explosion_damage_reduction_3": {
+		"definition": "explosion_damage_reduction_3",
+		"x": -288,
+		"y": 224,
+		"root": false
+	},
+	"explosion_damage_reduction_4": {
+		"definition": "explosion_damage_reduction_4",
+		"x": -224,
+		"y": 224,
+		"root": false
+	},
+	"projectile_damage_reduction_1": {
+		"definition": "projectile_damage_reduction_1",
+		"x": -416,
+		"y": 256,
+		"root": true
+	},
+	"projectile_damage_reduction_2": {
+		"definition": "projectile_damage_reduction_2",
+		"x": -352,
+		"y": 256,
+		"root": false
+	},
+	"projectile_damage_reduction_3": {
+		"definition": "projectile_damage_reduction_3",
+		"x": -288,
+		"y": 256,
+		"root": false
+	},
+	"projectile_damage_reduction_4": {
+		"definition": "projectile_damage_reduction_4",
+		"x": -224,
+		"y": 256,
+		"root": false
+	},
+	"shield_footwork_1": {
+		"definition": "shield_footwork_1",
+		"x": 0,
+		"y": -224,
+		"root": true
+	},
+	"shield_footwork_2": {
+		"definition": "shield_footwork_2",
+		"x": 96,
+		"y": -224,
+		"root": false
+	},
+	"shield_footwork_3": {
+		"definition": "shield_footwork_3",
+		"x": 192,
+		"y": -224,
+		"root": false
+	},
+	"shield_footwork_4": {
+		"definition": "shield_footwork_4",
+		"x": 288,
+		"y": -224,
+		"root": false
+	},
+	"physical_resistance_1": {
+		"definition": "physical_resistance_1",
+		"x": -416,
+		"y": 128,
+		"root": true
+	},
+	"physical_resistance_2": {
+		"definition": "physical_resistance_2",
+		"x": -352,
+		"y": 128,
+		"root": false
+	},
+	"physical_resistance_3": {
+		"definition": "physical_resistance_3",
+		"x": -288,
+		"y": 128,
+		"root": false
+	},
+	"physical_resistance_4": {
+		"definition": "physical_resistance_4",
+		"x": -224,
+		"y": 128,
+		"root": false
+	},
+	"ranged_footwork_1": {
+		"definition": "ranged_footwork_1",
+		"x": 0,
+		"y": -160,
+		"root": true
+	},
+	"ranged_footwork_2": {
+		"definition": "ranged_footwork_2",
+		"x": 96,
+		"y": -160,
+		"root": false
+	},
+	"ranged_footwork_3": {
+		"definition": "ranged_footwork_3",
+		"x": 192,
+		"y": -160,
+		"root": false
+	},
+	"ranged_footwork_4": {
+		"definition": "ranged_footwork_4",
+		"x": 288,
+		"y": -160,
+		"root": false
+	},
+	"action_resistance_1": {
+		"definition": "action_resistance_1",
+		"x": -416,
+		"y": 160,
+		"root": true
+	},
+	"action_resistance_2": {
+		"definition": "action_resistance_2",
+		"x": -352,
+		"y": 160,
+		"root": false
+	},
+	"action_resistance_3": {
+		"definition": "action_resistance_3",
+		"x": -288,
+		"y": 160,
+		"root": false
+	},
+	"action_resistance_4": {
+		"definition": "action_resistance_4",
+		"x": -224,
+		"y": 160,
+		"root": false
+	},
+	"field_resupply_1": {
+		"definition": "field_resupply_1",
+		"x": 0,
+		"y": -96,
+		"root": true
+	},
+	"field_resupply_2": {
+		"definition": "field_resupply_2",
+		"x": 96,
+		"y": -96,
+		"root": false
+	},
+	"field_resupply_3": {
+		"definition": "field_resupply_3",
+		"x": 192,
+		"y": -96,
+		"root": false
+	},
+	"field_resupply_4": {
+		"definition": "field_resupply_4",
+		"x": 288,
+		"y": -96,
+		"root": false
+	},
+	"sensory_resistance_1": {
+		"definition": "sensory_resistance_1",
+		"x": -416,
+		"y": 192,
+		"root": true
+	},
+	"sensory_resistance_2": {
+		"definition": "sensory_resistance_2",
+		"x": -352,
+		"y": 192,
+		"root": false
+	},
+	"sensory_resistance_3": {
+		"definition": "sensory_resistance_3",
+		"x": -288,
+		"y": 192,
+		"root": false
+	},
+	"sensory_resistance_4": {
+		"definition": "sensory_resistance_4",
+		"x": -224,
+		"y": 192,
+		"root": false
+	},
+	"emergency_evasion_1": {
+		"definition": "emergency_evasion_1",
+		"x": 96,
+		"y": -32,
+		"root": false
+	},
+	"emergency_evasion_2": {
+		"definition": "emergency_evasion_2",
+		"x": 192,
+		"y": -32,
+		"root": false
+	},
+	"emergency_evasion_3": {
+		"definition": "emergency_evasion_3",
+		"x": 288,
+		"y": -32,
+		"root": false
+	},
+	"emergency_evasion_4": {
+		"definition": "emergency_evasion_4",
+		"x": 384,
+		"y": -32,
+		"root": false
+	},
+	"burning_resistance_1": {
+		"definition": "burning_resistance_1",
+		"x": -416,
+		"y": 288,
+		"root": true
+	},
+	"burning_resistance_2": {
+		"definition": "burning_resistance_2",
+		"x": -352,
+		"y": 288,
+		"root": false
+	},
+	"burning_resistance_3": {
+		"definition": "burning_resistance_3",
+		"x": -288,
+		"y": 288,
+		"root": false
+	},
+	"burning_resistance_4": {
+		"definition": "burning_resistance_4",
+		"x": -224,
+		"y": 288,
+		"root": false
+	},
+	"deathline_crossing": {
+		"definition": "deathline_crossing",
+		"x": -96,
+		"y": 224,
+		"root": false
+	}
 }
