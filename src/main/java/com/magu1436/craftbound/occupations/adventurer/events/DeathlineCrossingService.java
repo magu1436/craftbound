@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import com.magu1436.craftbound.occupations.adventurer.AdventurerConfig;
 import com.magu1436.craftbound.occupations.adventurer.capability.IAdventurerData;
+import com.magu1436.craftbound.occupations.adventurer.data.DeathlineClearEffectDefinitions;
+import com.magu1436.craftbound.occupations.adventurer.data.DeathlineExcludedDamageDefinitions;
 import com.magu1436.craftbound.registry.CraftboundCapabilities;
 
 import net.minecraft.server.MinecraftServer;
@@ -11,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 
 /**
  * 死線踏破の発動判定と発動後の保護を処理する。
@@ -126,6 +129,7 @@ public final class DeathlineCrossingService {
             player.setAirSupply(player.getMaxAirSupply());
         }
 
+        clearConfiguredEffects(player);
         player.serverLevel().broadcastEntityEvent(
             player,
             TOTEM_ACTIVATION_EVENT_ID
@@ -134,7 +138,23 @@ public final class DeathlineCrossingService {
         return true;
     }
 
+    private static void clearConfiguredEffects(ServerPlayer player) {
+        var effectsToClear = player
+            .getActiveEffects()
+            .stream()
+            .map(MobEffectInstance::getEffect)
+            .filter(
+                DeathlineClearEffectDefinitions.INSTANCE::shouldClear
+            )
+            .toList();
+
+        effectsToClear.forEach(player::removeEffect);
+    }
+
     private static boolean isExcludedDamage(DamageSource source) {
-        return source.is(DamageTypeTags.BYPASSES_INVULNERABILITY);
+        return source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)
+            || DeathlineExcludedDamageDefinitions.INSTANCE.matches(
+                source
+            );
     }
 }
