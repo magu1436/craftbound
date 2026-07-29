@@ -7,5 +7,7 @@
   "attribute.name.craftbound.sensory_resistance": "Sensory Resistance",
   "attribute.name.craftbound.shield_footwork": "Shield Footwork",
   "attribute.name.craftbound.ranged_footwork": "Ranged Footwork",
-  "attribute.name.craftbound.field_resupply": "Field Resupply"
+  "attribute.name.craftbound.field_resupply": "Field Resupply",
+  "key.categories.craftbound": "Craftbound",
+  "key.craftbound.emergency_evasion": "Emergency Evasion"
 }

@@ -29,7 +29,10 @@
             ["field_resupply_3", "field_resupply_4"],
             ["sensory_resistance_1", "sensory_resistance_2"],
             ["sensory_resistance_2", "sensory_resistance_3"],
-            ["sensory_resistance_3", "sensory_resistance_4"]
+            ["sensory_resistance_3", "sensory_resistance_4"],
+            ["emergency_evasion_1", "emergency_evasion_2"],
+            ["emergency_evasion_2", "emergency_evasion_3"],
+            ["emergency_evasion_3", "emergency_evasion_4"]
         ]
     }
 }
