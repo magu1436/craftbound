@@ -176,5 +176,26 @@
         "x": 460,
         "y": 60,
         "definition": "shield_footwork_4"
+    },
+    "ranged_footwork_1": {
+        "x": 480,
+        "y": 0,
+        "definition": "ranged_footwork_1",
+        "root": true
+    },
+    "ranged_footwork_2": {
+        "x": 500,
+        "y": 20,
+        "definition": "ranged_footwork_2"
+    },
+    "ranged_footwork_3": {
+        "x": 520,
+        "y": 40,
+        "definition": "ranged_footwork_3"
+    },
+    "ranged_footwork_4": {
+        "x": 540,
+        "y": 60,
+        "definition": "ranged_footwork_4"
     }
 }

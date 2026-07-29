@@ -14,6 +14,12 @@ public final class CraftboundItemTags {
     public static final TagKey<Item> SHIELD_FOOTWORK_EXCLUDED_ITEMS =
         create("adventurer/shield_footwork_excluded_items");
 
+    public static final TagKey<Item> RANGED_FOOTWORK_ITEMS =
+        create("adventurer/ranged_footwork_items");
+
+    public static final TagKey<Item> RANGED_FOOTWORK_EXCLUDED_ITEMS =
+        create("adventurer/ranged_footwork_excluded_items");
+
     private CraftboundItemTags() {
     }
 
