@@ -663,5 +663,81 @@
                 }
             }
         ]
+    },
+    "ranged_footwork_1": {
+        "title": "射撃歩法I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "弓、クロスボウ、トライデント使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:ranged_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "b7c2810b-c4de-4a36-a15f-4ade2130e2cb"
+                }
+            }
+        ]
+    },
+    "ranged_footwork_2": {
+        "title": "射撃歩法II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "弓、クロスボウ、トライデント使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:ranged_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "9ee26bfe-f41f-4555-b28a-462f65439d44"
+                }
+            }
+        ]
+    },
+    "ranged_footwork_3": {
+        "title": "射撃歩法III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "弓、クロスボウ、トライデント使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:ranged_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "9cf8fee5-b789-4687-878c-be240c336bf2"
+                }
+            }
+        ]
+    },
+    "ranged_footwork_4": {
+        "title": "射撃歩法IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bow"
+            }
+        },
+        "description": "弓、クロスボウ、トライデント使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:ranged_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "18454a8f-a3be-4ed6-a143-8b3c717fc666"
+                }
+            }
+        ]
     }
 }

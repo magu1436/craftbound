@@ -197,5 +197,26 @@
         "x": 540,
         "y": 60,
         "definition": "physical_resistance_4"
+    },
+    "ranged_footwork_1": {
+        "x": 560,
+        "y": 0,
+        "definition": "ranged_footwork_1",
+        "root": true
+    },
+    "ranged_footwork_2": {
+        "x": 580,
+        "y": 20,
+        "definition": "ranged_footwork_2"
+    },
+    "ranged_footwork_3": {
+        "x": 600,
+        "y": 40,
+        "definition": "ranged_footwork_3"
+    },
+    "ranged_footwork_4": {
+        "x": 620,
+        "y": 60,
+        "definition": "ranged_footwork_4"
     }
 }
