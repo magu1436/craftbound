@@ -20,7 +20,10 @@
             ["action_resistance_3", "action_resistance_4"],
             ["field_resupply_1", "field_resupply_2"],
             ["field_resupply_2", "field_resupply_3"],
-            ["field_resupply_3", "field_resupply_4"]
+            ["field_resupply_3", "field_resupply_4"],
+            ["sensory_resistance_1", "sensory_resistance_2"],
+            ["sensory_resistance_2", "sensory_resistance_3"],
+            ["sensory_resistance_3", "sensory_resistance_4"]
         ]
     }
 }

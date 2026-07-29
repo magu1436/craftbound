@@ -260,5 +260,26 @@
         "x": 780,
         "y": 60,
         "definition": "field_resupply_4"
+    },
+    "sensory_resistance_1": {
+        "x": 800,
+        "y": 0,
+        "definition": "sensory_resistance_1",
+        "root": true
+    },
+    "sensory_resistance_2": {
+        "x": 820,
+        "y": 20,
+        "definition": "sensory_resistance_2"
+    },
+    "sensory_resistance_3": {
+        "x": 840,
+        "y": 40,
+        "definition": "sensory_resistance_3"
+    },
+    "sensory_resistance_4": {
+        "x": 860,
+        "y": 60,
+        "definition": "sensory_resistance_4"
     }
 }

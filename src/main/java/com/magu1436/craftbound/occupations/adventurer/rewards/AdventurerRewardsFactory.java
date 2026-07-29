@@ -20,7 +20,8 @@ public class AdventurerRewardsFactory extends AttributeRewardFactory{
         new AttributeRewardArgs("physical_resistance_reward", CraftboundAttributes.PHYSICAL_RESISTANCE::get, Operation.ADDITION),
         new AttributeRewardArgs("ranged_footwork_reward", CraftboundAttributes.RANGED_FOOTWORK::get, Operation.ADDITION),
         new AttributeRewardArgs("action_resistance_reward", CraftboundAttributes.ACTION_RESISTANCE::get, Operation.ADDITION),
-        new AttributeRewardArgs("field_resupply_reward", CraftboundAttributes.FIELD_RESUPPLY::get, Operation.ADDITION)
+        new AttributeRewardArgs("field_resupply_reward", CraftboundAttributes.FIELD_RESUPPLY::get, Operation.ADDITION),
+        new AttributeRewardArgs("sensory_resistance_reward", CraftboundAttributes.SENSORY_RESISTANCE::get, Operation.ADDITION)
     );
 
     public static void registerRewards(){

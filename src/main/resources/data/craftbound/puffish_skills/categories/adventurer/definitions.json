@@ -891,5 +891,81 @@
                 }
             }
         ]
+    },
+    "sensory_resistance_1": {
+        "title": "感覚耐性I",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:blindness"
+            }
+        },
+        "description": "暗闇、盲目、吐き気などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:sensory_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "705e4610-4bb8-4fde-906a-cd3baac29965"
+                }
+            }
+        ]
+    },
+    "sensory_resistance_2": {
+        "title": "感覚耐性II",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:blindness"
+            }
+        },
+        "description": "暗闇、盲目、吐き気などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:sensory_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "1b25408d-cf29-452f-98a7-d47c659e4d45"
+                }
+            }
+        ]
+    },
+    "sensory_resistance_3": {
+        "title": "感覚耐性III",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:blindness"
+            }
+        },
+        "description": "暗闇、盲目、吐き気などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:sensory_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "d87ada13-6ac6-46f3-b914-70dec5234173"
+                }
+            }
+        ]
+    },
+    "sensory_resistance_4": {
+        "title": "感覚耐性IV",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:blindness"
+            }
+        },
+        "description": "暗闇、盲目、吐き気などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:sensory_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "34b21de2-b6fc-42e2-9d3f-94c925f6e460"
+                }
+            }
+        ]
     }
 }
