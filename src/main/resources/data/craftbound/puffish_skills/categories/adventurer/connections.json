@@ -17,7 +17,10 @@
             ["ranged_footwork_3", "ranged_footwork_4"],
             ["action_resistance_1", "action_resistance_2"],
             ["action_resistance_2", "action_resistance_3"],
-            ["action_resistance_3", "action_resistance_4"]
+            ["action_resistance_3", "action_resistance_4"],
+            ["emergency_evasion_1", "emergency_evasion_2"],
+            ["emergency_evasion_2", "emergency_evasion_3"],
+            ["emergency_evasion_3", "emergency_evasion_4"]
         ]
     }
 }
