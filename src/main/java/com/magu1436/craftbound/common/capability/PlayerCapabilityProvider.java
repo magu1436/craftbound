@@ -3,7 +3,6 @@ package com.magu1436.craftbound.common.capability;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
@@ -44,9 +43,8 @@ public final class PlayerCapabilityProvider<
     }
 
     @Override
-    @Nonnull
     public <R> LazyOptional<R> getCapability(
-        @Nonnull Capability<R> requestedCapability,
+        Capability<R> requestedCapability,
         @Nullable Direction side
     ) {
         return capability.orEmpty(requestedCapability, optional);

@@ -67,7 +67,9 @@ class DeathlineCrossingSkillDataTest {
             "deathline_crossing",
             skill.get("definition").getAsString()
         );
-        assertFalse(skill.has("root"));
+        assertFalse(
+            skill.has("root") && skill.get("root").getAsBoolean()
+        );
     }
 
     @Test

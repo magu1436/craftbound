@@ -1,7 +1,6 @@
 package com.magu1436.craftbound.common;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -16,7 +15,7 @@ import net.minecraftforge.common.capabilities.Capability;
 public record LevelRewardArgs<C>(
     String rewardId,
     Capability<C> capability,
-    Function<C, SkillLevelState> stateAccessor
+    SkillLevelStateAccessor<C> stateAccessor
 ) {
     public LevelRewardArgs {
         Objects.requireNonNull(rewardId, "reward id is null");

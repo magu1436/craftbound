@@ -4,11 +4,12 @@ import java.util.Optional;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.puffish.skillsmod.api.Category;
 import net.puffish.skillsmod.api.Skill;
 import net.puffish.skillsmod.api.SkillsAPI;
 
-public class PuffishSkillsUtilities {
+public final class PuffishSkillsUtilities {
+    private PuffishSkillsUtilities() {
+    }
 
     /**
      * スキルを取得するための関数.  
@@ -21,11 +22,8 @@ public class PuffishSkillsUtilities {
         ResourceLocation categoryId,
         String skillId
     ) {
-        Category category = SkillsAPI.getCategory(categoryId).orElse(null);
-        
-        if (category == null) return Optional.empty();
-
-        return category.getSkill(skillId);
+        return SkillsAPI.getCategory(categoryId)
+            .flatMap(category -> category.getSkill(skillId));
     }
 
     /**
@@ -54,10 +52,8 @@ public class PuffishSkillsUtilities {
         ResourceLocation categoryId,
         String skillId
     ) {
-        Skill skill = PuffishSkillsUtilities.getSkill(categoryId, skillId).orElse(null);
-
-        if (skill == null) return false;
-
-        return PuffishSkillsUtilities.hasSkill(player, skill);
+        return getSkill(categoryId, skillId)
+            .map(skill -> hasSkill(player, skill))
+            .orElse(false);
     }
 }

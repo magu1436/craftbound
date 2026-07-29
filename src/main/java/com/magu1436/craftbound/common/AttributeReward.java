@@ -4,22 +4,24 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.puffish.skillsmod.api.SkillsAPI;
-import net.puffish.skillsmod.api.json.JsonElement;
 import net.puffish.skillsmod.api.reward.Reward;
 import net.puffish.skillsmod.api.reward.RewardConfigContext;
 import net.puffish.skillsmod.api.reward.RewardDisposeContext;
 import net.puffish.skillsmod.api.reward.RewardUpdateContext;
 import net.puffish.skillsmod.api.util.Problem;
 import net.puffish.skillsmod.api.util.Result;
+import org.slf4j.Logger;
 
 public class AttributeReward implements Reward {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String AMOUNT_KEY = "amount";
     private static final String MODIFIER_ID_KEY = "modifier_uuid";
 
@@ -36,11 +38,23 @@ public class AttributeReward implements Reward {
         double amount,
         Operation operation
     ) {
-        this.rewardId = rewardId;
-        this.attribute = attribute;
+        this.rewardId = Objects.requireNonNull(
+            rewardId,
+            "reward id is null"
+        );
+        this.attribute = Objects.requireNonNull(
+            attribute,
+            "attribute supplier is null"
+        );
         this.amount = amount;
-        this.modifierId = modifierId;
-        this.operation = operation;
+        this.modifierId = Objects.requireNonNull(
+            modifierId,
+            "modifier id is null"
+        );
+        this.operation = Objects.requireNonNull(
+            operation,
+            "operation is null"
+        );
     }
 
     public static void register(
@@ -68,16 +82,18 @@ public class AttributeReward implements Reward {
         Operation operation,
         RewardCreator creator
     ) {
-        if (rewardId == null) throw new NullPointerException("reward id is null");
+        Objects.requireNonNull(rewardId, "reward id is null");
+        Objects.requireNonNull(attribute, "attribute supplier is null");
+        Objects.requireNonNull(operation, "operation is null");
+        Objects.requireNonNull(creator, "reward creator is null");
+
         SkillsAPI.registerReward(
             CraftboundUtilities.createResourceLocation(rewardId),
-            context -> {
-                ParsedJsonValues values = AttributeReward
-                    .parseJson(context)
-                    .getSuccessOrElse(null);
-                if (values == null) return Result.failure(Problem.message("parse json failed"));
-                return Result.success(creator.create(values.modifierId, values.amount));
-            }
+            context -> parseJson(context).andThen(
+                values -> Result.success(
+                    creator.create(values.modifierId, values.amount)
+                )
+            )
         );
     }
 
@@ -86,119 +102,125 @@ public class AttributeReward implements Reward {
      * @param context 報酬の設定情報
      * @return 報酬量を含む {@code Result}
      */
-    protected static Result<ParsedJsonValues, Problem> parseJson( RewardConfigContext context ) {
-        JsonElement result = context.getData()
-            .getSuccess()
-            .orElse(null);
-        if (result == null) {
-            return Result.failure(Problem.message("Some error happened on parsing json. CODE: 0"));
-        }
-
-        var json = result
-            .getAsObject()
-            .getSuccess()
-            .orElse(null);
-        
-        if (json == null) {
-            return Result.failure(Problem.message("Some error happened on parsing json. CODE: 1"));
-        }
-
-        Double amount = json
-            .getDouble(AMOUNT_KEY)
-            .getSuccessOrElse(null);
-        UUID modifierId = UUID.fromString(json
-            .getString(MODIFIER_ID_KEY)
-            .getSuccessOrElse(null)
+    protected static Result<ParsedJsonValues, Problem> parseJson(
+        RewardConfigContext context
+    ) {
+        return context.getData().andThen(
+            data -> data.getAsObject().andThen(
+                json -> json.getDouble(AMOUNT_KEY).andThen(
+                    amount -> json.getString(MODIFIER_ID_KEY).andThen(
+                        modifierId -> parseModifierId(amount, modifierId)
+                    )
+                )
+            )
         );
+    }
 
-        if (amount == null) {
-            return Result.failure(Problem.message("Some error happened on parsing json. CODE: 2"));
+    private static Result<ParsedJsonValues, Problem> parseModifierId(
+        double amount,
+        String modifierId
+    ) {
+        try {
+            return Result.success(
+                new ParsedJsonValues(amount, UUID.fromString(modifierId))
+            );
+        } catch (IllegalArgumentException exception) {
+            return Result.failure(
+                Problem.message(
+                    "modifier_uuid must be a valid UUID: " + modifierId
+                )
+            );
         }
-
-        return Result.success(new ParsedJsonValues(amount, modifierId) );
     }
 
     @Override
     public void update(RewardUpdateContext context) {
-        int rewardCount = context.getCount();   // 同一報酬が取得された回数
-
-        Attribute attribute = Objects.requireNonNull(
-            this.attribute.get(),
-            "Attribute is null"
-        );
-        UUID modifierId = Objects.requireNonNull(
-            this.modifierId,
-            "UUID is null"
-        );
-        String rewardId = Objects.requireNonNull(
-            this.rewardId,
-            "rewardId is null"
+        int rewardCount = context.getCount();
+        AttributeInstance attributeInstance = getAttributeInstance(
+            context.getPlayer()
         );
 
-        AttributeInstance attr = Objects.requireNonNull(
-            context.getPlayer().getAttribute(attribute),
-            "AttributeInstance is null"
+        if (attributeInstance == null) {
+            return;
+        }
+
+        attributeInstance.removeModifier(modifierId);
+
+        if (rewardCount <= 0) {
+            return;
+        }
+
+        attributeInstance.addTransientModifier(
+            new AttributeModifier(
+                modifierId,
+                rewardId,
+                amount * rewardCount,
+                operation.toAttributeOperation()
+            )
         );
-
-        attr.removeModifier(modifierId);  // 重複を防ぐために削除
-
-        if (rewardCount <= 0) return;
-
-        AttributeModifier modifier = new AttributeModifier(
-            modifierId,
-            rewardId,
-            this.amount * rewardCount,
-            operation.toAttributeOperation()
-        );
-
-        attr.addTransientModifier(modifier);
     }
 
     @Override
     public void dispose(RewardDisposeContext context) {
         for (ServerPlayer player : context.getServer().getPlayerList().getPlayers()) {
-            Attribute attribute = Objects.requireNonNull(
-                this.attribute.get(),
-                "Attribute is null"
-            );
-            UUID modifierId = Objects.requireNonNull(
-                this.modifierId,
-                "UUID is null"
-            );
-            Objects
-                .requireNonNull(
-                    player.getAttribute(attribute),
-                    "AttributeInstance is null"
-                )
-                .removeModifier(modifierId);
+            AttributeInstance attributeInstance = getAttributeInstance(player);
+
+            if (attributeInstance != null) {
+                attributeInstance.removeModifier(modifierId);
+            }
         }
     }
 
+    @Nullable
+    private AttributeInstance getAttributeInstance(ServerPlayer player) {
+        Attribute resolvedAttribute = attribute.get();
+
+        if (resolvedAttribute == null) {
+            LOGGER.error(
+                "Cannot apply reward '{}': attribute supplier returned null",
+                rewardId
+            );
+            return null;
+        }
+
+        AttributeInstance attributeInstance = player.getAttribute(
+            resolvedAttribute
+        );
+
+        if (attributeInstance == null) {
+            LOGGER.error(
+                "Cannot apply reward '{}' to player '{}': attribute '{}' is unavailable",
+                rewardId,
+                player.getScoreboardName(),
+                resolvedAttribute.getDescriptionId()
+            );
+        }
+
+        return attributeInstance;
+    }
+
     public enum Operation {
-        
         ADDITION,
         MULTIPLY_BASE,
         MULTIPLY_TOTAL;
 
-        @Nonnull
         private AttributeModifier.Operation toAttributeOperation() {
-            switch (this) {
-                case ADDITION:
-                    return AttributeModifier.Operation.ADDITION;
-                case MULTIPLY_BASE:
-                    return AttributeModifier.Operation.MULTIPLY_BASE;
-                case MULTIPLY_TOTAL:
-                    return AttributeModifier.Operation.MULTIPLY_TOTAL;
-            }
-            throw new NullPointerException("Operation is null");
+            return switch (this) {
+                case ADDITION -> AttributeModifier.Operation.ADDITION;
+                case MULTIPLY_BASE -> AttributeModifier.Operation.MULTIPLY_BASE;
+                case MULTIPLY_TOTAL -> AttributeModifier.Operation.MULTIPLY_TOTAL;
+            };
         }
-
     }
 
     protected record ParsedJsonValues(
         double amount,
         UUID modifierId
-    ) {}
+    ) {
+        protected ParsedJsonValues {
+            Objects.requireNonNull(modifierId, "modifier id is null");
+        }
+    }
 
     @FunctionalInterface
     protected interface RewardCreator {

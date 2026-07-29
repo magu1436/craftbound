@@ -1,12 +1,10 @@
 package com.magu1436.craftbound.common;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.puffish.skillsmod.api.SkillsAPI;
-import net.puffish.skillsmod.api.json.JsonElement;
 import net.puffish.skillsmod.api.reward.Reward;
 import net.puffish.skillsmod.api.reward.RewardConfigContext;
 import net.puffish.skillsmod.api.reward.RewardDisposeContext;
@@ -23,12 +21,12 @@ public final class LevelReward<C> implements Reward {
     private static final String STAGE_KEY = "stage";
 
     private final Capability<C> capability;
-    private final Function<C, SkillLevelState> stateAccessor;
+    private final SkillLevelStateAccessor<C> stateAccessor;
     private final int stage;
 
     private LevelReward(
         Capability<C> capability,
-        Function<C, SkillLevelState> stateAccessor,
+        SkillLevelStateAccessor<C> stateAccessor,
         int stage
     ) {
         this.capability = Objects.requireNonNull(
@@ -60,7 +58,7 @@ public final class LevelReward<C> implements Reward {
     public static <C> void register(
         String rewardId,
         Capability<C> capability,
-        Function<C, SkillLevelState> stateAccessor
+        SkillLevelStateAccessor<C> stateAccessor
     ) {
         Objects.requireNonNull(rewardId, "reward id is null");
         Objects.requireNonNull(capability, "capability is null");
@@ -83,29 +81,16 @@ public final class LevelReward<C> implements Reward {
     private static Result<Integer, Problem> parseStage(
         RewardConfigContext context
     ) {
-        JsonElement data = context.getData().getSuccessOrElse(null);
+        return context.getData().andThen(
+            data -> data.getAsObject().andThen(
+                json -> json.getInt(STAGE_KEY).andThen(
+                    LevelReward::validateStage
+                )
+            )
+        );
+    }
 
-        if (data == null) {
-            return Result.failure(
-                Problem.message("reward data is missing")
-            );
-        }
-
-        var json = data.getAsObject().getSuccessOrElse(null);
-
-        if (json == null) {
-            return Result.failure(
-                Problem.message("reward data must be an object")
-            );
-        }
-
-        Integer stage = json.getInt(STAGE_KEY).getSuccessOrElse(null);
-
-        if (stage == null) {
-            return Result.failure(
-                Problem.message("reward stage is missing")
-            );
-        }
+    private static Result<Integer, Problem> validateStage(int stage) {
         if (stage < 1) {
             return Result.failure(
                 Problem.message(
@@ -140,11 +125,7 @@ public final class LevelReward<C> implements Reward {
         boolean active
     ) {
         player.getCapability(capability).ifPresent(data -> {
-            SkillLevelState state = Objects.requireNonNull(
-                stateAccessor.apply(data),
-                "skill level state is null"
-            );
-
+            SkillLevelState state = stateAccessor.get(data);
             state.setStageActive(stage, active);
         });
     }
