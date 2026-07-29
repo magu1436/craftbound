@@ -35,6 +35,11 @@ public class AdventurerRewardsFactory extends AttributeRewardFactory{
                 "emergency_evasion_level_reward",
                 CraftboundCapabilities.ADVENTURER_DATA,
                 IAdventurerData::getEmergencyEvasionLevelState
+            ),
+            new LevelRewardArgs<>(
+                "deathline_crossing_level_reward",
+                CraftboundCapabilities.ADVENTURER_DATA,
+                IAdventurerData::getDeathlineCrossingLevelState
             )
         );
 

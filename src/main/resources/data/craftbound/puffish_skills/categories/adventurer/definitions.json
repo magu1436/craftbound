@@ -1115,5 +1115,24 @@
                 }
             }
         ]
+    },
+    "deathline_crossing": {
+        "title": "死線踏破",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:totem_of_undying"
+            }
+        },
+        "description": "1日に1回、致死ダメージを体力1で耐える。オーバーワールドの日付境界を越えると再使用可能になる",
+        "required_skills": 6,
+        "rewards": [
+            {
+                "type": "craftbound:deathline_crossing_level_reward",
+                "data": {
+                    "stage": 1
+                }
+            }
+        ]
     }
 }

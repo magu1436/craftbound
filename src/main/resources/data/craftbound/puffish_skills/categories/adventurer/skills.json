@@ -317,5 +317,10 @@
         "x": 1020,
         "y": 60,
         "definition": "burning_resistance_4"
+    },
+    "deathline_crossing": {
+        "x": 620,
+        "y": 120,
+        "definition": "deathline_crossing"
     }
 }

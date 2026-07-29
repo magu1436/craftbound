@@ -35,7 +35,13 @@
             ["emergency_evasion_3", "emergency_evasion_4"],
             ["burning_resistance_1", "burning_resistance_2"],
             ["burning_resistance_2", "burning_resistance_3"],
-            ["burning_resistance_3", "burning_resistance_4"]
+            ["burning_resistance_3", "burning_resistance_4"],
+            ["explosion_damage_reduction_4", "deathline_crossing"],
+            ["projectile_damage_reduction_4", "deathline_crossing"],
+            ["physical_resistance_4", "deathline_crossing"],
+            ["action_resistance_4", "deathline_crossing"],
+            ["sensory_resistance_4", "deathline_crossing"],
+            ["burning_resistance_4", "deathline_crossing"]
         ]
     }
 }
