@@ -6,11 +6,13 @@ import com.magu1436.craftbound.event.MovementPenaltyReductionRule;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.magu1436.craftbound.registry.CraftboundItemTags;
 
+import net.minecraft.world.item.UseAnim;
 import net.minecraftforge.common.ToolActions;
 
 public final class AdventurerMovementPenaltyRules {
 
     private static final double SHIELD_FOOTWORK_REDUCTION_RATE = 0.1D;
+    private static final double RANGED_FOOTWORK_REDUCTION_RATE = 0.1D;
 
     private AdventurerMovementPenaltyRules() {
     }
@@ -25,6 +27,18 @@ public final class AdventurerMovementPenaltyRules {
                     ToolActions.SHIELD_BLOCK
                 ),
                 SHIELD_FOOTWORK_REDUCTION_RATE
+            ),
+            new MovementPenaltyReductionRule(
+                CraftboundAttributes.RANGED_FOOTWORK::get,
+                CraftboundItemTags.RANGED_FOOTWORK_ITEMS,
+                CraftboundItemTags.RANGED_FOOTWORK_EXCLUDED_ITEMS,
+                itemStack -> {
+                    UseAnim useAnimation = itemStack.getUseAnimation();
+                    return useAnimation == UseAnim.BOW
+                        || useAnimation == UseAnim.CROSSBOW
+                        || useAnimation == UseAnim.SPEAR;
+                },
+                RANGED_FOOTWORK_REDUCTION_RATE
             )
         );
     }
