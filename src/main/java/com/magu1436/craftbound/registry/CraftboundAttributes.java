@@ -21,17 +21,18 @@ public final class CraftboundAttributes {
     private static final String PHYSICAL_RESISTANCE_NAME = "physical_resistance";
     private static final String ACTION_RESISTANCE_NAME = "action_resistance";
     private static final String SENSORY_RESISTANCE_NAME = "sensory_resistance";
+    private static final String SHIELD_FOOTWORK_NAME = "shield_footwork";
 
-    private static final DeferredRegister<Attribute> ATTRIBUTES = 
+    private static final DeferredRegister<Attribute> ATTRIBUTES =
         DeferredRegister.create(
             ForgeRegistries.ATTRIBUTES,
             Craftbound.MODID
         );
-    
+
     /**
      * 爆発ダメージの軽減
      */
-    public static final RegistryObject<Attribute> EXPLOSION_DAMAGE_REDUCTION = 
+    public static final RegistryObject<Attribute> EXPLOSION_DAMAGE_REDUCTION =
         ATTRIBUTES.register(
             EXPLOSION_DAMAGE_REDUCTION_NAME,
             () -> new RangedAttribute(
@@ -102,7 +103,21 @@ public final class CraftboundAttributes {
                 0.4D
             ).setSyncable(true)
         );
-    
+
+    /**
+     * 盾歩法の取得段階
+     */
+    public static final RegistryObject<Attribute> SHIELD_FOOTWORK =
+        ATTRIBUTES.register(
+            SHIELD_FOOTWORK_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(SHIELD_FOOTWORK_NAME),
+                0.0D,
+                0.0D,
+                4.0D
+            ).setSyncable(true)
+        );
+
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
         modEventBus.addListener(CraftboundAttributes::addAttributesToEntities);
@@ -137,6 +152,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 SENSORY_RESISTANCE.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                SHIELD_FOOTWORK.get()
         );
     }
 

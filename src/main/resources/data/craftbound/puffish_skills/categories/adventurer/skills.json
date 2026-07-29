@@ -156,24 +156,45 @@
         "definition": "projectile_damage_reduction_4",
         "root": true
     },
-    "physical_resistance_1": {
+    "shield_footwork_1": {
         "x": 400,
+        "y": 0,
+        "definition": "shield_footwork_1",
+        "root": true
+    },
+    "shield_footwork_2": {
+        "x": 420,
+        "y": 20,
+        "definition": "shield_footwork_2"
+    },
+    "shield_footwork_3": {
+        "x": 440,
+        "y": 40,
+        "definition": "shield_footwork_3"
+    },
+    "shield_footwork_4": {
+        "x": 460,
+        "y": 60,
+        "definition": "shield_footwork_4"
+    },
+    "physical_resistance_1": {
+        "x": 480,
         "y": 0,
         "definition": "physical_resistance_1",
         "root": true
     },
     "physical_resistance_2": {
-        "x": 420,
+        "x": 500,
         "y": 20,
         "definition": "physical_resistance_2"
     },
     "physical_resistance_3": {
-        "x": 440,
+        "x": 520,
         "y": 40,
         "definition": "physical_resistance_3"
     },
     "physical_resistance_4": {
-        "x": 460,
+        "x": 540,
         "y": 60,
         "definition": "physical_resistance_4"
     }

@@ -512,6 +512,82 @@
             }
         ]
     },
+    "shield_footwork_1": {
+        "title": "盾歩法I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:shield"
+            }
+        },
+        "description": "盾使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:shield_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "83c7c759-0a69-4c48-9978-42eeb5ab73fb"
+                }
+            }
+        ]
+    },
+    "shield_footwork_2": {
+        "title": "盾歩法II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:shield"
+            }
+        },
+        "description": "盾使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:shield_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "ba753acc-4f7c-408f-bc8b-e6b69b431d60"
+                }
+            }
+        ]
+    },
+    "shield_footwork_3": {
+        "title": "盾歩法III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:shield"
+            }
+        },
+        "description": "盾使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:shield_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "5d0d6f3b-2778-426b-83ee-eb7d1fa4183c"
+                }
+            }
+        ]
+    },
+    "shield_footwork_4": {
+        "title": "盾歩法IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:shield"
+            }
+        },
+        "description": "盾使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:shield_footwork_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "166b4a0f-8f39-4978-a201-d3f46073412f"
+                }
+            }
+        ]
+    },
     "physical_resistance_1": {
         "title": "肉体耐性I",
         "icon": {
