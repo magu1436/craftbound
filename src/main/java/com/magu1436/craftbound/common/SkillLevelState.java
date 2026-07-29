@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.common;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -48,6 +49,22 @@ public final class SkillLevelState {
      */
     public int getLevel() {
         return activeStages.size();
+    }
+
+    /**
+     * 別の状態から有効な段階をコピーする。
+     *
+     * @param original コピー元
+     */
+    public void copyFrom(SkillLevelState original) {
+        Objects.requireNonNull(original, "original is null");
+
+        if (original == this) {
+            return;
+        }
+
+        activeStages.clear();
+        activeStages.addAll(original.activeStages);
     }
 
     /**

@@ -8,5 +8,7 @@
     "attribute.name.craftbound.burning_resistance": "炎上時間短縮",
     "attribute.name.craftbound.shield_footwork": "盾歩法",
     "attribute.name.craftbound.ranged_footwork": "射撃歩法",
-    "attribute.name.craftbound.field_resupply": "戦地補給"
+    "attribute.name.craftbound.field_resupply": "戦地補給",
+    "key.categories.craftbound": "Craftbound",
+    "key.craftbound.emergency_evasion": "緊急回避"
 }

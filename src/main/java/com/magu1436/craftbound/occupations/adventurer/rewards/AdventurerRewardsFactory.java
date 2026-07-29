@@ -5,7 +5,11 @@ import java.util.List;
 import com.magu1436.craftbound.common.AttributeRewardArgs;
 import com.magu1436.craftbound.common.AttributeRewardFactory;
 import com.magu1436.craftbound.common.AttributeReward.Operation;
+import com.magu1436.craftbound.common.LevelRewardArgs;
+import com.magu1436.craftbound.common.LevelRewardFactory;
+import com.magu1436.craftbound.occupations.adventurer.capability.IAdventurerData;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
+import com.magu1436.craftbound.registry.CraftboundCapabilities;
 
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
@@ -25,8 +29,18 @@ public class AdventurerRewardsFactory extends AttributeRewardFactory{
         new AttributeRewardArgs("burning_resistance_reward", CraftboundAttributes.BURNING_RESISTANCE::get, Operation.ADDITION)
     );
 
+    private static final List<LevelRewardArgs<IAdventurerData>> levelRewards =
+        List.of(
+            new LevelRewardArgs<>(
+                "emergency_evasion_level_reward",
+                CraftboundCapabilities.ADVENTURER_DATA,
+                IAdventurerData::getEmergencyEvasionLevelState
+            )
+        );
+
     public static void registerRewards(){
         registerRewards(rewards);
+        LevelRewardFactory.registerRewards(levelRewards);
         AttackSpeedReward.register();
         MaxHealthReward.register();
     }

@@ -968,6 +968,78 @@
             }
         ]
     },
+    "emergency_evasion_1": {
+        "title": "緊急回避I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:rabbit_foot"
+            }
+        },
+        "description": "約1.25ブロック前方へ緊急回避する。クールダウンは16秒",
+        "rewards": [
+            {
+                "type": "craftbound:emergency_evasion_level_reward",
+                "data": {
+                    "stage": 1
+                }
+            }
+        ]
+    },
+    "emergency_evasion_2": {
+        "title": "緊急回避II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:rabbit_foot"
+            }
+        },
+        "description": "緊急回避の移動距離を約1.5ブロック、クールダウンを14秒に強化する",
+        "rewards": [
+            {
+                "type": "craftbound:emergency_evasion_level_reward",
+                "data": {
+                    "stage": 2
+                }
+            }
+        ]
+    },
+    "emergency_evasion_3": {
+        "title": "緊急回避III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:rabbit_foot"
+            }
+        },
+        "description": "緊急回避の移動距離を約1.75ブロック、クールダウンを12秒に強化する",
+        "rewards": [
+            {
+                "type": "craftbound:emergency_evasion_level_reward",
+                "data": {
+                    "stage": 3
+                }
+            }
+        ]
+    },
+    "emergency_evasion_4": {
+        "title": "緊急回避IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:rabbit_foot"
+            }
+        },
+        "description": "緊急回避の移動距離を約2ブロック、クールダウンを10秒に強化する",
+        "rewards": [
+            {
+                "type": "craftbound:emergency_evasion_level_reward",
+                "data": {
+                    "stage": 4
+                }
+            }
+        ]
+    },
     "burning_resistance_1": {
         "title": "炎上時間短縮I",
         "icon": {

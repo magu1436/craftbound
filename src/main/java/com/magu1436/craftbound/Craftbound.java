@@ -1,9 +1,11 @@
 package com.magu1436.craftbound;
 
 import com.magu1436.craftbound.client.event.CraftboundMovementPenaltyEventHandler;
+import com.magu1436.craftbound.occupations.adventurer.AdventurerConfig;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyRules;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyService;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
+import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
@@ -87,6 +89,11 @@ public class Craftbound
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        context.registerConfig(
+            ModConfig.Type.SERVER,
+            AdventurerConfig.SPEC,
+            "craftbound-adventurer.toml"
+        );
 
         // Attributes の登録
         CraftboundAttributes.register(modEventBus);
@@ -97,6 +104,8 @@ public class Craftbound
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
+        event.enqueueWork(CraftboundNetwork::register);
+
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
 
