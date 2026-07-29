@@ -117,20 +117,17 @@
     "explosion_damage_reduction_2": {
         "x": 180,
         "y": 20,
-        "definition": "explosion_damage_reduction_2",
-        "root": true
+        "definition": "explosion_damage_reduction_2"
     },
     "explosion_damage_reduction_3": {
         "x": 200,
         "y": 40,
-        "definition": "explosion_damage_reduction_3",
-        "root": true
+        "definition": "explosion_damage_reduction_3"
     },
     "explosion_damage_reduction_4": {
         "x": 220,
         "y": 60,
-        "definition": "explosion_damage_reduction_4",
-        "root": true
+        "definition": "explosion_damage_reduction_4"
     },
     "projectile_damage_reduction_1": {
         "x": 320,
@@ -141,20 +138,17 @@
     "projectile_damage_reduction_2": {
         "x": 340,
         "y": 20,
-        "definition": "projectile_damage_reduction_2",
-        "root": true
+        "definition": "projectile_damage_reduction_2"
     },
     "projectile_damage_reduction_3": {
         "x": 360,
         "y": 40,
-        "definition": "projectile_damage_reduction_3",
-        "root": true
+        "definition": "projectile_damage_reduction_3"
     },
     "projectile_damage_reduction_4": {
         "x": 380,
         "y": 60,
-        "definition": "projectile_damage_reduction_4",
-        "root": true
+        "definition": "projectile_damage_reduction_4"
     },
     "shield_footwork_1": {
         "x": 400,
