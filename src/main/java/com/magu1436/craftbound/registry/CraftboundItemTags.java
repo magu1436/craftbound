@@ -20,6 +20,12 @@ public final class CraftboundItemTags {
     public static final TagKey<Item> RANGED_FOOTWORK_EXCLUDED_ITEMS =
         create("adventurer/ranged_footwork_excluded_items");
 
+    public static final TagKey<Item> FIELD_RESUPPLY_ITEMS =
+        create("adventurer/field_resupply_items");
+
+    public static final TagKey<Item> FIELD_RESUPPLY_EXCLUDED_ITEMS =
+        create("adventurer/field_resupply_excluded_items");
+
     private CraftboundItemTags() {
     }
 

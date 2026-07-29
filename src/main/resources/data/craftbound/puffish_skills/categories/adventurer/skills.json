@@ -239,5 +239,26 @@
         "x": 700,
         "y": 60,
         "definition": "action_resistance_4"
+    },
+    "field_resupply_1": {
+        "x": 720,
+        "y": 0,
+        "definition": "field_resupply_1",
+        "root": true
+    },
+    "field_resupply_2": {
+        "x": 740,
+        "y": 20,
+        "definition": "field_resupply_2"
+    },
+    "field_resupply_3": {
+        "x": 760,
+        "y": 40,
+        "definition": "field_resupply_3"
+    },
+    "field_resupply_4": {
+        "x": 780,
+        "y": 60,
+        "definition": "field_resupply_4"
     }
 }

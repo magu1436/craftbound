@@ -815,5 +815,81 @@
                 }
             }
         ]
+    },
+    "field_resupply_1": {
+        "title": "戦地補給I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bread"
+            }
+        },
+        "description": "飲食物やポーション使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:field_resupply_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "41cd0487-13d6-452e-9906-58aae0ac7e45"
+                }
+            }
+        ]
+    },
+    "field_resupply_2": {
+        "title": "戦地補給II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bread"
+            }
+        },
+        "description": "飲食物やポーション使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:field_resupply_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "a58db2b3-1c3f-4ed1-bfc7-d9245ad72450"
+                }
+            }
+        ]
+    },
+    "field_resupply_3": {
+        "title": "戦地補給III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bread"
+            }
+        },
+        "description": "飲食物やポーション使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:field_resupply_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "dbc9d6ce-7f1a-44a2-a8a8-93a924927659"
+                }
+            }
+        ]
+    },
+    "field_resupply_4": {
+        "title": "戦地補給IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "item": "minecraft:bread"
+            }
+        },
+        "description": "飲食物やポーション使用中の移動ペナルティを10%軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:field_resupply_reward",
+                "data": {
+                    "amount": 1.0,
+                    "modifier_uuid": "0fe70401-9b4f-4fe3-bfe3-2a51f87cc6b9"
+                }
+            }
+        ]
     }
 }
