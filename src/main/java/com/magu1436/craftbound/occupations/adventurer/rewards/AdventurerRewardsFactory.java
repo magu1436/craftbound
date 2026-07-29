@@ -16,7 +16,8 @@ public class AdventurerRewardsFactory extends AttributeRewardFactory{
         new AttributeRewardArgs("knockback_resistance_reward", () -> Attributes.KNOCKBACK_RESISTANCE, Operation.ADDITION),
         new AttributeRewardArgs("explosion_damage_reduction_reward", CraftboundAttributes.EXPLOSION_DAMAGE_REDUCTION::get, Operation.ADDITION),
         new AttributeRewardArgs("projectile_damage_reduction_reward", CraftboundAttributes.PROJECTILE_DAMAGE_REDUCTION::get, Operation.ADDITION),
-        new AttributeRewardArgs("shield_footwork_reward", CraftboundAttributes.SHIELD_FOOTWORK::get, Operation.ADDITION)
+        new AttributeRewardArgs("shield_footwork_reward", CraftboundAttributes.SHIELD_FOOTWORK::get, Operation.ADDITION),
+        new AttributeRewardArgs("ranged_footwork_reward", CraftboundAttributes.RANGED_FOOTWORK::get, Operation.ADDITION)
     );
 
     public static void registerRewards(){

@@ -22,6 +22,7 @@ public final class CraftboundAttributes {
     private static final String ACTION_RESISTANCE_NAME = "action_resistance";
     private static final String SENSORY_RESISTANCE_NAME = "sensory_resistance";
     private static final String SHIELD_FOOTWORK_NAME = "shield_footwork";
+    private static final String RANGED_FOOTWORK_NAME = "ranged_footwork";
 
     private static final DeferredRegister<Attribute> ATTRIBUTES =
         DeferredRegister.create(
@@ -118,6 +119,20 @@ public final class CraftboundAttributes {
             ).setSyncable(true)
         );
 
+    /**
+     * 射撃歩法の取得段階
+     */
+    public static final RegistryObject<Attribute> RANGED_FOOTWORK =
+        ATTRIBUTES.register(
+            RANGED_FOOTWORK_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(RANGED_FOOTWORK_NAME),
+                0.0D,
+                0.0D,
+                4.0D
+            ).setSyncable(true)
+        );
+
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
         modEventBus.addListener(CraftboundAttributes::addAttributesToEntities);
@@ -156,6 +171,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 SHIELD_FOOTWORK.get()
+        );
+        event.add(
+                EntityType.PLAYER,
+                RANGED_FOOTWORK.get()
         );
     }
 
