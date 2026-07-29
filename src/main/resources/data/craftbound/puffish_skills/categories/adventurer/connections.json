@@ -8,7 +8,10 @@
             ["attack_speed_4", "attack_speed_5"],
             ["shield_footwork_1", "shield_footwork_2"],
             ["shield_footwork_2", "shield_footwork_3"],
-            ["shield_footwork_3", "shield_footwork_4"]
+            ["shield_footwork_3", "shield_footwork_4"],
+            ["physical_resistance_1", "physical_resistance_2"],
+            ["physical_resistance_2", "physical_resistance_3"],
+            ["physical_resistance_3", "physical_resistance_4"]
         ]
     }
 }

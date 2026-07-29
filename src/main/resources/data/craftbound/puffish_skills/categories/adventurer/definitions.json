@@ -587,5 +587,81 @@
                 }
             }
         ]
+    },
+    "physical_resistance_1": {
+        "title": "肉体耐性I",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:poison"
+            }
+        },
+        "description": "毒、衰弱、空腹などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:physical_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "8bee10df-ab05-4001-b426-b8d83644297f"
+                }
+            }
+        ]
+    },
+    "physical_resistance_2": {
+        "title": "肉体耐性II",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:poison"
+            }
+        },
+        "description": "毒、衰弱、空腹などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:physical_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "b1f4aef7-b137-4fd9-813e-8c65049e20b0"
+                }
+            }
+        ]
+    },
+    "physical_resistance_3": {
+        "title": "肉体耐性III",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:poison"
+            }
+        },
+        "description": "毒、衰弱、空腹などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:physical_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "25d07e51-7fec-473b-a1f1-3a84a528ffb9"
+                }
+            }
+        ]
+    },
+    "physical_resistance_4": {
+        "title": "肉体耐性IV",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:poison"
+            }
+        },
+        "description": "毒、衰弱、空腹などの持続時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:physical_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "3403fd05-d05a-41da-b576-17acfb3e71af"
+                }
+            }
+        ]
     }
 }

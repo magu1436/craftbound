@@ -176,5 +176,26 @@
         "x": 460,
         "y": 60,
         "definition": "shield_footwork_4"
+    },
+    "physical_resistance_1": {
+        "x": 480,
+        "y": 0,
+        "definition": "physical_resistance_1",
+        "root": true
+    },
+    "physical_resistance_2": {
+        "x": 500,
+        "y": 20,
+        "definition": "physical_resistance_2"
+    },
+    "physical_resistance_3": {
+        "x": 520,
+        "y": 40,
+        "definition": "physical_resistance_3"
+    },
+    "physical_resistance_4": {
+        "x": 540,
+        "y": 60,
+        "definition": "physical_resistance_4"
     }
 }
