@@ -275,5 +275,26 @@
         "x": 860,
         "y": 60,
         "definition": "sensory_resistance_4"
+    },
+    "burning_resistance_1": {
+        "x": 880,
+        "y": 0,
+        "definition": "burning_resistance_1",
+        "root": true
+    },
+    "burning_resistance_2": {
+        "x": 900,
+        "y": 20,
+        "definition": "burning_resistance_2"
+    },
+    "burning_resistance_3": {
+        "x": 920,
+        "y": 40,
+        "definition": "burning_resistance_3"
+    },
+    "burning_resistance_4": {
+        "x": 940,
+        "y": 60,
+        "definition": "burning_resistance_4"
     }
 }

@@ -967,5 +967,81 @@
                 }
             }
         ]
+    },
+    "burning_resistance_1": {
+        "title": "炎上時間短縮I",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:fire_resistance"
+            }
+        },
+        "description": "炎上時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:burning_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "2887ce2f-6209-4d29-abb7-17155036357a"
+                }
+            }
+        ]
+    },
+    "burning_resistance_2": {
+        "title": "炎上時間短縮II",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:fire_resistance"
+            }
+        },
+        "description": "炎上時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:burning_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "9d33854f-ee0c-482f-8e38-169d53be8cee"
+                }
+            }
+        ]
+    },
+    "burning_resistance_3": {
+        "title": "炎上時間短縮III",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:fire_resistance"
+            }
+        },
+        "description": "炎上時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:burning_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "6a0da940-88d5-4cbd-92fe-976409704a68"
+                }
+            }
+        ]
+    },
+    "burning_resistance_4": {
+        "title": "炎上時間短縮IV",
+        "icon": {
+            "type": "effect",
+            "data": {
+                "effect": "minecraft:fire_resistance"
+            }
+        },
+        "description": "炎上時間を10%短縮する",
+        "rewards": [
+            {
+                "type": "craftbound:burning_resistance_reward",
+                "data": {
+                    "amount": 0.1,
+                    "modifier_uuid": "756135cb-db47-4547-be73-f4ed8fafa83c"
+                }
+            }
+        ]
     }
 }
