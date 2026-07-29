@@ -27,14 +27,14 @@ import org.slf4j.Logger;
 public final class DeathlineClearEffectDefinitions
     extends SimpleJsonResourceReloadListener {
 
-    public static final DeathlineClearEffectDefinitions INSTANCE =
-        new DeathlineClearEffectDefinitions();
-
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().create();
     private static final String DIRECTORY =
         "craftbound/adventurer/deathline_clear_effects";
     private static final String EFFECT_KEY = "effect";
+
+    public static final DeathlineClearEffectDefinitions INSTANCE =
+        new DeathlineClearEffectDefinitions();
 
     private volatile Set<ResourceLocation> effectIds = Set.of();
 

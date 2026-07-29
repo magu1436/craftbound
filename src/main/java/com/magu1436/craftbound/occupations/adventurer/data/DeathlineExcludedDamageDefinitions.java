@@ -30,15 +30,15 @@ import org.slf4j.Logger;
 public final class DeathlineExcludedDamageDefinitions
     extends SimpleJsonResourceReloadListener {
 
-    public static final DeathlineExcludedDamageDefinitions INSTANCE =
-        new DeathlineExcludedDamageDefinitions();
-
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().create();
     private static final String DIRECTORY =
         "craftbound/adventurer/deathline_excluded_damage";
     private static final String DAMAGE_TYPE_KEY = "damage_type";
     private static final String DAMAGE_TAG_KEY = "damage_tag";
+
+    public static final DeathlineExcludedDamageDefinitions INSTANCE =
+        new DeathlineExcludedDamageDefinitions();
 
     private volatile DefinitionSnapshot snapshot =
         DefinitionSnapshot.EMPTY;
