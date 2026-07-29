@@ -13,6 +13,7 @@ public final class AdventurerMovementPenaltyRules {
 
     private static final double SHIELD_FOOTWORK_REDUCTION_RATE = 0.1D;
     private static final double RANGED_FOOTWORK_REDUCTION_RATE = 0.1D;
+    private static final double FIELD_RESUPPLY_REDUCTION_RATE = 0.1D;
 
     private AdventurerMovementPenaltyRules() {
     }
@@ -39,6 +40,17 @@ public final class AdventurerMovementPenaltyRules {
                         || useAnimation == UseAnim.SPEAR;
                 },
                 RANGED_FOOTWORK_REDUCTION_RATE
+            ),
+            new MovementPenaltyReductionRule(
+                CraftboundAttributes.FIELD_RESUPPLY::get,
+                CraftboundItemTags.FIELD_RESUPPLY_ITEMS,
+                CraftboundItemTags.FIELD_RESUPPLY_EXCLUDED_ITEMS,
+                itemStack -> {
+                    UseAnim useAnimation = itemStack.getUseAnimation();
+                    return useAnimation == UseAnim.EAT
+                        || useAnimation == UseAnim.DRINK;
+                },
+                FIELD_RESUPPLY_REDUCTION_RATE
             )
         );
     }
