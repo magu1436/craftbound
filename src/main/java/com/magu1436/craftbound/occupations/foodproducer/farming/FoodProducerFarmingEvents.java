@@ -117,6 +117,9 @@ public final class FoodProducerFarmingEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         BlockState state = event.getLevel().getBlockState(event.getPos());
+        if (rejectInfertilePlanting(event, state)) {
+            return;
+        }
         if (state.is(Blocks.COMPOSTER) && state.getValue(ComposterBlock.LEVEL) == ComposterBlock.READY) {
             extractCompost(event, state);
             return;
@@ -130,6 +133,44 @@ public final class FoodProducerFarmingEvents {
                 && state.getValue(CaveVines.BERRIES)) {
             harvestGlowBerries(event, state);
         }
+    }
+
+    /** 種を消費する前に肥沃度不足を拒否し、設置後キャンセルによる種の消失を防ぐ. */
+    private static boolean rejectInfertilePlanting(
+            PlayerInteractEvent.RightClickBlock event,
+            BlockState clickedState
+    ) {
+        if (!(event.getLevel() instanceof ServerLevel level)
+                || !clickedState.is(Blocks.FARMLAND)
+                || !isFarmlandPlantingItem(event.getItemStack())) {
+            return false;
+        }
+
+        int cost = FarmlandFertility.BASE_PLANTING_COST;
+        if (event.getEntity() instanceof ServerPlayer player
+                && FoodProducerSkills.fertilityManagementRank(player) >= 2) {
+            cost = FarmlandFertility.FERTILITY_MANAGEMENT_II_PLANTING_COST;
+        }
+        if (FarmlandFertility.get(level, event.getPos()) >= cost) {
+            return false;
+        }
+
+        event.setCancellationResult(InteractionResult.FAIL);
+        event.setCanceled(true);
+        if (event.getEntity() instanceof ServerPlayer player && !(player instanceof FakePlayer)) {
+            // クライアントが先に減らした手持ち数を、未消費のサーバー値へ即時復元する.
+            player.containerMenu.sendAllDataToRemote();
+        }
+        return true;
+    }
+
+    private static boolean isFarmlandPlantingItem(ItemStack stack) {
+        return stack.is(Items.WHEAT_SEEDS)
+                || stack.is(Items.CARROT)
+                || stack.is(Items.POTATO)
+                || stack.is(Items.BEETROOT_SEEDS)
+                || stack.is(Items.PUMPKIN_SEEDS)
+                || stack.is(Items.MELON_SEEDS);
     }
 
     private static void extractCompost(PlayerInteractEvent.RightClickBlock event, BlockState state) {
