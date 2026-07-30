@@ -1,0 +1,10 @@
+{
+	"title": "探検家",
+	"icon": {
+		"type": "item",
+		"data": {
+			"item": "banner"
+		}
+	},
+	"background": "textures/gui/advancements/backgrounds/stone.png"
+}
