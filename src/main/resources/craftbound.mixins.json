@@ -5,7 +5,10 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "craftbound.refmap.json",
   "mixins": [
-    "PlayerMovementExhaustionMixin"
+    "EntityBlockSpeedFactorMixin",
+    "PlayerMovementExhaustionMixin",
+    "PowderSnowBlockMixin",
+    "SweetBerryBushBlockMixin"
   ],
   "client": [],
   "injectors": {
