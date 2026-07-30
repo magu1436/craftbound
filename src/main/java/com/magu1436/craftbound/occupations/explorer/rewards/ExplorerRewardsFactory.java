@@ -7,9 +7,12 @@ import com.magu1436.craftbound.common.AttributeReward.Operation;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 
+import net.minecraftforge.common.ForgeMod;
+
 public class ExplorerRewardsFactory extends AdventurerRewardsFactory {
     private static final List<AttributeRewardArgs> rewards = List.of(
         new AttributeRewardArgs("expedition_endurance_reward", CraftboundAttributes.EXPEDITION_ENDURANCE::get, Operation.ADDITION),
+        new AttributeRewardArgs("water_mobility_reward", ForgeMod.SWIM_SPEED::get, Operation.MULTIPLY_TOTAL),
         new AttributeRewardArgs("diving_reward", CraftboundAttributes.DIVING::get, Operation.ADDITION),
         new AttributeRewardArgs("climbing_reward", CraftboundAttributes.CLIMBING::get, Operation.ADDITION),
         new AttributeRewardArgs("tool_care_reward", CraftboundAttributes.TOOL_CARE::get, Operation.ADDITION),
