@@ -1,0 +1,97 @@
+{
+    "expedition_endurance_1": {
+        "title": "遠征歩行I",
+        "icon": {
+            "type": "item",
+            "data": {
+                "effect": "minecraft:minecraft:leather_boots"
+            }
+        },
+        "description": "歩行時の体力の消耗を軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:expedition_endurance_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "60ad1921-c97e-d634-86ac-cf01264b2f14"
+                }
+            }
+        ]
+    },
+    "expedition_endurance_2": {
+        "title": "遠征歩行II",
+        "icon": {
+            "type": "item",
+            "data": {
+                "effect": "minecraft:minecraft:leather_boots"
+            }
+        },
+        "description": "歩行時の体力の消耗を軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:expedition_endurance_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "d455f710-3fbe-fcd9-23c2-24f592613857"
+                }
+            }
+        ]
+    },
+    "expedition_endurance_3": {
+        "title": "遠征歩行III",
+        "icon": {
+            "type": "item",
+            "data": {
+                "effect": "minecraft:minecraft:leather_boots"
+            }
+        },
+        "description": "歩行時の体力の消耗を軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:expedition_endurance_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "bfc185e2-694a-48e2-f042-a2abdd2a09e1"
+                }
+            }
+        ]
+    },
+    "expedition_endurance_4": {
+        "title": "遠征歩行IV",
+        "icon": {
+            "type": "item",
+            "data": {
+                "effect": "minecraft:minecraft:leather_boots"
+            }
+        },
+        "description": "歩行時の体力の消耗を軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:expedition_endurance_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "d649abca-7b23-4ed4-1294-f9226470ef07"
+                }
+            }
+        ]
+    },
+    "expedition_endurance_5": {
+        "title": "遠征歩行V",
+        "icon": {
+            "type": "item",
+            "data": {
+                "effect": "minecraft:minecraft:leather_boots"
+            }
+        },
+        "description": "歩行時の体力の消耗を軽減する",
+        "rewards": [
+            {
+                "type": "craftbound:expedition_endurance_reward",
+                "data": {
+                    "amount": 0.05,
+                    "modifier_uuid": "55d169af-97da-bbcf-ddd8-9aff6cded88d"
+                }
+            }
+        ]
+    }
+}
