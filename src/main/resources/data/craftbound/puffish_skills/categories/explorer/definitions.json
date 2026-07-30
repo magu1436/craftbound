@@ -1,97 +1,51 @@
 {
-    "expedition_endurance_1": {
-        "title": "遠征歩行I",
-        "icon": {
-            "type": "item",
-            "data": {
-                "item": "minecraft:leather_boots"
-            }
-        },
-        "description": "歩行時の体力の消耗を軽減する",
-        "rewards": [
-            {
-                "type": "craftbound:expedition_endurance_reward",
-                "data": {
-                    "amount": 0.05,
-                    "modifier_uuid": "60ad1921-c97e-d634-86ac-cf01264b2f14"
-                }
-            }
-        ]
-    },
-    "expedition_endurance_2": {
-        "title": "遠征歩行II",
-        "icon": {
-            "type": "item",
-            "data": {
-                "item": "minecraft:leather_boots"
-            }
-        },
-        "description": "歩行時の体力の消耗を軽減する",
-        "rewards": [
-            {
-                "type": "craftbound:expedition_endurance_reward",
-                "data": {
-                    "amount": 0.05,
-                    "modifier_uuid": "d455f710-3fbe-fcd9-23c2-24f592613857"
-                }
-            }
-        ]
-    },
-    "expedition_endurance_3": {
-        "title": "遠征歩行III",
-        "icon": {
-            "type": "item",
-            "data": {
-                "item": "minecraft:leather_boots"
-            }
-        },
-        "description": "歩行時の体力の消耗を軽減する",
-        "rewards": [
-            {
-                "type": "craftbound:expedition_endurance_reward",
-                "data": {
-                    "amount": 0.05,
-                    "modifier_uuid": "bfc185e2-694a-48e2-f042-a2abdd2a09e1"
-                }
-            }
-        ]
-    },
-    "expedition_endurance_4": {
-        "title": "遠征歩行IV",
-        "icon": {
-            "type": "item",
-            "data": {
-                "item": "minecraft:leather_boots"
-            }
-        },
-        "description": "歩行時の体力の消耗を軽減する",
-        "rewards": [
-            {
-                "type": "craftbound:expedition_endurance_reward",
-                "data": {
-                    "amount": 0.05,
-                    "modifier_uuid": "d649abca-7b23-4ed4-1294-f9226470ef07"
-                }
-            }
-        ]
-    },
-    "expedition_endurance_5": {
-        "title": "遠征歩行V",
-        "icon": {
-            "type": "item",
-            "data": {
-                "item": "minecraft:leather_boots"
-            }
-        },
-        "description": "歩行時の体力の消耗を軽減する",
-        "rewards": [
-            {
-                "type": "craftbound:expedition_endurance_reward",
-                "data": {
-                    "amount": 0.05,
-                    "modifier_uuid": "55d169af-97da-bbcf-ddd8-9aff6cded88d"
-                }
-            }
-        ]
-    }
+  "expedition_endurance_1": {"title":"遠征歩行 I","icon":{"type":"item","data":{"item":"minecraft:leather_boots"}},"description":"移動による消耗を5%軽減する","rewards":[{"type":"craftbound:expedition_endurance_reward","data":{"amount":0.05,"modifier_uuid":"3dbc4b39-215b-40c2-ace7-5ec9de1656c8"}}]},
+  "expedition_endurance_2": {"title":"遠征歩行 II","icon":{"type":"item","data":{"item":"minecraft:leather_boots"}},"description":"移動による消耗をさらに5%軽減する","rewards":[{"type":"craftbound:expedition_endurance_reward","data":{"amount":0.05,"modifier_uuid":"936a7694-b76a-47c5-b4ba-81f4336ecff6"}}]},
+  "expedition_endurance_3": {"title":"遠征歩行 III","icon":{"type":"item","data":{"item":"minecraft:leather_boots"}},"description":"移動による消耗をさらに5%軽減する","rewards":[{"type":"craftbound:expedition_endurance_reward","data":{"amount":0.05,"modifier_uuid":"111570f3-6ddc-4317-a552-8ceea77a5907"}}]},
+  "expedition_endurance_4": {"title":"遠征歩行 IV","icon":{"type":"item","data":{"item":"minecraft:leather_boots"}},"description":"移動による消耗をさらに5%軽減する","rewards":[{"type":"craftbound:expedition_endurance_reward","data":{"amount":0.05,"modifier_uuid":"dc188437-3ebe-4281-ac9d-3956fae9d2bc"}}]},
+  "expedition_endurance_5": {"title":"遠征歩行 V","icon":{"type":"item","data":{"item":"minecraft:leather_boots"}},"description":"移動による消耗をさらに5%軽減する","rewards":[{"type":"craftbound:expedition_endurance_reward","data":{"amount":0.05,"modifier_uuid":"3068882d-9493-44bd-aa07-d59c14601e13"}}]},
+
+  "tool_care_1": {"title":"道具の手入れ I","icon":{"type":"item","data":{"item":"minecraft:iron_pickaxe"}},"description":"ブロック破壊時、道具の耐久消費を5%の確率で防ぐ","rewards":[{"type":"craftbound:tool_care_reward","data":{"amount":0.05,"modifier_uuid":"6f75e9fd-93dc-4075-bb76-e8c231777024"}}]},
+  "tool_care_2": {"title":"道具の手入れ II","icon":{"type":"item","data":{"item":"minecraft:iron_pickaxe"}},"description":"ブロック破壊時、道具の耐久消費をさらに5%の確率で防ぐ","rewards":[{"type":"craftbound:tool_care_reward","data":{"amount":0.05,"modifier_uuid":"dd51a04f-d549-4437-ae26-e95354422906"}}]},
+  "tool_care_3": {"title":"道具の手入れ III","icon":{"type":"item","data":{"item":"minecraft:iron_pickaxe"}},"description":"ブロック破壊時、道具の耐久消費をさらに5%の確率で防ぐ","rewards":[{"type":"craftbound:tool_care_reward","data":{"amount":0.05,"modifier_uuid":"809010c1-5969-4729-a28f-f0356f7333f7"}}]},
+  "tool_care_4": {"title":"道具の手入れ IV","icon":{"type":"item","data":{"item":"minecraft:iron_pickaxe"}},"description":"ブロック破壊時、道具の耐久消費をさらに5%の確率で防ぐ","rewards":[{"type":"craftbound:tool_care_reward","data":{"amount":0.05,"modifier_uuid":"284e93b6-133e-4500-a3a2-0d5f06571fed"}}]},
+  "tool_care_5": {"title":"道具の手入れ V","icon":{"type":"item","data":{"item":"minecraft:iron_pickaxe"}},"description":"ブロック破壊時、道具の耐久消費をさらに5%の確率で防ぐ","rewards":[{"type":"craftbound:tool_care_reward","data":{"amount":0.05,"modifier_uuid":"49bfeae8-fb55-44a5-abdd-223f808ac0a4"}}]},
+
+  "sure_footed_1": {"title":"確かな足取り I","icon":{"type":"item","data":{"item":"minecraft:oak_slab"}},"description":"ジャンプせずに乗り越えられる段差を0.125ブロック増やす","rewards":[{"type":"craftbound:sure_footed_reward","data":{"amount":0.125,"modifier_uuid":"ebcefe34-25d7-4b49-807a-08c8864d0d31"}}]},
+  "sure_footed_2": {"title":"確かな足取り II","icon":{"type":"item","data":{"item":"minecraft:oak_slab"}},"description":"ジャンプせずに乗り越えられる段差をさらに0.125ブロック増やす","rewards":[{"type":"craftbound:sure_footed_reward","data":{"amount":0.125,"modifier_uuid":"28c19118-6a48-4f77-91bb-3dbf7f5ab89f"}}]},
+  "sure_footed_3": {"title":"確かな足取り III","icon":{"type":"item","data":{"item":"minecraft:oak_slab"}},"description":"ジャンプせずに乗り越えられる段差をさらに0.15ブロック増やす","rewards":[{"type":"craftbound:sure_footed_reward","data":{"amount":0.15,"modifier_uuid":"6ea2a994-13c4-4fac-9677-cd20309e3ac0"}}]},
+
+  "bushwhacking_1": {"title":"藪漕ぎ I","icon":{"type":"item","data":{"item":"minecraft:sweet_berries"}},"description":"スイートベリーの茂みによる減速量を25%軽減する","rewards":[{"type":"craftbound:bushwhacking_reward","data":{"amount":0.25,"modifier_uuid":"9b215dba-3417-437e-a83e-fee7e6c3ec79"}}]},
+  "bushwhacking_2": {"title":"藪漕ぎ II","icon":{"type":"item","data":{"item":"minecraft:sweet_berries"}},"description":"スイートベリーの茂みによる減速量をさらに25%軽減する","rewards":[{"type":"craftbound:bushwhacking_reward","data":{"amount":0.25,"modifier_uuid":"f346fa79-8c70-4600-bafc-58cc03f4ada3"}}]},
+  "bushwhacking_3": {"title":"藪漕ぎ III","icon":{"type":"item","data":{"item":"minecraft:sweet_berries"}},"description":"スイートベリーの茂みによる減速量をさらに25%軽減する","rewards":[{"type":"craftbound:bushwhacking_reward","data":{"amount":0.25,"modifier_uuid":"5e340599-29f0-4637-8cab-afbc771b8f1a"}}]},
+
+  "climbing_1": {"title":"登攀術 I","icon":{"type":"item","data":{"item":"minecraft:ladder"}},"description":"はしごやツタの昇降速度を6%上げる","rewards":[{"type":"craftbound:climbing_reward","data":{"amount":0.06,"modifier_uuid":"7a29fcb8-99ca-410b-a97b-f2804e4671d5"}}]},
+  "climbing_2": {"title":"登攀術 II","icon":{"type":"item","data":{"item":"minecraft:ladder"}},"description":"はしごやツタの昇降速度をさらに6%上げる","rewards":[{"type":"craftbound:climbing_reward","data":{"amount":0.06,"modifier_uuid":"cd5b3f5b-e01f-4158-aa71-7fe2f7bf5060"}}]},
+  "climbing_3": {"title":"登攀術 III","icon":{"type":"item","data":{"item":"minecraft:ladder"}},"description":"はしごやツタの昇降速度をさらに6%上げる","rewards":[{"type":"craftbound:climbing_reward","data":{"amount":0.06,"modifier_uuid":"2829be18-f333-474e-8351-f8b04fd74ac0"}}]},
+  "climbing_4": {"title":"登攀術 IV","icon":{"type":"item","data":{"item":"minecraft:ladder"}},"description":"はしごやツタの昇降速度をさらに6%上げる","rewards":[{"type":"craftbound:climbing_reward","data":{"amount":0.06,"modifier_uuid":"ba650ad2-207f-4d13-bc47-0b23635a3d97"}}]},
+  "climbing_5": {"title":"登攀術 V","icon":{"type":"item","data":{"item":"minecraft:ladder"}},"description":"はしごやツタの昇降速度をさらに6%上げる","rewards":[{"type":"craftbound:climbing_reward","data":{"amount":0.06,"modifier_uuid":"183f6b43-51bf-4bea-adea-65becd64632a"}}]},
+
+  "water_mobility_1": {"title":"水中行動 I","icon":{"type":"item","data":{"item":"minecraft:water_bucket"}},"description":"水中での自力移動速度を4%上げる","rewards":[{"type":"craftbound:water_mobility_reward","data":{"amount":0.04,"modifier_uuid":"ee0e3778-cb54-4f15-a9d1-20111bb16692"}}]},
+  "water_mobility_2": {"title":"水中行動 II","icon":{"type":"item","data":{"item":"minecraft:water_bucket"}},"description":"水中での自力移動速度をさらに4%上げる","rewards":[{"type":"craftbound:water_mobility_reward","data":{"amount":0.04,"modifier_uuid":"32365d94-a822-402f-a8a5-c4d41db7b417"}}]},
+  "water_mobility_3": {"title":"水中行動 III","icon":{"type":"item","data":{"item":"minecraft:water_bucket"}},"description":"水中での自力移動速度をさらに4%上げる","rewards":[{"type":"craftbound:water_mobility_reward","data":{"amount":0.04,"modifier_uuid":"d5b6ec33-379a-4526-b770-a574924539c5"}}]},
+  "water_mobility_4": {"title":"水中行動 IV","icon":{"type":"item","data":{"item":"minecraft:water_bucket"}},"description":"水中での自力移動速度をさらに4%上げる","rewards":[{"type":"craftbound:water_mobility_reward","data":{"amount":0.04,"modifier_uuid":"889fbda8-645a-44b8-a8d5-033f6a060365"}}]},
+  "water_mobility_5": {"title":"水中行動 V","icon":{"type":"item","data":{"item":"minecraft:water_bucket"}},"description":"水中での自力移動速度をさらに4%上げる","rewards":[{"type":"craftbound:water_mobility_reward","data":{"amount":0.04,"modifier_uuid":"97cdbd35-1b39-43b5-81f9-1e44bb5c0b6b"}}]},
+
+  "diving_1": {"title":"潜水術 I","icon":{"type":"item","data":{"item":"minecraft:turtle_helmet"}},"description":"水中での空気消費を8%の確率で防ぐ","rewards":[{"type":"craftbound:diving_reward","data":{"amount":0.08,"modifier_uuid":"9a3a9f03-13d6-451f-8e44-cc8d77e29718"}}]},
+  "diving_2": {"title":"潜水術 II","icon":{"type":"item","data":{"item":"minecraft:turtle_helmet"}},"description":"水中での空気消費をさらに8%の確率で防ぐ","rewards":[{"type":"craftbound:diving_reward","data":{"amount":0.08,"modifier_uuid":"ca231809-1732-48e7-a16d-7626f9338c1d"}}]},
+  "diving_3": {"title":"潜水術 III","icon":{"type":"item","data":{"item":"minecraft:turtle_helmet"}},"description":"水中での空気消費をさらに8%の確率で防ぐ","rewards":[{"type":"craftbound:diving_reward","data":{"amount":0.08,"modifier_uuid":"a6a66fc0-d42e-4822-8f02-b304f5a3a1db"}}]},
+  "diving_4": {"title":"潜水術 IV","icon":{"type":"item","data":{"item":"minecraft:turtle_helmet"}},"description":"水中での空気消費をさらに8%の確率で防ぐ","rewards":[{"type":"craftbound:diving_reward","data":{"amount":0.08,"modifier_uuid":"37ede806-7d2b-4fdb-84ca-4da684e1b704"}}]},
+  "diving_5": {"title":"潜水術 V","icon":{"type":"item","data":{"item":"minecraft:turtle_helmet"}},"description":"水中での空気消費をさらに8%の確率で防ぐ","rewards":[{"type":"craftbound:diving_reward","data":{"amount":0.08,"modifier_uuid":"d545aed1-ceaf-48e7-b7a8-3fd3abf1fd9d"}}]},
+
+  "soul_sand_traversal_1": {"title":"魂砂踏破 I","icon":{"type":"item","data":{"item":"minecraft:soul_sand"}},"description":"ソウルサンドによる減速量を25%軽減する","rewards":[{"type":"craftbound:soul_sand_traversal_reward","data":{"amount":0.25,"modifier_uuid":"eba3f2db-ef08-4d5d-9449-917fba3635fa"}}]},
+  "soul_sand_traversal_2": {"title":"魂砂踏破 II","icon":{"type":"item","data":{"item":"minecraft:soul_sand"}},"description":"ソウルサンドによる減速量をさらに25%軽減する","rewards":[{"type":"craftbound:soul_sand_traversal_reward","data":{"amount":0.25,"modifier_uuid":"7173d334-74f0-462a-acf5-a642d3019047"}}]},
+  "soul_sand_traversal_3": {"title":"魂砂踏破 III","icon":{"type":"item","data":{"item":"minecraft:soul_sand"}},"description":"ソウルサンドによる減速量をさらに25%軽減する","rewards":[{"type":"craftbound:soul_sand_traversal_reward","data":{"amount":0.25,"modifier_uuid":"75f8ff4b-96f0-495d-95f5-4a3e1db8d60f"}}]},
+
+  "powder_snow_traversal_1": {"title":"粉雪踏破 I","icon":{"type":"item","data":{"item":"minecraft:powder_snow_bucket"}},"description":"粉雪内の水平移動による減速量を25%軽減する","rewards":[{"type":"craftbound:powder_snow_traversal_reward","data":{"amount":0.25,"modifier_uuid":"b09f33ad-0b32-486a-ab28-02e9a89f02be"}}]},
+  "powder_snow_traversal_2": {"title":"粉雪踏破 II","icon":{"type":"item","data":{"item":"minecraft:powder_snow_bucket"}},"description":"粉雪内の水平移動による減速量をさらに25%軽減する","rewards":[{"type":"craftbound:powder_snow_traversal_reward","data":{"amount":0.25,"modifier_uuid":"541a0610-4619-440f-b490-b6b6491118ab"}}]},
+  "powder_snow_traversal_3": {"title":"粉雪踏破 III","icon":{"type":"item","data":{"item":"minecraft:powder_snow_bucket"}},"description":"粉雪内の水平移動による減速量をさらに25%軽減する","rewards":[{"type":"craftbound:powder_snow_traversal_reward","data":{"amount":0.25,"modifier_uuid":"fe554c92-c43b-464b-8a62-540fa5331b53"}}]},
+
+  "cold_adaptation_1": {"title":"寒冷地対応 I","icon":{"type":"item","data":{"item":"minecraft:powder_snow_bucket"}},"description":"凍結ゲージの蓄積を25%の確率で防ぐ","rewards":[{"type":"craftbound:cold_adaptation_reward","data":{"amount":0.25,"modifier_uuid":"346e67e1-d213-4522-8c1a-61a7936e874d"}}]},
+  "cold_adaptation_2": {"title":"寒冷地対応 II","icon":{"type":"item","data":{"item":"minecraft:powder_snow_bucket"}},"description":"凍結ゲージの蓄積をさらに25%の確率で防ぐ","rewards":[{"type":"craftbound:cold_adaptation_reward","data":{"amount":0.25,"modifier_uuid":"fddf3506-7569-409d-b7e7-afd11c39c4ff"}}]},
+  "cold_adaptation_3": {"title":"寒冷地対応 III","icon":{"type":"item","data":{"item":"minecraft:powder_snow_bucket"}},"description":"凍結ゲージの蓄積をさらに25%の確率で防ぐ","rewards":[{"type":"craftbound:cold_adaptation_reward","data":{"amount":0.25,"modifier_uuid":"1324750d-7c8b-40a5-a937-ada6afd2c2b1"}}]}
 }

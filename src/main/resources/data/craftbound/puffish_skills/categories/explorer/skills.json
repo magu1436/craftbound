@@ -1,32 +1,42 @@
 {
-	"expedition_endurance_1": {
-		"definition": "expedition_endurance_1",
-		"x": 0,
-		"y": 0,
-		"root": true
-	},
-	"expedition_endurance_2": {
-		"definition": "expedition_endurance_2",
-		"x": 96,
-		"y": 0,
-		"root": false
-	},
-	"expedition_endurance_3": {
-		"definition": "expedition_endurance_3",
-		"x": 192,
-		"y": 0,
-		"root": false
-	},
-	"expedition_endurance_4": {
-		"definition": "expedition_endurance_4",
-		"x": 288,
-		"y": 0,
-		"root": false
-	},
-	"expedition_endurance_5": {
-		"definition": "expedition_endurance_5",
-		"x": 384,
-		"y": 0,
-		"root": false
-	}
+  "expedition_endurance_1":{"definition":"expedition_endurance_1","x":0,"y":0,"root":true},
+  "expedition_endurance_2":{"definition":"expedition_endurance_2","x":96,"y":0,"root":false},
+  "expedition_endurance_3":{"definition":"expedition_endurance_3","x":192,"y":0,"root":false},
+  "expedition_endurance_4":{"definition":"expedition_endurance_4","x":288,"y":0,"root":false},
+  "expedition_endurance_5":{"definition":"expedition_endurance_5","x":384,"y":0,"root":false},
+  "tool_care_1":{"definition":"tool_care_1","x":96,"y":-128,"root":false},
+  "tool_care_2":{"definition":"tool_care_2","x":192,"y":-128,"root":false},
+  "tool_care_3":{"definition":"tool_care_3","x":288,"y":-128,"root":false},
+  "tool_care_4":{"definition":"tool_care_4","x":384,"y":-128,"root":false},
+  "tool_care_5":{"definition":"tool_care_5","x":480,"y":-128,"root":false},
+  "sure_footed_1":{"definition":"sure_footed_1","x":96,"y":96,"root":false},
+  "sure_footed_2":{"definition":"sure_footed_2","x":192,"y":96,"root":false},
+  "sure_footed_3":{"definition":"sure_footed_3","x":288,"y":96,"root":false},
+  "bushwhacking_1":{"definition":"bushwhacking_1","x":192,"y":160,"root":false},
+  "bushwhacking_2":{"definition":"bushwhacking_2","x":288,"y":160,"root":false},
+  "bushwhacking_3":{"definition":"bushwhacking_3","x":384,"y":160,"root":false},
+  "climbing_1":{"definition":"climbing_1","x":288,"y":64,"root":false},
+  "climbing_2":{"definition":"climbing_2","x":384,"y":64,"root":false},
+  "climbing_3":{"definition":"climbing_3","x":480,"y":64,"root":false},
+  "climbing_4":{"definition":"climbing_4","x":576,"y":64,"root":false},
+  "climbing_5":{"definition":"climbing_5","x":672,"y":64,"root":false},
+  "water_mobility_1":{"definition":"water_mobility_1","x":96,"y":-64,"root":false},
+  "water_mobility_2":{"definition":"water_mobility_2","x":192,"y":-64,"root":false},
+  "water_mobility_3":{"definition":"water_mobility_3","x":288,"y":-64,"root":false},
+  "water_mobility_4":{"definition":"water_mobility_4","x":384,"y":-64,"root":false},
+  "water_mobility_5":{"definition":"water_mobility_5","x":480,"y":-64,"root":false},
+  "diving_1":{"definition":"diving_1","x":288,"y":-32,"root":false},
+  "diving_2":{"definition":"diving_2","x":384,"y":-32,"root":false},
+  "diving_3":{"definition":"diving_3","x":480,"y":-32,"root":false},
+  "diving_4":{"definition":"diving_4","x":576,"y":-32,"root":false},
+  "diving_5":{"definition":"diving_5","x":672,"y":-32,"root":false},
+  "soul_sand_traversal_1":{"definition":"soul_sand_traversal_1","x":192,"y":224,"root":false},
+  "soul_sand_traversal_2":{"definition":"soul_sand_traversal_2","x":288,"y":224,"root":false},
+  "soul_sand_traversal_3":{"definition":"soul_sand_traversal_3","x":384,"y":224,"root":false},
+  "powder_snow_traversal_1":{"definition":"powder_snow_traversal_1","x":192,"y":288,"root":false},
+  "powder_snow_traversal_2":{"definition":"powder_snow_traversal_2","x":288,"y":288,"root":false},
+  "powder_snow_traversal_3":{"definition":"powder_snow_traversal_3","x":384,"y":288,"root":false},
+  "cold_adaptation_1":{"definition":"cold_adaptation_1","x":384,"y":320,"root":false},
+  "cold_adaptation_2":{"definition":"cold_adaptation_2","x":480,"y":320,"root":false},
+  "cold_adaptation_3":{"definition":"cold_adaptation_3","x":576,"y":320,"root":false}
 }
