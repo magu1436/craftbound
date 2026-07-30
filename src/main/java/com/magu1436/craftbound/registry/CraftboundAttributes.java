@@ -15,6 +15,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 public final class CraftboundAttributes {
 
+    // 冒険者
+
     private static final String EXPLOSION_DAMAGE_REDUCTION_NAME = "explosion_damage_reduction";
     private static final String PROJECTILE_DAMAGE_REDUCTION_NAME = "projectile_damage_reduction";
     private static final String ATTACK_SPEED_BONUS_NAME = "attack_speed_bonus";
@@ -160,6 +162,26 @@ public final class CraftboundAttributes {
             ).setSyncable(true)
         );
 
+
+        // 探検家
+
+        public static final String EXPEDITION_ENDURANCE_NAME = "expedition_endurance";
+
+        /**
+         * 遠征歩行の取得段階
+         */
+        public static final RegistryObject<Attribute> EXPEDITION_ENDURANCE =
+            ATTRIBUTES.register(
+                EXPEDITION_ENDURANCE_NAME,
+                () -> new RangedAttribute(
+                    createTranslateName(EXPEDITION_ENDURANCE_NAME),
+                    0.0D,
+                    0.0D,
+                    1.0D
+                ).setSyncable(true)
+            );
+
+
     public static void register(IEventBus modEventBus) {
         ATTRIBUTES.register(modEventBus);
         modEventBus.addListener(CraftboundAttributes::addAttributesToEntities);
@@ -210,6 +232,10 @@ public final class CraftboundAttributes {
         event.add(
                 EntityType.PLAYER,
                 FIELD_RESUPPLY.get()
+        );
+        event.add(
+            EntityType.PLAYER, 
+            EXPEDITION_ENDURANCE.get()
         );
     }
 
