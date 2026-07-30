@@ -166,6 +166,14 @@ public final class CraftboundAttributes {
         // 探検家
 
         public static final String EXPEDITION_ENDURANCE_NAME = "expedition_endurance";
+        public static final String DIVING_NAME = "diving";
+        public static final String CLIMBING_NAME = "climbing";
+        public static final String TOOL_CARE_NAME = "tool_care";
+        public static final String SOUL_SAND_TRAVERSAL_NAME = "soul_sand_traversal";
+        public static final String BUSHWHACKING_NAME = "bushwhacking";
+        public static final String POWDER_SNOW_TRAVERSAL_NAME = "powder_snow_traversal";
+        public static final String SURE_FOOTED_NAME = "sure_footed";
+        public static final String COLD_ADAPTATION_NAME = "cold_adaptation";
 
         /**
          * 遠征歩行の取得段階
@@ -180,6 +188,30 @@ public final class CraftboundAttributes {
                     1.0D
                 ).setSyncable(true)
             );
+
+        public static final RegistryObject<Attribute> DIVING =
+            registerExplorerAttribute(DIVING_NAME, 1.0D);
+
+        public static final RegistryObject<Attribute> CLIMBING =
+            registerExplorerAttribute(CLIMBING_NAME, 10.0D);
+
+        public static final RegistryObject<Attribute> TOOL_CARE =
+            registerExplorerAttribute(TOOL_CARE_NAME, 1.0D);
+
+        public static final RegistryObject<Attribute> SOUL_SAND_TRAVERSAL =
+            registerExplorerAttribute(SOUL_SAND_TRAVERSAL_NAME, 1.0D);
+
+        public static final RegistryObject<Attribute> BUSHWHACKING =
+            registerExplorerAttribute(BUSHWHACKING_NAME, 1.0D);
+
+        public static final RegistryObject<Attribute> POWDER_SNOW_TRAVERSAL =
+            registerExplorerAttribute(POWDER_SNOW_TRAVERSAL_NAME, 1.0D);
+
+        public static final RegistryObject<Attribute> SURE_FOOTED =
+            registerExplorerAttribute(SURE_FOOTED_NAME, 5.0D);
+
+        public static final RegistryObject<Attribute> COLD_ADAPTATION =
+            registerExplorerAttribute(COLD_ADAPTATION_NAME, 1.0D);
 
 
     public static void register(IEventBus modEventBus) {
@@ -236,6 +268,29 @@ public final class CraftboundAttributes {
         event.add(
             EntityType.PLAYER, 
             EXPEDITION_ENDURANCE.get()
+        );
+        event.add(EntityType.PLAYER, DIVING.get());
+        event.add(EntityType.PLAYER, CLIMBING.get());
+        event.add(EntityType.PLAYER, TOOL_CARE.get());
+        event.add(EntityType.PLAYER, SOUL_SAND_TRAVERSAL.get());
+        event.add(EntityType.PLAYER, BUSHWHACKING.get());
+        event.add(EntityType.PLAYER, POWDER_SNOW_TRAVERSAL.get());
+        event.add(EntityType.PLAYER, SURE_FOOTED.get());
+        event.add(EntityType.PLAYER, COLD_ADAPTATION.get());
+    }
+
+    private static RegistryObject<Attribute> registerExplorerAttribute(
+        String attributeName,
+        double maximumValue
+    ) {
+        return ATTRIBUTES.register(
+            attributeName,
+            () -> new RangedAttribute(
+                createTranslateName(attributeName),
+                0.0D,
+                0.0D,
+                maximumValue
+            ).setSyncable(true)
         );
     }
 
