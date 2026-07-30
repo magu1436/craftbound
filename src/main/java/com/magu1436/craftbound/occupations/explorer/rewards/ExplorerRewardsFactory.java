@@ -9,7 +9,7 @@ import com.magu1436.craftbound.registry.CraftboundAttributes;
 
 public class ExplorerRewardsFactory extends AdventurerRewardsFactory {
     private static final List<AttributeRewardArgs> rewards = List.of(
-        new AttributeRewardArgs("expedition_endurance", CraftboundAttributes.EXPEDITION_ENDURANCE::get, Operation.ADDITION)
+        new AttributeRewardArgs("expedition_endurance_reward", CraftboundAttributes.EXPEDITION_ENDURANCE::get, Operation.ADDITION)
     );
 
     public static void registerRewards() {

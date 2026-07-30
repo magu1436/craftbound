@@ -3,7 +3,7 @@
 	"icon": {
 		"type": "item",
 		"data": {
-			"item": "banner"
+			"item": "red_banner"
 		}
 	},
 	"background": "textures/gui/advancements/backgrounds/stone.png"

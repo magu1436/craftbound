@@ -1,6 +1,6 @@
 {
     "normal": {
-        "undirectional": [
+        "unidirectional": [
             ["expedition_endurance_1", "expedition_endurance_2"],
             ["expedition_endurance_2", "expedition_endurance_3"],
             ["expedition_endurance_3", "expedition_endurance_4"],

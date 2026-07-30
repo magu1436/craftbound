@@ -6,6 +6,7 @@ import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementP
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyService;
 import com.magu1436.craftbound.occupations.adventurer.experience.AdventurerMobKillExperienceSource;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
+import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.mojang.logging.LogUtils;
@@ -104,6 +105,7 @@ public class Craftbound
 
         // 報酬の登録
         AdventurerRewardsFactory.registerRewards();
+        ExplorerRewardsFactory.registerRewards();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)

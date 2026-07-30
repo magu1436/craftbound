@@ -4,7 +4,7 @@
         "icon": {
             "type": "item",
             "data": {
-                "effect": "minecraft:minecraft:leather_boots"
+                "item": "minecraft:leather_boots"
             }
         },
         "description": "歩行時の体力の消耗を軽減する",
@@ -23,7 +23,7 @@
         "icon": {
             "type": "item",
             "data": {
-                "effect": "minecraft:minecraft:leather_boots"
+                "item": "minecraft:leather_boots"
             }
         },
         "description": "歩行時の体力の消耗を軽減する",
@@ -42,7 +42,7 @@
         "icon": {
             "type": "item",
             "data": {
-                "effect": "minecraft:minecraft:leather_boots"
+                "item": "minecraft:leather_boots"
             }
         },
         "description": "歩行時の体力の消耗を軽減する",
@@ -61,7 +61,7 @@
         "icon": {
             "type": "item",
             "data": {
-                "effect": "minecraft:minecraft:leather_boots"
+                "item": "minecraft:leather_boots"
             }
         },
         "description": "歩行時の体力の消耗を軽減する",
@@ -80,7 +80,7 @@
         "icon": {
             "type": "item",
             "data": {
-                "effect": "minecraft:minecraft:leather_boots"
+                "item": "minecraft:leather_boots"
             }
         },
         "description": "歩行時の体力の消耗を軽減する",
