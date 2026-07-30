@@ -11,7 +11,6 @@ import com.google.gson.JsonPrimitive;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
@@ -97,14 +96,12 @@ final class MobExperienceDefinitionParser {
                 "entity does not exist: " + entityId
             );
         }
-        if (
-            entityType == EntityType.PLAYER
-                || !LivingEntity.class.isAssignableFrom(
-                    entityType.getBaseClass()
-                )
-        ) {
+
+        // Forge 1.20.1 returns Entity.class from getBaseClass() for vanilla
+        // types. LivingDeathEvent guarantees the awarded entity is living.
+        if (entityType == EntityType.PLAYER) {
             throw new JsonParseException(
-                "entity must be a living non-player entity: "
+                "entity must not be a player: "
                     + entityId
             );
         }
