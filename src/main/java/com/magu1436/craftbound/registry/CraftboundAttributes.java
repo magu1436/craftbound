@@ -190,28 +190,47 @@ public final class CraftboundAttributes {
             );
 
         public static final RegistryObject<Attribute> DIVING =
-            registerExplorerAttribute(DIVING_NAME, 1.0D);
+            createCraftboundAttribute(DIVING_NAME, 1.0D);
 
         public static final RegistryObject<Attribute> CLIMBING =
-            registerExplorerAttribute(CLIMBING_NAME, 10.0D);
+            createCraftboundAttribute(CLIMBING_NAME, 10.0D);
 
         public static final RegistryObject<Attribute> TOOL_CARE =
-            registerExplorerAttribute(TOOL_CARE_NAME, 1.0D);
+            createCraftboundAttribute(TOOL_CARE_NAME, 1.0D);
 
         public static final RegistryObject<Attribute> SOUL_SAND_TRAVERSAL =
-            registerExplorerAttribute(SOUL_SAND_TRAVERSAL_NAME, 1.0D);
+            createCraftboundAttribute(SOUL_SAND_TRAVERSAL_NAME, 1.0D);
 
         public static final RegistryObject<Attribute> BUSHWHACKING =
-            registerExplorerAttribute(BUSHWHACKING_NAME, 1.0D);
+            createCraftboundAttribute(BUSHWHACKING_NAME, 1.0D);
 
         public static final RegistryObject<Attribute> POWDER_SNOW_TRAVERSAL =
-            registerExplorerAttribute(POWDER_SNOW_TRAVERSAL_NAME, 1.0D);
+            createCraftboundAttribute(POWDER_SNOW_TRAVERSAL_NAME, 1.0D);
 
         public static final RegistryObject<Attribute> SURE_FOOTED =
-            registerExplorerAttribute(SURE_FOOTED_NAME, 5.0D);
+            createCraftboundAttribute(SURE_FOOTED_NAME, 5.0D);
 
         public static final RegistryObject<Attribute> COLD_ADAPTATION =
-            registerExplorerAttribute(COLD_ADAPTATION_NAME, 1.0D);
+            createCraftboundAttribute(COLD_ADAPTATION_NAME, 1.0D);
+
+
+        // 建築家
+        public static final String SCAFFOLDING_MOBILITY_NAME = "scaffolding_mobility";
+        public static final String DEMOLITION_SPEED_NAME = "demolition_speed";
+        public static final String FALL_DAMAGE_REDUCTION_NAME = "fall_damage_reduction";
+        public static final String FIREWORK_CONSERVATION_CHANCE_NAME = "firework_conservation_chance";
+
+        public static final RegistryObject<Attribute> SCAFFOLDING_MOBILITY =
+            createCraftboundAttribute(SCAFFOLDING_MOBILITY_NAME, 5.0D);
+
+        public static final RegistryObject<Attribute> DEMOLITION_SPEED =
+            createCraftboundAttribute(DEMOLITION_SPEED_NAME, 5.0D);
+
+        public static final RegistryObject<Attribute> FALL_DAMAGE_REDUCTION =
+            createCraftboundAttribute(FALL_DAMAGE_REDUCTION_NAME, 1.0D);
+
+        public static final RegistryObject<Attribute> FIREWORK_CONSERVATION_CHANCE =
+            createCraftboundAttribute(FIREWORK_CONSERVATION_CHANCE_NAME, 1.0D);
 
 
     public static void register(IEventBus modEventBus) {
@@ -279,7 +298,7 @@ public final class CraftboundAttributes {
         event.add(EntityType.PLAYER, COLD_ADAPTATION.get());
     }
 
-    private static RegistryObject<Attribute> registerExplorerAttribute(
+    private static RegistryObject<Attribute> createCraftboundAttribute(
         String attributeName,
         double maximumValue
     ) {
