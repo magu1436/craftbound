@@ -49,7 +49,7 @@ public abstract class ItemStackToolCareMixin {
             return item.mineBlock(stack, level, state, position, entity);
         }
 
-        ToolCareDurabilityService.beginBlockBreak(player);
+        ToolCareDurabilityService.beginBlockBreak(player, state);
         try {
             return item.mineBlock(stack, level, state, position, entity);
         } finally {

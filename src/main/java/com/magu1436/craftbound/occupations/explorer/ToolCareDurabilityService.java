@@ -1,10 +1,12 @@
 package com.magu1436.craftbound.occupations.explorer;
 
+import com.magu1436.craftbound.occupations.explorer.data.ToolCareBlockDefinitions;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.FakePlayer;
 
 /**
@@ -12,7 +14,7 @@ import net.minecraftforge.common.util.FakePlayer;
  */
 public final class ToolCareDurabilityService {
 
-    private static final ThreadLocal<Player> BLOCK_BREAKING_PLAYER =
+    private static final ThreadLocal<BlockBreakContext> BLOCK_BREAK_CONTEXT =
         new ThreadLocal<>();
 
     private ToolCareDurabilityService() {
@@ -21,15 +23,18 @@ public final class ToolCareDurabilityService {
     /**
      * ブロック破壊による耐久消費処理の開始を記録する。
      */
-    public static void beginBlockBreak(Player player) {
-        BLOCK_BREAKING_PLAYER.set(player);
+    public static void beginBlockBreak(
+        Player player,
+        BlockState state
+    ) {
+        BLOCK_BREAK_CONTEXT.set(new BlockBreakContext(player, state));
     }
 
     /**
      * ブロック破壊による耐久消費処理の記録を破棄する。
      */
     public static void endBlockBreak() {
-        BLOCK_BREAKING_PLAYER.remove();
+        BLOCK_BREAK_CONTEXT.remove();
     }
 
     /**
@@ -50,9 +55,20 @@ public final class ToolCareDurabilityService {
     }
 
     private static boolean isEligible(ServerPlayer player) {
-        return BLOCK_BREAKING_PLAYER.get() == player
+        BlockBreakContext context = BLOCK_BREAK_CONTEXT.get();
+        return context != null
+            && context.player() == player
+            && ToolCareBlockDefinitions.INSTANCE.contains(
+                context.state().getBlock()
+            )
             && !(player instanceof FakePlayer)
             && player.gameMode.getGameModeForPlayer()
                 == GameType.SURVIVAL;
+    }
+
+    private record BlockBreakContext(
+        Player player,
+        BlockState state
+    ) {
     }
 }
