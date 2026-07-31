@@ -6,6 +6,7 @@
   "refmap": "craftbound.refmap.json",
   "mixins": [
     "EntityBlockSpeedFactorMixin",
+    "LivingEntityFreezeMixin",
     "PlayerMovementExhaustionMixin",
     "PowderSnowBlockMixin",
     "SweetBerryBushBlockMixin"
