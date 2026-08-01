@@ -296,6 +296,7 @@ public final class CraftboundAttributes {
         event.add(EntityType.PLAYER, POWDER_SNOW_TRAVERSAL.get());
         event.add(EntityType.PLAYER, SURE_FOOTED.get());
         event.add(EntityType.PLAYER, COLD_ADAPTATION.get());
+        event.add(EntityType.PLAYER, FALL_DAMAGE_REDUCTION.get());
     }
 
     private static RegistryObject<Attribute> createCraftboundAttribute(
