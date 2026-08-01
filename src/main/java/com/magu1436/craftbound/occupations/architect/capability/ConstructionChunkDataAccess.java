@@ -1,5 +1,7 @@
 package com.magu1436.craftbound.occupations.architect.capability;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -147,6 +149,23 @@ public final class ConstructionChunkDataAccess {
             .orElseGet(() -> new long[0]);
     }
 
+    public static List<PendingConstructionEntry> getPendingConstructions(
+        LevelChunk chunk
+    ) {
+        Objects.requireNonNull(chunk, "chunk is null");
+        List<PendingConstructionEntry> entries = new ArrayList<>();
+        chunk.getCapability(CraftboundCapabilities.CONSTRUCTION_CHUNK_DATA)
+            .ifPresent(data -> {
+                for (int localPosition : data.getPendingPositions()) {
+                    BlockPos pos = decodePosition(chunk, localPosition);
+                    data.getPending(pos).ifPresent(pending -> entries.add(
+                        new PendingConstructionEntry(pos, pending)
+                    ));
+                }
+            });
+        return List.copyOf(entries);
+    }
+
     public static LongArrayList markAllPlayerPlaced(
         LevelChunk chunk,
         LongCollection packedPositions
@@ -237,15 +256,20 @@ public final class ConstructionChunkDataAccess {
 
     private static long[] decodePositions(LevelChunk chunk, int[] positions) {
         long[] decoded = new long[positions.length];
-        ChunkPos chunkPos = chunk.getPos();
-        int minBuildHeight = chunk.getMinBuildHeight();
         for (int index = 0; index < positions.length; index++) {
-            int localPosition = positions[index];
-            int x = chunkPos.getMinBlockX() + (localPosition & 15);
-            int z = chunkPos.getMinBlockZ() + ((localPosition >> 4) & 15);
-            int y = minBuildHeight + (localPosition >> 8);
-            decoded[index] = BlockPos.asLong(x, y, z);
+            decoded[index] = decodePosition(chunk, positions[index]).asLong();
         }
         return decoded;
+    }
+
+    private static BlockPos decodePosition(
+        LevelChunk chunk,
+        int localPosition
+    ) {
+        ChunkPos chunkPos = chunk.getPos();
+        int x = chunkPos.getMinBlockX() + (localPosition & 15);
+        int z = chunkPos.getMinBlockZ() + ((localPosition >> 4) & 15);
+        int y = chunk.getMinBuildHeight() + (localPosition >> 8);
+        return new BlockPos(x, y, z);
     }
 }

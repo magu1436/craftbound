@@ -4,10 +4,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.event.level.ChunkWatchEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -18,6 +21,9 @@ import net.minecraftforge.fml.common.Mod;
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.architect.ConstructionTrackingService;
 import com.magu1436.craftbound.occupations.architect.events.PlayerPlacedBlockRemovalQueue;
+import com.magu1436.craftbound.occupations.architect.experience.ArchitectExperienceService;
+import com.magu1436.craftbound.occupations.architect.experience.ConstructionScheduler;
+import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataAccess;
 import com.magu1436.craftbound.occupations.architect.network.PlayerPlacedBlockSync;
 
 /**
@@ -90,6 +96,7 @@ public final class CraftboundPlayerPlacedBlockEventHandler {
         if (event.phase == TickEvent.Phase.END
             && event.level instanceof ServerLevel level) {
             PlayerPlacedBlockRemovalQueue.flush(level);
+            ConstructionScheduler.tick(level);
         }
     }
 
@@ -97,6 +104,30 @@ public final class CraftboundPlayerPlacedBlockEventHandler {
     public static void onLevelUnload(LevelEvent.Unload event) {
         if (event.getLevel() instanceof ServerLevel level) {
             PlayerPlacedBlockRemovalQueue.clear(level);
+            ConstructionScheduler.clear(level);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChunkLoad(ChunkEvent.Load event) {
+        if (!(event.getLevel() instanceof ServerLevel level)
+            || !(event.getChunk() instanceof LevelChunk chunk)) {
+            return;
+        }
+        ConstructionChunkDataAccess.getPendingConstructions(chunk)
+            .forEach(entry -> ConstructionScheduler.schedule(
+                level,
+                entry.pos(),
+                entry.pending()
+            ));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(
+        PlayerEvent.PlayerLoggedInEvent event
+    ) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            ArchitectExperienceService.deliverPending(player);
         }
     }
 

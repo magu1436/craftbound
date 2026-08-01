@@ -16,6 +16,14 @@ public final class CraftboundBlockTags {
             CraftboundUtilities.createResourceLocation(
                 "architect_demolition_blacklist"
             )
+            );
+
+    public static final TagKey<Block> ARCHITECT_EXPERIENCE_BLACKLIST =
+        TagKey.create(
+            Registries.BLOCK,
+            CraftboundUtilities.createResourceLocation(
+                "architect_experience_blacklist"
+            )
         );
 
     private CraftboundBlockTags() {

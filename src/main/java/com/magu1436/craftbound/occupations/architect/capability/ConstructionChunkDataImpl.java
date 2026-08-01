@@ -100,6 +100,11 @@ public final class ConstructionChunkDataImpl
     }
 
     @Override
+    public int[] getPendingPositions() {
+        return pendingConstructions.keySet().toIntArray();
+    }
+
+    @Override
     public int[] getPlayerPlacedPositions() {
         IntArrayList positions = new IntArrayList();
         for (var entry : positionStates.int2ByteEntrySet()) {

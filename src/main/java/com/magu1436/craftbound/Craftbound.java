@@ -7,6 +7,7 @@ import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementP
 import com.magu1436.craftbound.occupations.adventurer.experience.AdventurerMobKillExperienceSource;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.occupations.architect.rewards.ArchitectRewardFactory;
+import com.magu1436.craftbound.occupations.architect.experience.ArchitectConstructionExperienceSource;
 import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
@@ -103,6 +104,7 @@ public class Craftbound
 
         // 経験値源の登録
         AdventurerMobKillExperienceSource.register();
+        ArchitectConstructionExperienceSource.register();
 
         // 報酬の登録
         AdventurerRewardsFactory.registerRewards();

@@ -29,6 +29,8 @@ public interface ConstructionChunkData {
 
     boolean removePending(BlockPos pos);
 
+    int[] getPendingPositions();
+
     int[] getPlayerPlacedPositions();
 
     CompoundTag savePersistentData();

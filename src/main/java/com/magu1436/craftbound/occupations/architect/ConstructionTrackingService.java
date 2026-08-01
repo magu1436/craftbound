@@ -6,11 +6,17 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.common.util.FakePlayer;
 
 import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataAccess;
+import com.magu1436.craftbound.occupations.architect.capability.PendingConstruction;
+import com.magu1436.craftbound.occupations.architect.experience.ConstructionScheduler;
+import com.magu1436.craftbound.occupations.architect.experience.PendingConstructionFactory;
 import com.magu1436.craftbound.occupations.architect.network.PlayerPlacedBlockSync;
+import com.magu1436.craftbound.registry.CraftboundBlockTags;
 
 /**
  * プレイヤーによる設置と、その後のブロック削除を一元管理する。
@@ -31,17 +37,29 @@ public final class ConstructionTrackingService {
         Objects.requireNonNull(pos, "pos is null");
         Objects.requireNonNull(placedState, "placed state is null");
 
-        if (!ConstructionChunkDataAccess.markPlayerPlaced(level, pos)) {
-            return;
-        }
-
+        boolean newlyMarked =
+            ConstructionChunkDataAccess.markPlayerPlaced(level, pos);
         LevelChunk chunk = getLoadedChunk(level, pos);
-        if (chunk != null) {
+        if (newlyMarked && chunk != null) {
             PlayerPlacedBlockSync.sendAdded(
                 level,
                 chunk,
                 singlePosition(pos)
             );
+        }
+
+        if (!canCreateExperienceCandidate(player, placedState)
+            || ConstructionChunkDataAccess.isXpRewarded(level, pos)) {
+            return;
+        }
+
+        PendingConstruction pending = PendingConstructionFactory.create(
+            player,
+            level,
+            placedState
+        );
+        if (ConstructionChunkDataAccess.putPending(level, pos, pending)) {
+            ConstructionScheduler.schedule(level, pos, pending);
         }
     }
 
@@ -88,6 +106,20 @@ public final class ConstructionTrackingService {
             pos.getX() >> 4,
             pos.getZ() >> 4
         );
+    }
+
+    private static boolean canCreateExperienceCandidate(
+        ServerPlayer player,
+        BlockState state
+    ) {
+        GameType gameMode = player.gameMode.getGameModeForPlayer();
+        return !(player instanceof FakePlayer)
+            && (gameMode == GameType.SURVIVAL
+                || gameMode == GameType.ADVENTURE)
+            && !state.isAir()
+            && !state.is(
+                CraftboundBlockTags.ARCHITECT_EXPERIENCE_BLACKLIST
+            );
     }
 
     private static LongArrayList singlePosition(BlockPos pos) {
