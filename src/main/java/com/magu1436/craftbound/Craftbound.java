@@ -106,6 +106,7 @@ public class Craftbound
 
         // 報酬の登録
         AdventurerRewardsFactory.registerRewards();
+        ArchitectRewardFactory.registerRewards();
         ExplorerRewardsFactory.registerRewards();
         ArchitectRewardFactory.registerRewards();
     }
