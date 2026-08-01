@@ -15,6 +15,8 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraftforge.common.ForgeHooks;
 
 /** 初期加工設備に共通する手動操作メニュー。 */
 public final class FoodProcessingMenu extends AbstractContainerMenu {
@@ -68,6 +70,12 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
         });
         addSlot(new OutputSlot(container, FoodProcessingBlockEntity.OUTPUT, 116, 36));
         addSlot(new OutputSlot(container, FoodProcessingBlockEntity.RETURN, 134, 36));
+        addSlot(new ProcessingSlot(container, FoodProcessingBlockEntity.FUEL, 80, 61, processor) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0 && super.mayPlace(stack);
+            }
+        });
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -105,6 +113,14 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
         return data.get(FoodProcessingBlockEntity.DATA_RUNNING) != 0;
     }
 
+    public int burnTime() {
+        return data.get(FoodProcessingBlockEntity.DATA_BURN_TIME);
+    }
+
+    public int burnTotal() {
+        return data.get(FoodProcessingBlockEntity.DATA_BURN_TOTAL);
+    }
+
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
         if (!(player instanceof ServerPlayer serverPlayer) || processor == null) return false;
@@ -136,6 +152,10 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
         } else if (stack.is(Craftbound.COOKING_KNIFE.get())) {
             if (!moveItemStackTo(stack, FoodProcessingBlockEntity.TOOL,
                     FoodProcessingBlockEntity.TOOL + 1, false)) return ItemStack.EMPTY;
+        } else if (station() == FoodProcessingStation.COOKING_POT
+                && ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0) {
+            if (!moveItemStackTo(stack, FoodProcessingBlockEntity.FUEL,
+                    FoodProcessingBlockEntity.FUEL + 1, false)) return ItemStack.EMPTY;
         } else if (!moveItemStackTo(stack, FoodProcessingBlockEntity.INPUT_0,
                 FoodProcessingBlockEntity.INPUT_2 + 1, false)) {
             return ItemStack.EMPTY;

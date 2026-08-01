@@ -7,6 +7,8 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingData;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingTestHooks;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
@@ -112,6 +114,15 @@ public final class CraftboundTestCommands {
                         .executes(context -> showNearestProcessingStatus(context.getSource())))
                 .then(Commands.literal("finish")
                         .executes(context -> finishNearestProcessing(context.getSource()))));
+
+        LiteralArgumentBuilder<CommandSourceStack> cookingPrepare = Commands.literal("prepare");
+        cookingPrepare.then(cookingQualityLiteral("high", FoodQuality.HIGH));
+        cookingPrepare.then(cookingQualityLiteral("standard", FoodQuality.STANDARD));
+        cookingPrepare.then(cookingQualityLiteral("low", FoodQuality.LOW));
+        test.then(Commands.literal("cooking")
+                .then(cookingPrepare)
+                .then(Commands.literal("force_upgrade")
+                        .executes(context -> forceNextCookingUpgrade(context.getSource()))));
 
         event.getDispatcher().register(Commands.literal("craftbound").then(test));
     }
@@ -383,6 +394,14 @@ public final class CraftboundTestCommands {
         return showFoodProducerExperience(source);
     }
 
+    private static LiteralArgumentBuilder<CommandSourceStack> cookingQualityLiteral(
+            String name,
+            FoodQuality quality
+    ) {
+        return Commands.literal(name)
+                .executes(context -> giveTestPreparedSet(context.getSource(), quality));
+    }
+
     private static int showNearestProcessingStatus(CommandSourceStack source)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         FoodProcessingBlockEntity processor = nearestProcessing(source);
@@ -393,9 +412,36 @@ public final class CraftboundTestCommands {
                 processor.currentOperation().serializedName(),
                 processor.isRunning(),
                 processor.progress(),
-                processor.totalTicks()
+                processor.totalTicks(),
+                processor.burnTime()
         ), false);
         return processor.isRunning() ? 1 : 0;
+    }
+
+    private static int giveTestPreparedSet(CommandSourceStack source, FoodQuality quality)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ItemStack stack = FoodCookingData.createTestPreparedSet(
+                quality,
+                player.serverLevel().getGameTime()
+        );
+        if (!player.addItem(stack)) {
+            player.drop(stack, false);
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.prepare",
+                qualityName(quality)
+        ), false);
+        return 1;
+    }
+
+    private static int forceNextCookingUpgrade(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        FoodCookingTestHooks.forceNextUpgrade(source.getPlayerOrException());
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.force_upgrade"
+        ), false);
+        return 1;
     }
 
     private static int finishNearestProcessing(CommandSourceStack source)

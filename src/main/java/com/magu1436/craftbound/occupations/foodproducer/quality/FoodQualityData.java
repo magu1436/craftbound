@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingData;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
@@ -150,6 +152,7 @@ public final class FoodQualityData {
         tag.putLong(LAST_UPDATE_TAG, gameTime);
         tag.putDouble(PRESERVATION_MULTIPLIER_TAG, currentMultiplier);
         tag.putBoolean(CLOCK_RUNNING_TAG, true);
+        FoodCookingData.lowerPreparedQualityCap(stack, degradedStages, quality);
         return degradedStages;
     }
 

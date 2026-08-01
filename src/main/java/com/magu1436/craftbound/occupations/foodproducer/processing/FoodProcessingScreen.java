@@ -69,6 +69,13 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
         graphics.fill(leftPos + 5, topPos + 5, leftPos + imageWidth - 5, topPos + imageHeight - 5, 0xFFC6C6C6);
         for (int x : new int[] { 26, 44, 62, 116, 134 }) drawSlot(graphics, x, 36);
         drawSlot(graphics, 44, 61);
+        if (menu.station() == FoodProcessingStation.COOKING_POT) {
+            drawSlot(graphics, 80, 61);
+            int flameHeight = menu.burnTotal() <= 0 ? 0 : Math.min(12,
+                    Math.round(12.0F * menu.burnTime() / menu.burnTotal()));
+            graphics.fill(leftPos + 101, topPos + 62 + (12 - flameHeight),
+                    leftPos + 107, topPos + 74, 0xFFFF8C00);
+        }
         int width = menu.totalTicks() <= 0 ? 0 : Math.min(50,
                 Math.round(50.0F * menu.progress() / menu.totalTicks()));
         graphics.fill(leftPos + 65, topPos + 58, leftPos + 117, topPos + 65, 0xFF373737);
@@ -91,6 +98,10 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
                         Math.max(0, (menu.totalTicks() - menu.progress() + 19) / 20))
                 : Component.translatable("screen.craftbound.processing.ready");
         graphics.drawString(font, state, 101 - font.width(state) / 2, 66, 0x404040, false);
+        if (menu.station() == FoodProcessingStation.COOKING_POT) {
+            graphics.drawString(font, Component.translatable("screen.craftbound.processing.fuel"),
+                    77, 82, 0x404040, false);
+        }
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
 

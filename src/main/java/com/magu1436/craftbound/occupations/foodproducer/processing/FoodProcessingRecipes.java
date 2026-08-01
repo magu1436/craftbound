@@ -31,7 +31,7 @@ public final class FoodProcessingRecipes {
             case GRIND -> grind(inputs);
             case PRESERVE -> preserve(inputs);
             case MIX -> mix(inputs);
-            case HEAT -> Optional.empty();
+            case HEAT -> heat(inputs);
         };
     }
 
@@ -118,6 +118,23 @@ public final class FoodProcessingRecipes {
                 new ItemStack(Craftbound.DOUGH.get()),
                 consumed,
                 new ItemStack(Items.GLASS_BOTTLE),
+                false,
+                qualityInputs(inputs, consumed)
+        ));
+    }
+
+    private static Optional<Match> heat(List<ItemStack> inputs) {
+        int slot = onlyOccupiedSlot(inputs);
+        if (slot < 0) return Optional.empty();
+        ItemStack input = inputs.get(slot);
+        if (!FoodCookingData.isPreparedSet(input)) return Optional.empty();
+        ItemStack output = FoodCookingData.createDish(input);
+        int[] consumed = new int[3];
+        consumed[slot] = 1;
+        return Optional.of(new Match(
+                output,
+                consumed,
+                FoodCookingData.returnedContainer(input),
                 false,
                 qualityInputs(inputs, consumed)
         ));

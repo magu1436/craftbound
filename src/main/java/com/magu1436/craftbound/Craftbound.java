@@ -9,6 +9,8 @@ import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessin
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingMenu;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingScreen;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodDishItem;
+import com.magu1436.craftbound.occupations.foodproducer.processing.PreparedIngredientSetItem;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlock;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockRecipe;
@@ -97,6 +99,14 @@ public class Craftbound
     public static final RegistryObject<Item> DRIED_MEAT = intermediate("dried_meat");
     public static final RegistryObject<Item> DRIED_VEGETABLE = intermediate("dried_vegetable");
     public static final RegistryObject<Item> DRIED_FRUIT = intermediate("dried_fruit");
+    public static final RegistryObject<Item> PREPARED_INGREDIENT_SET = ITEMS.register(
+            "prepared_ingredient_set", () -> new PreparedIngredientSetItem(new Item.Properties())
+    );
+    public static final RegistryObject<Item> FOOD_DISH = ITEMS.register(
+            "food_dish", () -> new FoodDishItem(new Item.Properties().stacksTo(16).food(
+                    new FoodProperties.Builder().nutrition(1).saturationMod(0.0F).build()
+            ))
+    );
 
     public static final RegistryObject<Block> COOKING_TABLE = processingBlock("cooking_table", MapColor.WOOD, SoundType.WOOD);
     public static final RegistryObject<Block> HAND_MILL = processingBlock("hand_mill", MapColor.STONE, SoundType.STONE);

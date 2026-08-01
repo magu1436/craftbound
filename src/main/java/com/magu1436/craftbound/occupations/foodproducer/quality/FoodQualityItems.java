@@ -4,6 +4,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodIntermediateItem;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingData;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodDishItem;
+import com.magu1436.craftbound.occupations.foodproducer.processing.PreparedIngredientSetItem;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -57,8 +60,15 @@ public final class FoodQualityItems {
 
     public static Optional<FoodQualityCategory> category(ItemStack stack) {
         Item item = stack.getItem();
-        if (MATERIALS.contains(item) || item instanceof FoodIntermediateItem) {
+        if (MATERIALS.contains(item)
+                || item instanceof FoodIntermediateItem
+                || item instanceof PreparedIngredientSetItem) {
             return Optional.of(FoodQualityCategory.MATERIAL);
+        }
+        if (item instanceof FoodDishItem) {
+            return Optional.of(FoodCookingData.isPreserved(stack)
+                    ? FoodQualityCategory.PRESERVED_FOOD
+                    : FoodQualityCategory.DISH);
         }
         if (DISHES.contains(item)) {
             return Optional.of(FoodQualityCategory.DISH);

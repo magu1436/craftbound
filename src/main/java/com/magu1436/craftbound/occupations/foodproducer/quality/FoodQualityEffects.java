@@ -19,6 +19,15 @@ public final class FoodQualityEffects {
         };
     }
 
+    public static double buffDurationMultiplier(FoodQuality quality) {
+        return switch (quality) {
+            case HIGH -> 1.5D;
+            case STANDARD -> 1.0D;
+            case LOW -> 0.67D;
+            case SPOILED -> 0.0D;
+        };
+    }
+
     public static int adjustedNutrition(ItemStack stack, FoodQuality quality) {
         return adjustedNutrition(stack, null, quality);
     }

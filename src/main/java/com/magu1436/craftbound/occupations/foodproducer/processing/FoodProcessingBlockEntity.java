@@ -7,7 +7,9 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
+import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityItems;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExperience;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 
@@ -23,9 +25,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ForgeHooks;
 
 /** 手動で開始する初期中間素材加工。開始時の材料・ランク・品質を固定する。 */
 public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
@@ -36,14 +40,17 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     public static final int TOOL = 3;
     public static final int OUTPUT = 4;
     public static final int RETURN = 5;
-    public static final int CONTAINER_SIZE = 6;
+    public static final int FUEL = 6;
+    public static final int CONTAINER_SIZE = 7;
 
     public static final int DATA_STATION = 0;
     public static final int DATA_OPERATION = 1;
     public static final int DATA_PROGRESS = 2;
     public static final int DATA_TOTAL = 3;
     public static final int DATA_RUNNING = 4;
-    public static final int DATA_COUNT = 5;
+    public static final int DATA_BURN_TIME = 5;
+    public static final int DATA_BURN_TOTAL = 6;
+    public static final int DATA_COUNT = 7;
 
     private static final String OPERATION_TAG = "operation";
     private static final String PROGRESS_TAG = "progress";
@@ -52,6 +59,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private static final String PENDING_RETURN_TAG = "pending_return";
     private static final String CONSUMED_TAG = "consumed_";
     private static final String INITIATOR_TAG = "initiator";
+    private static final String PENDING_EXPERIENCE_TAG = "pending_experience";
+    private static final String BURN_TIME_TAG = "burn_time";
+    private static final String BURN_TOTAL_TAG = "burn_total";
 
     private NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
     private FoodProcessingOperation operation;
@@ -60,6 +70,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private ItemStack pendingOutput = ItemStack.EMPTY;
     private ItemStack pendingReturn = ItemStack.EMPTY;
     private final int[] pendingConsumed = new int[3];
+    private int pendingExperience;
+    private int burnTime;
+    private int burnTotal;
     @Nullable
     private UUID initiator;
 
@@ -72,6 +85,8 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 case DATA_PROGRESS -> progress;
                 case DATA_TOTAL -> totalTicks;
                 case DATA_RUNNING -> isRunning() ? 1 : 0;
+                case DATA_BURN_TIME -> burnTime;
+                case DATA_BURN_TOTAL -> burnTotal;
                 default -> 0;
             };
         }
@@ -82,6 +97,8 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 case DATA_OPERATION -> operation = operationByOrdinal(value);
                 case DATA_PROGRESS -> progress = Math.max(0, value);
                 case DATA_TOTAL -> totalTicks = Math.max(0, value);
+                case DATA_BURN_TIME -> burnTime = Math.max(0, value);
+                case DATA_BURN_TOTAL -> burnTotal = Math.max(0, value);
                 default -> {
                 }
             }
@@ -134,20 +151,35 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (match.toolRequired() && !isUsableKnife(items.get(TOOL))) {
             return false;
         }
+        if (currentOperation() == FoodProcessingOperation.HEAT
+                && burnTime <= 0
+                && fuelBurnTime(items.get(FUEL)) <= 0) {
+            return false;
+        }
 
         int rank = Math.max(0, Math.min(3,
                 FoodProducerSkills.rank(player, FoodProducerSkills.PROCESSING_TECHNIQUE)));
         ItemStack output = match.output().copy();
-        FoodIntermediateData.setSuccess(output);
+        if (output.getItem() instanceof FoodIntermediateItem) {
+            FoodIntermediateData.setSuccess(output);
+        }
         if (rank >= 2 && appliesExtraOutput(currentOperation())) {
             output.grow(rank - 1);
         }
-        FoodQualityData.inheritMinimum(match.qualityInputs(), output, level.getGameTime());
+        if (currentOperation() == FoodProcessingOperation.HEAT) {
+            applyFinalCookingQuality(player, match, output);
+            pendingExperience = FoodCookingData.experience(output);
+        } else {
+            FoodQualityData.inheritMinimum(match.qualityInputs(), output, level.getGameTime());
+            pendingExperience = 1;
+        }
 
         pendingOutput = output;
         pendingReturn = match.returnedContainer().copy();
         System.arraycopy(match.consumed(), 0, pendingConsumed, 0, pendingConsumed.length);
-        totalTicks = Math.max(1, Math.round(currentOperation().baseTicks() * (1.0F - rank * 0.1F)));
+        totalTicks = currentOperation() == FoodProcessingOperation.HEAT
+                ? currentOperation().baseTicks()
+                : Math.max(1, Math.round(currentOperation().baseTicks() * (1.0F - rank * 0.1F)));
         progress = 0;
         initiator = player.getUUID();
         setChanged();
@@ -169,10 +201,18 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (!processor.isRunning()) {
             return;
         }
-        processor.progress++;
-        if (processor.progress >= processor.totalTicks && processor.canFinish()) {
-            processor.finish();
+        if (processor.progress >= processor.totalTicks) {
+            if (processor.canFinish()) processor.finish();
+            return;
         }
+        if (processor.currentOperation() == FoodProcessingOperation.HEAT) {
+            if (processor.burnTime <= 0 && !processor.consumeFuel()) {
+                return;
+            }
+            processor.burnTime--;
+        }
+        processor.progress++;
+        if (processor.progress >= processor.totalTicks && processor.canFinish()) processor.finish();
         processor.setChanged();
     }
 
@@ -198,7 +238,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (level instanceof ServerLevel serverLevel && initiator != null) {
             ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(initiator);
             if (player != null) {
-                FoodProducerExperience.add(player, 1);
+                FoodProducerExperience.add(player, pendingExperience);
             }
         }
         clearPending();
@@ -223,6 +263,14 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
 
     public int totalTicks() {
         return totalTicks;
+    }
+
+    public int burnTime() {
+        return burnTime;
+    }
+
+    public int burnTotal() {
+        return burnTotal;
     }
 
     public ContainerData dataAccess() {
@@ -283,6 +331,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
         if (slotLocked(slot) || slot == OUTPUT || slot == RETURN) return false;
+        if (slot == FUEL) return station() == FoodProcessingStation.COOKING_POT && fuelBurnTime(stack) > 0;
         return slot != TOOL || stack.is(Craftbound.COOKING_KNIFE.get());
     }
 
@@ -312,6 +361,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (!pendingReturn.isEmpty()) tag.put(PENDING_RETURN_TAG, pendingReturn.save(new CompoundTag()));
         for (int slot = 0; slot < pendingConsumed.length; slot++) tag.putInt(CONSUMED_TAG + slot, pendingConsumed[slot]);
         if (initiator != null) tag.putUUID(INITIATOR_TAG, initiator);
+        tag.putInt(PENDING_EXPERIENCE_TAG, pendingExperience);
+        tag.putInt(BURN_TIME_TAG, burnTime);
+        tag.putInt(BURN_TOTAL_TAG, burnTotal);
     }
 
     @Override
@@ -326,6 +378,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         pendingReturn = tag.contains(PENDING_RETURN_TAG) ? ItemStack.of(tag.getCompound(PENDING_RETURN_TAG)) : ItemStack.EMPTY;
         for (int slot = 0; slot < pendingConsumed.length; slot++) pendingConsumed[slot] = tag.getInt(CONSUMED_TAG + slot);
         initiator = tag.hasUUID(INITIATOR_TAG) ? tag.getUUID(INITIATOR_TAG) : null;
+        pendingExperience = Math.max(0, tag.getInt(PENDING_EXPERIENCE_TAG));
+        burnTime = Math.max(0, tag.getInt(BURN_TIME_TAG));
+        burnTotal = Math.max(0, tag.getInt(BURN_TOTAL_TAG));
     }
 
     private List<ItemStack> inputCopies() {
@@ -341,7 +396,60 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         progress = 0;
         totalTicks = 0;
         initiator = null;
+        pendingExperience = 0;
         setChanged();
+    }
+
+    private void applyFinalCookingQuality(
+            ServerPlayer player,
+            FoodProcessingRecipes.Match match,
+            ItemStack output
+    ) {
+        FoodQuality baseQuality = match.qualityInputs().stream()
+                .filter(FoodQualityItems::isQualityTarget)
+                .map(FoodQualityData::getOrStandard)
+                .min(java.util.Comparator.comparingInt(FoodQuality::value))
+                .orElse(FoodQuality.STANDARD);
+        FoodQuality cap = match.qualityInputs().stream()
+                .filter(FoodCookingData::isPreparedSet)
+                .map(FoodCookingData::qualityCap)
+                .findFirst()
+                .orElse(baseQuality);
+        int qualityRank = Math.max(0, Math.min(5,
+                FoodProducerSkills.rank(player, FoodProducerSkills.QUALITY_COOKING)));
+        boolean eligible = qualityRank > 0 && baseQuality.value() < cap.value();
+        boolean forced = eligible && FoodCookingTestHooks.consumeForcedUpgrade(player);
+        int ratingModifier = switch (FoodCookingData.rating(output)) {
+            case 0 -> -20;
+            case 2 -> 20;
+            case 3 -> 40;
+            default -> 0;
+        };
+        int upgradeChance = Math.max(0, Math.min(100, qualityRank * 10 + ratingModifier));
+        boolean upgraded = eligible && (forced || level.random.nextInt(100) < upgradeChance);
+        FoodQuality finalQuality = upgraded
+                ? FoodQuality.fromValue(baseQuality.value() + 1)
+                : baseQuality;
+        FoodQualityData.initialize(output, finalQuality, level.getGameTime());
+    }
+
+    private boolean consumeFuel() {
+        ItemStack fuel = items.get(FUEL);
+        int duration = fuelBurnTime(fuel);
+        if (duration <= 0) return false;
+        ItemStack remainder = fuel.getCraftingRemainingItem();
+        if (fuel.getCount() > 1 && !canMerge(items.get(RETURN), remainder)) return false;
+
+        burnTime = duration;
+        burnTotal = duration;
+        fuel.shrink(1);
+        if (fuel.isEmpty()) {
+            items.set(FUEL, remainder);
+        } else {
+            mergeInto(RETURN, remainder);
+        }
+        setChanged();
+        return true;
     }
 
     private void mergeInto(int slot, ItemStack added) {
@@ -372,6 +480,10 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         return operation == FoodProcessingOperation.CUT
                 || operation == FoodProcessingOperation.GRIND
                 || operation == FoodProcessingOperation.PRESERVE;
+    }
+
+    private static int fuelBurnTime(ItemStack stack) {
+        return stack.isEmpty() ? 0 : ForgeHooks.getBurnTime(stack, RecipeType.SMELTING);
     }
 
     private static FoodProcessingOperation operationByName(String name) {

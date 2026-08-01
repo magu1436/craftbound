@@ -56,5 +56,10 @@
   },
   "processing_technique_1": { "x": 64, "y": 48, "definition": "processing_technique_1" },
   "processing_technique_2": { "x": 64, "y": 80, "definition": "processing_technique_2" },
-  "processing_technique_3": { "x": 64, "y": 112, "definition": "processing_technique_3" }
+  "processing_technique_3": { "x": 64, "y": 112, "definition": "processing_technique_3" },
+  "quality_cooking_1": { "x": 112, "y": 48, "definition": "quality_cooking_1" },
+  "quality_cooking_2": { "x": 112, "y": 80, "definition": "quality_cooking_2" },
+  "quality_cooking_3": { "x": 112, "y": 112, "definition": "quality_cooking_3" },
+  "quality_cooking_4": { "x": 112, "y": 144, "definition": "quality_cooking_4" },
+  "quality_cooking_5": { "x": 112, "y": 176, "definition": "quality_cooking_5" }
 }
