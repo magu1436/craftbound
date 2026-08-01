@@ -10,5 +10,9 @@
   "attribute.name.craftbound.ranged_footwork": "Ranged Footwork",
   "attribute.name.craftbound.field_resupply": "Field Resupply",
   "key.categories.craftbound": "Craftbound",
-  "key.craftbound.emergency_evasion": "Emergency Evasion"
+  "key.craftbound.emergency_evasion": "Emergency Evasion",
+  "message.craftbound.explorer.discovery.biome.with_experience": "[Exploration] Discovered a new biome: %1$s (+%2$s XP)",
+  "message.craftbound.explorer.discovery.biome.without_experience": "[Exploration] Discovered a new biome: %1$s",
+  "message.craftbound.explorer.discovery.dimension.with_experience": "[Exploration] Reached a new dimension: %1$s (+%2$s XP)",
+  "message.craftbound.explorer.discovery.dimension.without_experience": "[Exploration] Reached a new dimension: %1$s"
 }

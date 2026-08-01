@@ -19,6 +19,21 @@ public final class ExplorerCandidateTracker {
 
     public List<DiscoveryTarget> update(
         ServerPlayer player,
+        ExplorerDiscoveryScanner.DiscoveryScanResult scan,
+        long gameTime
+    ) {
+        Objects.requireNonNull(scan, "scan is null");
+        return update(
+            player,
+            scan.biome(),
+            scan.dimension(),
+            scan.structures(),
+            gameTime
+        );
+    }
+
+    public List<DiscoveryTarget> update(
+        ServerPlayer player,
         Optional<DiscoveryTarget.Biome> biome,
         Optional<DiscoveryTarget.Dimension> dimension,
         Map<StructureInstanceKey, DiscoveryTarget.Structure> structures,

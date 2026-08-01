@@ -49,11 +49,14 @@ public final class PufferfishExplorerExperienceGateway
     ) {
         Objects.requireNonNull(player, "player is null");
         Objects.requireNonNull(sourceId, "source id is null");
-        if (amount <= 0) {
+        if (amount < 0) {
             return ExperienceGrantResult.INVALID_AMOUNT;
         }
         if (!EXPERIENCE_SOURCE_ID.equals(sourceId)) {
             return ExperienceGrantResult.SOURCE_UNAVAILABLE;
+        }
+        if (amount == 0) {
+            return ExperienceGrantResult.SUCCESS;
         }
 
         Category category = SkillsAPI.getCategory(CATEGORY_ID).orElse(null);
