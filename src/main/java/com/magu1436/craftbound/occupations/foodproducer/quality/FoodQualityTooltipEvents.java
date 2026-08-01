@@ -4,6 +4,7 @@ import com.magu1436.craftbound.Craftbound;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -31,11 +32,32 @@ public final class FoodQualityTooltipEvents {
                         "tooltip.craftbound.quality_remaining",
                         formatDuration(FoodQualityData.getRemainingRealTicks(stack))
                 ).withStyle(ChatFormatting.DARK_GRAY));
+                event.getToolTip().add(Component.translatable(
+                        "tooltip.craftbound.spoilage_remaining",
+                        formatDuration(FoodQualityData.getRemainingUntilSpoiledRealTicks(stack))
+                ).withStyle(ChatFormatting.DARK_GRAY));
             }
             if (!FoodQualityData.isClockRunning(stack)) {
                 event.getToolTip().add(Component.translatable(
-                        "tooltip.craftbound.quality_clock_paused"
+                        FoodQualityData.isFrozenForTesting(stack)
+                                ? "tooltip.craftbound.quality_test_frozen"
+                                : "tooltip.craftbound.quality_clock_paused"
                 ).withStyle(ChatFormatting.BLUE));
+            }
+            FoodProperties food = stack.getFoodProperties(event.getEntity());
+            if (food != null && quality != FoodQuality.SPOILED) {
+                event.getToolTip().add(Component.translatable(
+                        "tooltip.craftbound.adjusted_nutrition",
+                        FoodQualityEffects.adjustedNutrition(stack, event.getEntity(), quality)
+                ).withStyle(ChatFormatting.DARK_GREEN));
+                event.getToolTip().add(Component.translatable(
+                        "tooltip.craftbound.adjusted_saturation",
+                        String.format("%.1f", FoodQualityEffects.adjustedSaturationGain(
+                                stack,
+                                event.getEntity(),
+                                quality
+                        ))
+                ).withStyle(ChatFormatting.DARK_GREEN));
             }
         });
     }
@@ -68,4 +90,5 @@ public final class FoodQualityTooltipEvents {
         }
         return String.format("%d:%02d", minutes, seconds);
     }
+
 }

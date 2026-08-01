@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.magu1436.craftbound.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "craftbound.refmap.json",
+  "mixins": [
+    "AbstractFurnaceBlockEntityMixin",
+    "CampfireBlockEntityMixin",
+    "ComposterBlockMixin",
+    "CraftingMenuMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

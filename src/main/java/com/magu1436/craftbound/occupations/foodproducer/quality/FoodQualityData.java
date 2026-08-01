@@ -18,6 +18,7 @@ public final class FoodQualityData {
     private static final String LAST_UPDATE_TAG = "last_update_game_time";
     private static final String PRESERVATION_MULTIPLIER_TAG = "preservation_multiplier";
     private static final String CLOCK_RUNNING_TAG = "clock_running";
+    private static final String TEST_FROZEN_TAG = "test_frozen";
 
     private FoodQualityData() {
     }
@@ -38,6 +39,19 @@ public final class FoodQualityData {
         return get(stack).orElse(FoodQuality.STANDARD);
     }
 
+    public static boolean isSpoiled(ItemStack stack) {
+        return get(stack).filter(quality -> quality == FoodQuality.SPOILED).isPresent();
+    }
+
+    public static boolean containsSpoiled(Iterable<ItemStack> stacks) {
+        for (ItemStack stack : stacks) {
+            if (isSpoiled(stack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean initialize(ItemStack stack, FoodQuality quality, long gameTime) {
         Optional<FoodQualityCategory> category = FoodQualityItems.category(stack);
         if (category.isEmpty()) {
@@ -45,6 +59,7 @@ public final class FoodQualityData {
         }
 
         set(stack, quality, category.get(), category.get().stageDurationTicks(), gameTime, 1.0D);
+        stack.getOrCreateTagElement(ROOT_TAG).remove(TEST_FROZEN_TAG);
         return true;
     }
 
@@ -82,6 +97,13 @@ public final class FoodQualityData {
         FoodQuality quality = FoodQuality.fromValue(tag.getInt(QUALITY_TAG));
         FoodQualityCategory category = readCategory(tag, stack);
         double currentMultiplier = Math.max(1.0D, preservationMultiplier);
+
+        if (tag.getBoolean(TEST_FROZEN_TAG)) {
+            tag.putLong(LAST_UPDATE_TAG, gameTime);
+            tag.putDouble(PRESERVATION_MULTIPLIER_TAG, currentMultiplier);
+            tag.putBoolean(CLOCK_RUNNING_TAG, false);
+            return 0;
+        }
 
         if (tag.contains(CLOCK_RUNNING_TAG, Tag.TAG_BYTE) && !tag.getBoolean(CLOCK_RUNNING_TAG)) {
             resetClock(stack, gameTime, currentMultiplier);
@@ -141,6 +163,12 @@ public final class FoodQualityData {
             return;
         }
         CompoundTag tag = stack.getOrCreateTagElement(ROOT_TAG);
+        if (tag.getBoolean(TEST_FROZEN_TAG)) {
+            tag.putLong(LAST_UPDATE_TAG, gameTime);
+            tag.putDouble(PRESERVATION_MULTIPLIER_TAG, Math.max(1.0D, preservationMultiplier));
+            tag.putBoolean(CLOCK_RUNNING_TAG, false);
+            return;
+        }
         tag.putLong(LAST_UPDATE_TAG, gameTime);
         tag.putDouble(PRESERVATION_MULTIPLIER_TAG, Math.max(1.0D, preservationMultiplier));
         tag.putBoolean(CLOCK_RUNNING_TAG, true);
@@ -173,6 +201,30 @@ public final class FoodQualityData {
         return getRemainingBaseTicks(stack) * getPreservationMultiplier(stack);
     }
 
+    /** 現在品質から腐敗までの、現在の保存倍率を反映した残り実時間を返す。 */
+    public static double getRemainingUntilSpoiledRealTicks(ItemStack stack) {
+        Optional<FoodQuality> quality = get(stack);
+        if (quality.isEmpty() || quality.get() == FoodQuality.SPOILED) {
+            return 0.0D;
+        }
+        CompoundTag tag = stack.getTagElement(ROOT_TAG);
+        FoodQualityCategory category = tag == null
+                ? FoodQualityItems.category(stack).orElse(FoodQualityCategory.MATERIAL)
+                : readCategory(tag, stack);
+        int fullStagesAfterCurrent = Math.max(0, quality.get().value() - 1);
+        double baseTicks = getRemainingBaseTicks(stack)
+                + fullStagesAfterCurrent * category.stageDurationTicks();
+        return baseTicks * getPreservationMultiplier(stack);
+    }
+
+    public static Optional<FoodQualityCategory> getCategory(ItemStack stack) {
+        CompoundTag tag = stack.getTagElement(ROOT_TAG);
+        if (tag == null) {
+            return FoodQualityItems.category(stack);
+        }
+        return Optional.of(readCategory(tag, stack));
+    }
+
     public static double getPreservationMultiplier(ItemStack stack) {
         CompoundTag tag = stack.getTagElement(ROOT_TAG);
         if (tag == null || !tag.contains(PRESERVATION_MULTIPLIER_TAG, Tag.TAG_ANY_NUMERIC)) {
@@ -186,6 +238,32 @@ public final class FoodQualityData {
         return tag == null
                 || !tag.contains(CLOCK_RUNNING_TAG, Tag.TAG_BYTE)
                 || tag.getBoolean(CLOCK_RUNNING_TAG);
+    }
+
+    /** OP向けテストコマンドで、品質を時間経過から完全に固定する。 */
+    public static void freezeForTesting(ItemStack stack, long gameTime) {
+        if (!hasQuality(stack)) {
+            return;
+        }
+        CompoundTag tag = stack.getOrCreateTagElement(ROOT_TAG);
+        tag.putBoolean(TEST_FROZEN_TAG, true);
+        tag.putLong(LAST_UPDATE_TAG, gameTime);
+        tag.putBoolean(CLOCK_RUNNING_TAG, false);
+    }
+
+    public static void unfreezeForTesting(ItemStack stack, long gameTime) {
+        CompoundTag tag = stack.getTagElement(ROOT_TAG);
+        if (tag == null) {
+            return;
+        }
+        tag.remove(TEST_FROZEN_TAG);
+        tag.putLong(LAST_UPDATE_TAG, gameTime);
+        tag.putBoolean(CLOCK_RUNNING_TAG, true);
+    }
+
+    public static boolean isFrozenForTesting(ItemStack stack) {
+        CompoundTag tag = stack.getTagElement(ROOT_TAG);
+        return tag != null && tag.getBoolean(TEST_FROZEN_TAG);
     }
 
     /**

@@ -31,7 +31,10 @@ public final class FoodQualityItems {
             Items.CHICKEN,
             Items.RABBIT,
             Items.MILK_BUCKET,
-            Items.EGG,
+            Items.EGG
+    );
+
+    private static final Set<Item> DISHES = Set.of(
             Items.BREAD,
             Items.BAKED_POTATO,
             Items.COOKED_BEEF,
@@ -40,14 +43,10 @@ public final class FoodQualityItems {
             Items.COOKED_CHICKEN,
             Items.COOKED_RABBIT,
             Items.COOKIE,
-            Items.PUMPKIN_PIE
-    );
-
-    private static final Set<Item> DISHES = Set.of(
+            Items.PUMPKIN_PIE,
             Items.MUSHROOM_STEW,
             Items.BEETROOT_SOUP,
             Items.RABBIT_STEW,
-            Items.SUSPICIOUS_STEW,
             Items.CAKE
     );
 
