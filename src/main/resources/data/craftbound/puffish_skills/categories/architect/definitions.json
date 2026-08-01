@@ -10,7 +10,7 @@
         "description": "足場ブロック上での移動速度を10%上げる",
         "rewards": [
             {
-                "type": "scaffolding_mobility_reward",
+                "type": "craftbound:scaffolding_mobility_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "22491743-1519-8998-1382-e90e09d34d06"
@@ -29,7 +29,7 @@
         "description": "足場ブロック上での移動速度をさらに10%上げる",
         "rewards": [
             {
-                "type": "scaffolding_mobility_reward",
+                "type": "craftbound:scaffolding_mobility_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "640546fd-98ce-993e-5468-65961a2c6a2d"
@@ -48,7 +48,7 @@
         "description": "足場ブロック上での移動速度をさらに10%上げる",
         "rewards": [
             {
-                "type": "scaffolding_mobility_reward",
+                "type": "craftbound:scaffolding_mobility_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "842b1439-210d-dbc7-fb0d-fd9fe511b28d"
@@ -67,7 +67,7 @@
         "description": "足場ブロック上での移動速度をさらに10%上げる",
         "rewards": [
             {
-                "type": "scaffolding_mobility_reward",
+                "type": "craftbound:scaffolding_mobility_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "b3bef4af-afa7-1cf4-b7d0-89ed0b185357"
@@ -86,7 +86,7 @@
         "description": "足場ブロック上での移動速度をさらに10%上げる",
         "rewards": [
             {
-                "type": "scaffolding_mobility_reward",
+                "type": "craftbound:scaffolding_mobility_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "ce2a79e4-caa9-5d2d-b6e8-ae62314baf52"
@@ -105,7 +105,7 @@
         "description": "プレイヤーが設置したブロックの破壊速度を15%上げる",
         "rewards": [
             {
-                "type": "demolition_speed_reward",
+                "type": "craftbound:demolition_speed_reward",
                 "data": {
                     "amount": 0.15,
                     "modifier_uuid": "dcf0b292-d0dd-4f61-da3f-79c2c16f2584"
@@ -124,7 +124,7 @@
         "description": "プレイヤーが設置したブロックの破壊速度をさらに15%上げる",
         "rewards": [
             {
-                "type": "demolition_speed_reward",
+                "type": "craftbound:demolition_speed_reward",
                 "data": {
                     "amount": 0.15,
                     "modifier_uuid": "b99fae85-ee78-1a8b-60c3-ae09c3cadb32"
@@ -143,7 +143,7 @@
         "description": "プレイヤーが設置したブロックの破壊速度をさらに20%上げる",
         "rewards": [
             {
-                "type": "demolition_speed_reward",
+                "type": "craftbound:demolition_speed_reward",
                 "data": {
                     "amount": 0.20,
                     "modifier_uuid": "f0dcc766-7107-5df8-5110-a3dab2c817d4"
@@ -162,7 +162,7 @@
         "description": "プレイヤーが設置したブロックの破壊速度をさらに25%上げる",
         "rewards": [
             {
-                "type": "demolition_speed_reward",
+                "type": "craftbound:demolition_speed_reward",
                 "data": {
                     "amount": 0.25,
                     "modifier_uuid": "139237ae-f2bc-3c92-54e7-7658f4d4c547"
@@ -181,7 +181,7 @@
         "description": "プレイヤーが設置したブロックの破壊速度をさらに25%上げる",
         "rewards": [
             {
-                "type": "demolition_speed_reward",
+                "type": "craftbound:demolition_speed_reward",
                 "data": {
                     "amount": 0.25,
                     "modifier_uuid": "db87a987-e881-6480-b9a2-c803675d9608"
@@ -200,7 +200,7 @@
         "description": "プレイヤーが設置することが可能な距離を増やす",
         "rewards": [
             {
-                "type": "placement_reach_reward",
+                "type": "craftbound:placement_reach_reward",
                 "data": {
                     "amount": 0.25,
                     "modifier_uuid": "f75ee7c8-0984-61a5-f469-c0e30db859bf"
@@ -219,7 +219,7 @@
         "description": "プレイヤーが設置することが可能な距離をさらに増やす",
         "rewards": [
             {
-                "type": "placement_reach_reward",
+                "type": "craftbound:placement_reach_reward",
                 "data": {
                     "amount": 0.25,
                     "modifier_uuid": "0ee35f36-8151-be04-e475-3079fc7ae507"
@@ -238,7 +238,7 @@
         "description": "プレイヤーが設置することが可能な距離をさらに増やす",
         "rewards": [
             {
-                "type": "placement_reach_reward",
+                "type": "craftbound:placement_reach_reward",
                 "data": {
                     "amount": 0.25,
                     "modifier_uuid": "2aaec441-cc69-736b-6192-a159a82e1f03"
@@ -257,7 +257,7 @@
         "description": "プレイヤーが設置することが可能な距離をさらに増やす",
         "rewards": [
             {
-                "type": "placement_reach_reward",
+                "type": "craftbound:placement_reach_reward",
                 "data": {
                     "amount": 0.25,
                     "modifier_uuid": "98c6c632-df42-b310-6d83-8521e114afb6"
@@ -276,7 +276,7 @@
         "description": "プレイヤーが設置することが可能な距離をさらに増やす",
         "rewards": [
             {
-                "type": "placement_reach_reward",
+                "type": "craftbound:placement_reach_reward",
                 "data": {
                     "amount": 0.50,
                     "modifier_uuid": "7ee9218e-3e9d-1be0-6c42-27dfe64b5432"
@@ -295,7 +295,7 @@
         "description": "落下ダメージを軽減する",
         "rewards": [
             {
-                "type": "fall_protection_reward",
+                "type": "craftbound:fall_protection_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "b030d6a6-cdfd-aa61-ea48-47d7cd182800"
@@ -314,7 +314,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "fall_protection_reward",
+                "type": "craftbound:fall_protection_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "d78df217-0154-e7f9-2c99-7ee2099cc3aa"
@@ -333,7 +333,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "fall_protection_reward",
+                "type": "craftbound:fall_protection_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "a7506736-f811-c9ef-3ac6-c7e0f8ab2c64"
@@ -352,7 +352,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "fall_protection_reward",
+                "type": "craftbound:fall_protection_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "8875cb28-6ca7-5039-7e3c-316bf37ff1f3"
@@ -371,7 +371,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "fall_protection_reward",
+                "type": "craftbound:fall_protection_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "5f790b8d-8f70-d985-9315-c59fe3757155"
@@ -390,7 +390,7 @@
         "description": "エリトラ飛行用花火を確率で消費しないようになる",
         "rewards": [
             {
-                "type": "firework_conservation_reward",
+                "type": "craftbound:firework_conservation_chance_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "779d7871-39aa-18d0-fdf8-9206ca6fa879"
@@ -409,7 +409,7 @@
         "description": "エリトラ飛行用花火をさらに確率で消費しないようになる",
         "rewards": [
             {
-                "type": "firework_conservation_reward",
+                "type": "craftbound:firework_conservation_chance_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "e1bfd041-d4f4-535e-9733-f4f819f8054e"
@@ -428,7 +428,7 @@
         "description": "エリトラ飛行用花火をさらに確率で消費しないようになる",
         "rewards": [
             {
-                "type": "firework_conservation_reward",
+                "type": "craftbound:firework_conservation_chance_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "13c1f1f5-94c9-641e-5023-83014d3b4904"
@@ -447,7 +447,7 @@
         "description": "エリトラ飛行用花火をさらに確率で消費しないようになる",
         "rewards": [
             {
-                "type": "firework_conservation_reward",
+                "type": "craftbound:firework_conservation_chance_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "209fe438-b9be-7df0-a80c-bd1351d2088a"
@@ -466,7 +466,7 @@
         "description": "エリトラ飛行用花火をさらに確率で消費しないようになる",
         "rewards": [
             {
-                "type": "firework_conservation_reward",
+                "type": "craftbound:firework_conservation_chance_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "1d24b665-6f76-6ec0-d283-9f71a393d89d"
