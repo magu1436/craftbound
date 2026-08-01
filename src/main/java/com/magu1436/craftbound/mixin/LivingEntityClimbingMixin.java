@@ -1,5 +1,6 @@
 package com.magu1436.craftbound.mixin;
 
+import com.magu1436.craftbound.occupations.architect.ScaffoldingMobilityService;
 import com.magu1436.craftbound.occupations.explorer.ClimbingService;
 
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityClimbingMixin {
+
+    private static final double VANILLA_SCAFFOLDING_UPWARD_SPEED = 0.42D;
 
     @Shadow
     protected boolean jumping;
@@ -40,7 +43,14 @@ public abstract class LivingEntityClimbingMixin {
             return vanillaMinimumY;
         }
 
-        double bonus = ClimbingService.getSpeedBonus(player);
+        double bonus;
+        if (ScaffoldingMobilityService.isInsideScaffolding(player)) {
+            bonus = player.isShiftKeyDown()
+                ? ScaffoldingMobilityService.getVerticalSpeedBonus(player)
+                : 0.0D;
+        } else {
+            bonus = ClimbingService.getSpeedBonus(player);
+        }
         return vanillaMinimumY * (1.0D + bonus);
     }
 
@@ -57,23 +67,37 @@ public abstract class LivingEntityClimbingMixin {
             return;
         }
 
-        double bonus = ClimbingService.getSpeedBonus(player);
+        boolean insideScaffolding =
+            ScaffoldingMobilityService.isInsideScaffolding(player);
+        double bonus = insideScaffolding
+            ? ScaffoldingMobilityService.getVerticalSpeedBonus(player)
+            : ClimbingService.getSpeedBonus(player);
         if (bonus <= 0.0D) {
             return;
         }
 
         boolean hasHorizontalInput =
             movementInput.horizontalDistanceSqr() > 1.0E-7D;
-        boolean activelyClimbing =
-            this.jumping || player.horizontalCollision && hasHorizontalInput;
+        boolean activelyClimbing = insideScaffolding
+            ? this.jumping
+            : this.jumping
+                || player.horizontalCollision && hasHorizontalInput;
         Vec3 velocity = player.getDeltaMovement();
         if (!activelyClimbing || velocity.y <= 0.0D) {
             return;
         }
 
+        double adjustedY = velocity.y * (1.0D + bonus);
+        if (insideScaffolding) {
+            adjustedY = Math.min(
+                adjustedY,
+                VANILLA_SCAFFOLDING_UPWARD_SPEED * (1.0D + bonus)
+            );
+        }
+
         player.setDeltaMovement(
             velocity.x,
-            velocity.y * (1.0D + bonus),
+            adjustedY,
             velocity.z
         );
     }
