@@ -108,7 +108,6 @@ public class Craftbound
         AdventurerRewardsFactory.registerRewards();
         ArchitectRewardFactory.registerRewards();
         ExplorerRewardsFactory.registerRewards();
-        ArchitectRewardFactory.registerRewards();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
