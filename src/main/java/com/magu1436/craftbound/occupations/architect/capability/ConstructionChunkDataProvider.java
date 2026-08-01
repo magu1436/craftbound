@@ -11,22 +11,25 @@ import net.minecraftforge.common.util.LazyOptional;
 import com.magu1436.craftbound.registry.CraftboundCapabilities;
 
 /**
- * 設置履歴CapabilityをLevelChunkへ公開するProvider。
+ * 建築チャンクデータCapabilityをLevelChunkへ公開するProvider。
  */
-public final class PlayerPlacedBlockProvider
+public final class ConstructionChunkDataProvider
     implements ICapabilitySerializable<CompoundTag> {
 
-    private final PlayerPlacedBlockData data =
-        new PlayerPlacedBlockDataImpl();
-    private final LazyOptional<PlayerPlacedBlockData> optional =
-        LazyOptional.of(() -> data);
+    private final ConstructionChunkData data;
+    private final LazyOptional<ConstructionChunkData> optional;
+
+    public ConstructionChunkDataProvider(int minBuildHeight) {
+        data = new ConstructionChunkDataImpl(minBuildHeight);
+        optional = LazyOptional.of(() -> data);
+    }
 
     @Override
     public <T> LazyOptional<T> getCapability(
         Capability<T> capability,
         @Nullable Direction side
     ) {
-        return CraftboundCapabilities.PLAYER_PLACED_BLOCKS.orEmpty(
+        return CraftboundCapabilities.CONSTRUCTION_CHUNK_DATA.orEmpty(
             capability,
             optional
         );

@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-import com.magu1436.craftbound.occupations.architect.capability.PlayerPlacedBlockAccess;
+import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataAccess;
 import com.magu1436.craftbound.occupations.architect.network.PlayerPlacedBlockSync;
 
 /**
@@ -77,7 +77,7 @@ public final class PlayerPlacedBlockRemovalQueue {
             }
 
             LongArrayList actuallyRemoved =
-                PlayerPlacedBlockAccess.removeAll(
+                ConstructionChunkDataAccess.clearAllPlayerPlaced(
                     chunk,
                     entry.getValue()
                 );
@@ -100,7 +100,7 @@ public final class PlayerPlacedBlockRemovalQueue {
         BlockPos pos
     ) {
         if (!level.hasChunkAt(pos)
-            || !PlayerPlacedBlockAccess.contains(level, pos)) {
+            || !ConstructionChunkDataAccess.isPlayerPlaced(level, pos)) {
             return;
         }
 
@@ -111,7 +111,7 @@ public final class PlayerPlacedBlockRemovalQueue {
                 pos.getZ() >> 4
             );
             if (chunk != null
-                && PlayerPlacedBlockAccess.remove(level, pos)) {
+                && ConstructionChunkDataAccess.clearPlayerPlaced(level, pos)) {
                 LongArrayList removed = new LongArrayList(1);
                 removed.add(pos.asLong());
                 PlayerPlacedBlockSync.sendRemoved(

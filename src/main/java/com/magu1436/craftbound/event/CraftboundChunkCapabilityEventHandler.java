@@ -2,7 +2,7 @@ package com.magu1436.craftbound.event;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.common.CraftboundUtilities;
-import com.magu1436.craftbound.occupations.architect.capability.PlayerPlacedBlockProvider;
+import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataProvider;
 
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -27,8 +27,10 @@ public final class CraftboundChunkCapabilityEventHandler {
     public static void attachChunkCapabilities(
         AttachCapabilitiesEvent<LevelChunk> event
     ) {
-        PlayerPlacedBlockProvider provider =
-            new PlayerPlacedBlockProvider();
+        ConstructionChunkDataProvider provider =
+            new ConstructionChunkDataProvider(
+                event.getObject().getMinBuildHeight()
+            );
 
         event.addCapability(
             CraftboundUtilities.createResourceLocation(

@@ -19,7 +19,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import com.magu1436.craftbound.Craftbound;
-import com.magu1436.craftbound.occupations.architect.capability.PlayerPlacedBlockAccess;
+import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataAccess;
 import com.magu1436.craftbound.occupations.architect.events.PlayerPlacedBlockRemovalQueue;
 import com.magu1436.craftbound.occupations.architect.network.PlayerPlacedBlockSync;
 
@@ -139,7 +139,8 @@ public final class CraftboundPlayerPlacedBlockEventHandler {
                 continue;
             }
 
-            LongArrayList actuallyAdded = PlayerPlacedBlockAccess.addAll(
+            LongArrayList actuallyAdded =
+                ConstructionChunkDataAccess.markAllPlayerPlaced(
                 chunk,
                 entry.getValue()
             );
