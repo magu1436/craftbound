@@ -33,6 +33,7 @@ public final class ConstructionChunkDataImpl
     private static final String PLAYER_KEY = "Player";
     private static final String MATURE_AT_KEY = "MatureAt";
     private static final String LIFETIME_USE_COUNT_KEY = "LifetimeUseCount";
+    private static final String RECENT_USE_COUNT_KEY = "RecentUseCount";
 
     private final int minBuildHeight;
     private final Int2ByteOpenHashMap positionStates =
@@ -132,6 +133,10 @@ public final class ConstructionChunkDataImpl
             pendingTag.putInt(
                 LIFETIME_USE_COUNT_KEY,
                 pending.lifetimeUseCountSnapshot()
+            );
+            pendingTag.putInt(
+                RECENT_USE_COUNT_KEY,
+                pending.recentUseCountSnapshot()
             );
             pendingTags.add(pendingTag);
         }
@@ -246,7 +251,10 @@ public final class ConstructionChunkDataImpl
                     blockId,
                     pendingTag.getUUID(PLAYER_KEY),
                     pendingTag.getLong(MATURE_AT_KEY),
-                    pendingTag.getInt(LIFETIME_USE_COUNT_KEY)
+                    pendingTag.getInt(LIFETIME_USE_COUNT_KEY),
+                    pendingTag.contains(RECENT_USE_COUNT_KEY, Tag.TAG_INT)
+                        ? pendingTag.getInt(RECENT_USE_COUNT_KEY)
+                        : 1
                 )
             );
         }

@@ -11,7 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 
 /**
- * オフライン中のプレイヤーへ渡す建築経験値をワールドへ保存する。
+ * オフライン中のプレイヤーへ渡す施工ポイント単位をワールドへ保存する。
  */
 public final class ArchitectPendingExperienceData extends SavedData {
     private static final String DATA_NAME =

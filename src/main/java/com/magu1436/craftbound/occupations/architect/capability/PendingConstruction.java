@@ -11,6 +11,7 @@ public record PendingConstruction(
     ResourceLocation expectedBlockId,
     UUID playerId,
     long matureAtGameTime,
-    int lifetimeUseCountSnapshot
+    int lifetimeUseCountSnapshot,
+    int recentUseCountSnapshot
 ) {
 }

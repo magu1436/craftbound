@@ -50,9 +50,11 @@ public final class ConstructionConfirmationService {
         ConstructionChunkDataAccess.removePending(level, pos);
         ArchitectExperienceService.grant(
             level,
+            pos,
             pending.playerId(),
             state,
-            pending.lifetimeUseCountSnapshot()
+            pending.lifetimeUseCountSnapshot(),
+            pending.recentUseCountSnapshot()
         );
     }
 }

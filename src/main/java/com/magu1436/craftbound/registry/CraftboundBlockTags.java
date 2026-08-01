@@ -18,11 +18,27 @@ public final class CraftboundBlockTags {
             )
             );
 
-    public static final TagKey<Block> ARCHITECT_EXPERIENCE_BLACKLIST =
+    public static final TagKey<Block> ARCHITECT_XP_BLACKLIST =
         TagKey.create(
             Registries.BLOCK,
             CraftboundUtilities.createResourceLocation(
-                "architect_experience_blacklist"
+                "architect_xp_blacklist"
+            )
+        );
+
+    public static final TagKey<Block> ARCHITECT_XP_WHITELIST =
+        TagKey.create(
+            Registries.BLOCK,
+            CraftboundUtilities.createResourceLocation(
+                "architect_xp_whitelist"
+            )
+        );
+
+    public static final TagKey<Block> ARCHITECT_XP_REDUCED =
+        TagKey.create(
+            Registries.BLOCK,
+            CraftboundUtilities.createResourceLocation(
+                "architect_xp_reduced"
             )
         );
 

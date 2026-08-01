@@ -5,6 +5,7 @@ import com.magu1436.craftbound.common.CraftboundUtilities;
 import com.magu1436.craftbound.common.capability.PlayerCapabilityData;
 import com.magu1436.craftbound.common.capability.PlayerCapabilityProvider;
 import com.magu1436.craftbound.occupations.adventurer.capability.AdventurerData;
+import com.magu1436.craftbound.occupations.architect.capability.ArchitectData;
 import com.magu1436.craftbound.registry.CraftboundCapabilities;
 
 import net.minecraft.world.entity.Entity;
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 )
 public final class CraftboundPlayerCapabilityEventHandler {
     private static final String ADVENTURER_DATA_ID = "adventurer_data";
+    private static final String ARCHITECT_DATA_ID = "architect_data";
 
     private CraftboundPlayerCapabilityEventHandler() {
     }
@@ -36,16 +38,24 @@ public final class CraftboundPlayerCapabilityEventHandler {
             return;
         }
 
-        PlayerCapabilityProvider<?> provider =
+        PlayerCapabilityProvider<?> adventurerProvider =
             createAdventurerDataProvider();
 
         event.addCapability(
             CraftboundUtilities.createResourceLocation(
                 ADVENTURER_DATA_ID
             ),
-            provider
+            adventurerProvider
         );
-        event.addListener(provider::invalidate);
+        event.addListener(adventurerProvider::invalidate);
+
+        PlayerCapabilityProvider<?> architectProvider =
+            createArchitectDataProvider();
+        event.addCapability(
+            CraftboundUtilities.createResourceLocation(ARCHITECT_DATA_ID),
+            architectProvider
+        );
+        event.addListener(architectProvider::invalidate);
     }
 
     @SubscribeEvent
@@ -65,6 +75,11 @@ public final class CraftboundPlayerCapabilityEventHandler {
                 event.getEntity(),
                 CraftboundCapabilities.ADVENTURER_DATA
             );
+            copyOnDeath(
+                original,
+                event.getEntity(),
+                CraftboundCapabilities.ARCHITECT_DATA
+            );
         } finally {
             original.invalidateCaps();
         }
@@ -74,6 +89,13 @@ public final class CraftboundPlayerCapabilityEventHandler {
         return new PlayerCapabilityProvider<>(
             CraftboundCapabilities.ADVENTURER_DATA,
             AdventurerData::new
+        );
+    }
+
+    private static PlayerCapabilityProvider<?> createArchitectDataProvider() {
+        return new PlayerCapabilityProvider<>(
+            CraftboundCapabilities.ARCHITECT_DATA,
+            ArchitectData::new
         );
     }
 

@@ -8,6 +8,7 @@ import com.magu1436.craftbound.occupations.adventurer.experience.AdventurerMobKi
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.occupations.architect.rewards.ArchitectRewardFactory;
 import com.magu1436.craftbound.occupations.architect.experience.ArchitectConstructionExperienceSource;
+import com.magu1436.craftbound.occupations.architect.ArchitectConfig;
 import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
@@ -97,6 +98,11 @@ public class Craftbound
             ModConfig.Type.SERVER,
             AdventurerConfig.SPEC,
             "craftbound-adventurer.toml"
+        );
+        context.registerConfig(
+            ModConfig.Type.SERVER,
+            ArchitectConfig.SPEC,
+            "craftbound-architect.toml"
         );
 
         // Attributes の登録

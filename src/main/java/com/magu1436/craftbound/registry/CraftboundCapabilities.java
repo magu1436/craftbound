@@ -3,6 +3,7 @@ package com.magu1436.craftbound.registry;
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.adventurer.capability.IAdventurerData;
 import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkData;
+import com.magu1436.craftbound.occupations.architect.capability.IArchitectData;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -27,6 +28,9 @@ public final class CraftboundCapabilities {
         CONSTRUCTION_CHUNK_DATA =
             CapabilityManager.get(new CapabilityToken<>() {});
 
+    public static final Capability<IArchitectData> ARCHITECT_DATA =
+        CapabilityManager.get(new CapabilityToken<>() {});
+
     private CraftboundCapabilities() {
     }
 
@@ -34,5 +38,6 @@ public final class CraftboundCapabilities {
     public static void register(RegisterCapabilitiesEvent event) {
         event.register(IAdventurerData.class);
         event.register(ConstructionChunkData.class);
+        event.register(IArchitectData.class);
     }
 }

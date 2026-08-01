@@ -118,7 +118,7 @@ public final class ConstructionTrackingService {
                 || gameMode == GameType.ADVENTURE)
             && !state.isAir()
             && !state.is(
-                CraftboundBlockTags.ARCHITECT_EXPERIENCE_BLACKLIST
+                CraftboundBlockTags.ARCHITECT_XP_BLACKLIST
             );
     }
 
