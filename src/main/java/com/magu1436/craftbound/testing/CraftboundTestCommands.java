@@ -1,9 +1,19 @@
 package com.magu1436.craftbound.testing;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
+
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityItems;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchAnimalData;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchManagementEvents;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchManager;
+import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExperience;
+import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -12,11 +22,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.puffish.skillsmod.api.Category;
+import net.puffish.skillsmod.api.Experience;
+import net.puffish.skillsmod.api.SkillsAPI;
 
 /** OP権限を持つプレイテスター向けの状態準備・観測コマンド。 */
 @Mod.EventBusSubscriber(modid = Craftbound.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -33,31 +47,63 @@ public final class CraftboundTestCommands {
         qualitySet.then(qualityLiteral("low", FoodQuality.LOW));
         qualitySet.then(qualityLiteral("spoiled", FoodQuality.SPOILED));
 
-        event.getDispatcher().register(Commands.literal("craftbound")
-                .then(Commands.literal("test")
-                        .requires(source -> source.hasPermission(2))
-                        .then(Commands.literal("quality")
-                                .then(qualitySet)
-                                .then(Commands.literal("get")
-                                        .executes(context -> showHeldQuality(context.getSource())))
-                                .then(Commands.literal("resume")
-                                        .executes(context -> resumeHeldQuality(context.getSource()))))
-                        .then(Commands.literal("food")
-                                .then(Commands.literal("get")
-                                        .executes(context -> showFoodStatus(context.getSource())))
-                                .then(Commands.literal("reset")
-                                        .executes(context -> setFoodStatus(context.getSource(), 10, 0.0F)))
-                                .then(Commands.literal("set")
-                                        .then(Commands.argument("hunger", IntegerArgumentType.integer(0, 20))
-                                                .then(Commands.argument(
-                                                                "saturation",
-                                                                FloatArgumentType.floatArg(0.0F, 20.0F)
-                                                        )
-                                                        .executes(context -> setFoodStatus(
-                                                                context.getSource(),
-                                                                IntegerArgumentType.getInteger(context, "hunger"),
-                                                                FloatArgumentType.getFloat(context, "saturation")
-                                                        ))))))));
+        LiteralArgumentBuilder<CommandSourceStack> test = Commands.literal("test")
+                .requires(source -> source.hasPermission(2));
+
+        test.then(Commands.literal("quality")
+                .then(qualitySet)
+                .then(Commands.literal("get")
+                        .executes(context -> showHeldQuality(context.getSource())))
+                .then(Commands.literal("resume")
+                        .executes(context -> resumeHeldQuality(context.getSource()))));
+
+        test.then(Commands.literal("food")
+                .then(Commands.literal("get")
+                        .executes(context -> showFoodStatus(context.getSource())))
+                .then(Commands.literal("reset")
+                        .executes(context -> setFoodStatus(context.getSource(), 10, 0.0F)))
+                .then(Commands.literal("set")
+                        .then(Commands.argument("hunger", IntegerArgumentType.integer(0, 20))
+                                .then(Commands.argument("saturation", FloatArgumentType.floatArg(0.0F, 20.0F))
+                                        .executes(context -> setFoodStatus(
+                                                context.getSource(),
+                                                IntegerArgumentType.getInteger(context, "hunger"),
+                                                FloatArgumentType.getFloat(context, "saturation")
+                                        ))))));
+
+        test.then(Commands.literal("ranch")
+                .then(Commands.literal("status")
+                        .executes(context -> showNearestRanchAnimalStatus(context.getSource())))
+                .then(Commands.literal("feed_due")
+                        .executes(context -> setNearestFeedDue(context.getSource())))
+                .then(Commands.literal("feed_now")
+                        .executes(context -> feedNearestNow(context.getSource())))
+                .then(Commands.literal("child_grow")
+                        .then(Commands.argument("seconds", IntegerArgumentType.integer(1, 3600))
+                                .executes(context -> prepareNearestChildGrowth(
+                                        context.getSource(),
+                                        IntegerArgumentType.getInteger(context, "seconds")
+                                ))))
+                .then(Commands.literal("child_pause")
+                        .executes(context -> pauseNearestChild(context.getSource())))
+                .then(Commands.literal("child_resume")
+                        .executes(context -> resumeNearestChild(context.getSource())))
+                .then(Commands.literal("breeding_ready")
+                        .executes(context -> prepareNearestBreedingPair(context.getSource())))
+                .then(Commands.literal("force_extra")
+                        .executes(context -> forceNextExtraChild(context.getSource()))));
+
+        test.then(Commands.literal("experience")
+                .then(Commands.literal("get")
+                        .executes(context -> showFoodProducerExperience(context.getSource())))
+                .then(Commands.literal("add")
+                        .then(Commands.argument("amount", IntegerArgumentType.integer(1, 100000))
+                                .executes(context -> addFoodProducerExperience(
+                                        context.getSource(),
+                                        IntegerArgumentType.getInteger(context, "amount")
+                                )))));
+
+        event.getDispatcher().register(Commands.literal("craftbound").then(test));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> qualityLiteral(
@@ -153,6 +199,194 @@ public final class CraftboundTestCommands {
                 formatFloat(appliedSaturation)
         ), false);
         return hunger;
+    }
+
+    private static int showNearestRanchAnimalStatus(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        Animal animal = nearestAnimal(source, ignored -> true);
+        if (animal == null) return 0;
+        long now = animal.level().getGameTime();
+        long nextFeed = RanchAnimalData.hasNextFeedTime(animal)
+                ? Math.max(0L, RanchAnimalData.getNextFeedTime(animal) - now) / 20L
+                : -1L;
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.status",
+                animal.getDisplayName(),
+                RanchAnimalData.isFed(animal),
+                animal.isBaby() ? RanchAnimalData.getRemainingGrowth(animal) / 20 : 0,
+                nextFeed
+        ), false);
+        return 1;
+    }
+
+    private static int setNearestFeedDue(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        Animal animal = nearestAnimal(source, ignored -> true);
+        if (animal == null) return 0;
+        RanchAnimalData.setFed(animal, false);
+        RanchAnimalData.setNextFeedTime(animal, animal.level().getGameTime());
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.feed_due",
+                animal.getDisplayName()
+        ), false);
+        return 1;
+    }
+
+    private static int feedNearestNow(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        Animal animal = nearestAnimal(source, ignored -> true);
+        if (animal == null) return 0;
+        RanchAnimalData.setFed(animal, true);
+        RanchAnimalData.setNextFeedTime(
+                animal,
+                animal.level().getGameTime() + (animal.isBaby()
+                        ? RanchAnimalData.CHILD_FEED_INTERVAL_TICKS
+                        : RanchAnimalData.ADULT_FEED_INTERVAL_TICKS)
+        );
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.feed_now",
+                animal.getDisplayName()
+        ), false);
+        return 1;
+    }
+
+    private static int prepareNearestChildGrowth(CommandSourceStack source, int seconds)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        Animal animal = nearestAnimal(source, Animal::isBaby);
+        if (animal == null) return 0;
+        RanchAnimalData.ensureManaged(animal);
+        RanchAnimalData.setRemainingGrowth(animal, seconds * 20);
+        RanchAnimalData.setFed(animal, true);
+        RanchAnimalData.setNextFeedTime(
+                animal,
+                animal.level().getGameTime() + RanchAnimalData.CHILD_FEED_INTERVAL_TICKS
+        );
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.child_remaining",
+                animal.getDisplayName(),
+                seconds
+        ), false);
+        return 1;
+    }
+
+    private static int pauseNearestChild(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        Animal animal = nearestAnimal(source, Animal::isBaby);
+        if (animal == null) return 0;
+        RanchAnimalData.ensureManaged(animal);
+        RanchAnimalData.setFed(animal, false);
+        RanchAnimalData.setNextFeedTime(animal, animal.level().getGameTime() + 60L * 60L * 20L);
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.child_paused",
+                animal.getDisplayName()
+        ), false);
+        return 1;
+    }
+
+    private static int resumeNearestChild(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        Animal animal = nearestAnimal(source, Animal::isBaby);
+        if (animal == null) return 0;
+        RanchAnimalData.ensureManaged(animal);
+        RanchAnimalData.setFed(animal, true);
+        RanchAnimalData.setNextFeedTime(
+                animal,
+                animal.level().getGameTime() + RanchAnimalData.CHILD_FEED_INTERVAL_TICKS
+        );
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.child_resumed",
+                animal.getDisplayName()
+        ), false);
+        return 1;
+    }
+
+    private static int prepareNearestBreedingPair(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        Animal nearest = nearestAnimal(source, animal -> !animal.isBaby());
+        if (nearest == null) return 0;
+        RanchBlockEntity ranch = RanchManager.findManagingRanch(nearest);
+        if (ranch == null) {
+            source.sendFailure(Component.translatable("command.craftbound.test.ranch.no_ranch"));
+            return 0;
+        }
+        List<Animal> pair = RanchManager.getManagedAnimals(ranch).stream()
+                .filter(animal -> !animal.isBaby())
+                .sorted(Comparator.comparingDouble(player::distanceToSqr))
+                .limit(2)
+                .toList();
+        if (pair.size() < 2 || RanchManager.getManagedAnimals(ranch).size() >= ranch.getManagementCapacity()) {
+            source.sendFailure(Component.translatable("command.craftbound.test.ranch.no_pair_or_capacity"));
+            return 0;
+        }
+        long nextFeed = player.serverLevel().getGameTime() + RanchAnimalData.ADULT_FEED_INTERVAL_TICKS;
+        pair.forEach(animal -> {
+            animal.setAge(0);
+            animal.resetLove();
+            RanchAnimalData.setFed(animal, true);
+            RanchAnimalData.setNextFeedTime(animal, nextFeed);
+        });
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.breeding_ready",
+                pair.get(0).getDisplayName(),
+                pair.get(1).getDisplayName()
+        ), false);
+        return 1;
+    }
+
+    private static int forceNextExtraChild(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        RanchManagementEvents.forceNextExtraChild(source.getPlayerOrException());
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.ranch.force_extra"
+        ), false);
+        return 1;
+    }
+
+    private static int showFoodProducerExperience(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        Category category = SkillsAPI.getCategory(FoodProducerSkills.CATEGORY_ID).orElse(null);
+        Experience experience = category == null ? null : category.getExperience().orElse(null);
+        if (category == null || experience == null) {
+            source.sendFailure(Component.translatable("command.craftbound.test.experience.unavailable"));
+            return 0;
+        }
+        int level = experience.getLevel(player);
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.experience.get",
+                experience.getTotal(player),
+                level,
+                experience.getCurrent(player),
+                experience.getRequired(player, level),
+                category.getPointsLeft(player)
+        ), false);
+        return experience.getTotal(player);
+    }
+
+    private static int addFoodProducerExperience(CommandSourceStack source, int amount)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        if (!FoodProducerExperience.add(source.getPlayerOrException(), amount)) {
+            source.sendFailure(Component.translatable("command.craftbound.test.experience.unavailable"));
+            return 0;
+        }
+        return showFoodProducerExperience(source);
+    }
+
+    private static Animal nearestAnimal(CommandSourceStack source, Predicate<Animal> filter)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        Animal animal = player.serverLevel().getEntitiesOfClass(
+                        Animal.class,
+                        player.getBoundingBox().inflate(16.0D),
+                        candidate -> candidate.isAlive() && filter.test(candidate)
+                ).stream()
+                .min(Comparator.comparingDouble(player::distanceToSqr))
+                .orElse(null);
+        if (animal == null) {
+            source.sendFailure(Component.translatable("command.craftbound.test.ranch.no_nearby_animal"));
+        }
+        return animal;
     }
 
     private static Component qualityName(FoodQuality quality) {

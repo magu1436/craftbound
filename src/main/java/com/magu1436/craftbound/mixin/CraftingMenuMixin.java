@@ -40,17 +40,24 @@ public abstract class CraftingMenuMixin {
                 continue;
             }
 
-            ServerPlayer serverPlayer = (ServerPlayer) player;
-            result.setItem(0, ItemStack.EMPTY);
-            menu.setRemoteSlot(0, ItemStack.EMPTY);
-            serverPlayer.connection.send(new ClientboundContainerSetSlotPacket(
-                    menu.containerId,
-                    menu.incrementStateId(),
-                    0,
-                    ItemStack.EMPTY
-            ));
+            clearResult(menu, result, (ServerPlayer) player);
             callback.cancel();
             return;
         }
+    }
+
+    private static void clearResult(
+            AbstractContainerMenu menu,
+            ResultContainer result,
+            ServerPlayer player
+    ) {
+        result.setItem(0, ItemStack.EMPTY);
+        menu.setRemoteSlot(0, ItemStack.EMPTY);
+        player.connection.send(new ClientboundContainerSetSlotPacket(
+                menu.containerId,
+                menu.incrementStateId(),
+                0,
+                ItemStack.EMPTY
+        ));
     }
 }

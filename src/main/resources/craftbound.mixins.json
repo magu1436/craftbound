@@ -8,7 +8,10 @@
     "AbstractFurnaceBlockEntityMixin",
     "CampfireBlockEntityMixin",
     "ComposterBlockMixin",
-    "CraftingMenuMixin"
+    "CraftingMenuMixin",
+    "HopperBlockEntityMixin",
+    "accessor.CraftingMenuAccessor",
+    "accessor.TransientCraftingContainerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -150,6 +150,81 @@
         "item": "minecraft:lead"
       }
     },
+    "cost": 1,
+    "rewards": [
+      {
+        "type": "puffish_skills:command",
+        "data": {
+          "unlock_command": "recipe give @s craftbound:ranch_block",
+          "lock_command": "recipe take @s craftbound:ranch_block"
+        }
+      }
+    ]
+  },
+  "feed_management_1": {
+    "title": { "translate": "skill.craftbound.food_producer.feed_management_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.feed_management_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "feed_management_2": {
+    "title": { "translate": "skill.craftbound.food_producer.feed_management_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.feed_management_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "feed_management_3": {
+    "title": { "translate": "skill.craftbound.food_producer.feed_management_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.feed_management_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "ranch_capacity_1": {
+    "title": { "translate": "skill.craftbound.food_producer.ranch_capacity_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.ranch_capacity_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:oak_fence" } },
+    "cost": 1
+  },
+  "ranch_capacity_2": {
+    "title": { "translate": "skill.craftbound.food_producer.ranch_capacity_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.ranch_capacity_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:oak_fence" } },
+    "cost": 1
+  },
+  "ranch_capacity_3": {
+    "title": { "translate": "skill.craftbound.food_producer.ranch_capacity_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.ranch_capacity_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:oak_fence" } },
+    "cost": 1
+  },
+  "breeding_management_1": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_2": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_3": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_4": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_4.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_4.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_5": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_5.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_5.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
     "cost": 1
   },
   "meat_processing_1": {

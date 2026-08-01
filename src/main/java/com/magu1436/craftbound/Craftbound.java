@@ -3,15 +3,25 @@ package com.magu1436.craftbound;
 import com.mojang.logging.LogUtils;
 import com.magu1436.craftbound.occupations.foodproducer.farming.AgriculturalFertilizerItem;
 import com.magu1436.craftbound.occupations.foodproducer.loot.FoodProducerLootModifiers;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlock;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockRecipe;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchMenu;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,6 +35,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -42,6 +53,12 @@ public class Craftbound
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Create a Deferred Register to hold Items which will all be registered under the "craftbound" namespace
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES =
+            DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
+            DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "craftbound" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
@@ -62,6 +79,28 @@ public class Craftbound
             "compost",
             () -> new Item(new Item.Properties())
     );
+    public static final RegistryObject<Block> RANCH_BLOCK = BLOCKS.register(
+            "ranch_block",
+            () -> new RanchBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(2.5F)
+                    .sound(SoundType.WOOD))
+    );
+    public static final RegistryObject<Item> RANCH_BLOCK_ITEM = ITEMS.register(
+            "ranch_block",
+            () -> new BlockItem(RANCH_BLOCK.get(), new Item.Properties())
+    );
+    public static final RegistryObject<BlockEntityType<RanchBlockEntity>> RANCH_BLOCK_ENTITY =
+            BLOCK_ENTITY_TYPES.register(
+                    "ranch_block",
+                    () -> BlockEntityType.Builder.of(RanchBlockEntity::new, RANCH_BLOCK.get()).build(null)
+            );
+    public static final RegistryObject<MenuType<RanchMenu>> RANCH_MENU = MENU_TYPES.register(
+            "ranch_block",
+            () -> IForgeMenuType.create(RanchMenu::new)
+    );
+    public static final RegistryObject<RecipeSerializer<RanchBlockRecipe>> RANCH_BLOCK_RECIPE_SERIALIZER =
+            RECIPE_SERIALIZERS.register("ranch_block", RanchBlockRecipe.Serializer::new);
 
     // Creates a creative tab with the id "craftbound:example_tab" for the example item, that is placed after the combat tab
     public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
@@ -82,6 +121,9 @@ public class Craftbound
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
+        BLOCK_ENTITY_TYPES.register(modEventBus);
+        MENU_TYPES.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
         FoodProducerLootModifiers.register(modEventBus);
@@ -113,7 +155,10 @@ public class Craftbound
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
+        {
             event.accept(EXAMPLE_BLOCK_ITEM);
+            event.accept(RANCH_BLOCK_ITEM);
+        }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
         {
             event.accept(COMPOST);
@@ -136,9 +181,11 @@ public class Craftbound
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
+            event.enqueueWork(() -> MenuScreens.register(RANCH_MENU.get(), RanchScreen::new));
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
     }
+
 }

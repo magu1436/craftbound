@@ -25,6 +25,20 @@
   ["fertility_management_1", "fertility_management_2"],
   ["fertility_management_2", "fertility_management_3"],
 
+  ["ranch_management", "feed_management_1"],
+  ["feed_management_1", "feed_management_2"],
+  ["feed_management_2", "feed_management_3"],
+
+  ["ranch_management", "ranch_capacity_1"],
+  ["ranch_capacity_1", "ranch_capacity_2"],
+  ["ranch_capacity_2", "ranch_capacity_3"],
+
+  ["ranch_management", "breeding_management_1"],
+  ["breeding_management_1", "breeding_management_2"],
+  ["breeding_management_2", "breeding_management_3"],
+  ["breeding_management_3", "breeding_management_4"],
+  ["breeding_management_4", "breeding_management_5"],
+
   ["ranch_management", "meat_processing_1"],
   ["meat_processing_1", "meat_processing_2"],
   ["meat_processing_2", "meat_processing_3"],
