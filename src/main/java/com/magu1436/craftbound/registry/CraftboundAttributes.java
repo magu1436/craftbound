@@ -224,7 +224,15 @@ public final class CraftboundAttributes {
             createCraftboundAttribute(SCAFFOLDING_MOBILITY_NAME, 5.0D);
 
         public static final RegistryObject<Attribute> DEMOLITION_SPEED =
-            createCraftboundAttribute(DEMOLITION_SPEED_NAME, 5.0D);
+            ATTRIBUTES.register(
+                DEMOLITION_SPEED_NAME,
+                () -> new RangedAttribute(
+                    createTranslateName(DEMOLITION_SPEED_NAME),
+                    1.0D,
+                    1.0D,
+                    5.0D
+                ).setSyncable(true)
+            );
 
         public static final RegistryObject<Attribute> FALL_DAMAGE_REDUCTION =
             createCraftboundAttribute(FALL_DAMAGE_REDUCTION_NAME, 1.0D);

@@ -2,6 +2,7 @@ package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.adventurer.capability.IAdventurerData;
+import com.magu1436.craftbound.occupations.architect.capability.PlayerPlacedBlockData;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -22,11 +23,16 @@ public final class CraftboundCapabilities {
     public static final Capability<IAdventurerData> ADVENTURER_DATA =
         CapabilityManager.get(new CapabilityToken<>() {});
 
+    public static final Capability<PlayerPlacedBlockData>
+        PLAYER_PLACED_BLOCKS =
+            CapabilityManager.get(new CapabilityToken<>() {});
+
     private CraftboundCapabilities() {
     }
 
     @SubscribeEvent
     public static void register(RegisterCapabilitiesEvent event) {
         event.register(IAdventurerData.class);
+        event.register(PlayerPlacedBlockData.class);
     }
 }
