@@ -193,7 +193,7 @@ public final class CraftboundAttributes {
             createCraftboundAttribute(DIVING_NAME, 1.0D);
 
         public static final RegistryObject<Attribute> CLIMBING =
-            createCraftboundAttribute(CLIMBING_NAME, 10.0D);
+            createCraftboundAttribute(CLIMBING_NAME, 1.0D);
 
         public static final RegistryObject<Attribute> TOOL_CARE =
             createCraftboundAttribute(TOOL_CARE_NAME, 1.0D);
