@@ -3,6 +3,8 @@ package com.magu1436.craftbound.occupations.foodproducer.quality;
 import java.util.Optional;
 import java.util.Set;
 
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodIntermediateItem;
+
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -55,7 +57,7 @@ public final class FoodQualityItems {
 
     public static Optional<FoodQualityCategory> category(ItemStack stack) {
         Item item = stack.getItem();
-        if (MATERIALS.contains(item)) {
+        if (MATERIALS.contains(item) || item instanceof FoodIntermediateItem) {
             return Optional.of(FoodQualityCategory.MATERIAL);
         }
         if (DISHES.contains(item)) {

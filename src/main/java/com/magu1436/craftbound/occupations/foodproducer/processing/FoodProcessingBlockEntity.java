@@ -1,0 +1,388 @@
+package com.magu1436.craftbound.occupations.foodproducer.processing;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
+import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
+import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExperience;
+import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+
+/** 手動で開始する初期中間素材加工。開始時の材料・ランク・品質を固定する。 */
+public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
+
+    public static final int INPUT_0 = 0;
+    public static final int INPUT_1 = 1;
+    public static final int INPUT_2 = 2;
+    public static final int TOOL = 3;
+    public static final int OUTPUT = 4;
+    public static final int RETURN = 5;
+    public static final int CONTAINER_SIZE = 6;
+
+    public static final int DATA_STATION = 0;
+    public static final int DATA_OPERATION = 1;
+    public static final int DATA_PROGRESS = 2;
+    public static final int DATA_TOTAL = 3;
+    public static final int DATA_RUNNING = 4;
+    public static final int DATA_COUNT = 5;
+
+    private static final String OPERATION_TAG = "operation";
+    private static final String PROGRESS_TAG = "progress";
+    private static final String TOTAL_TAG = "total";
+    private static final String PENDING_OUTPUT_TAG = "pending_output";
+    private static final String PENDING_RETURN_TAG = "pending_return";
+    private static final String CONSUMED_TAG = "consumed_";
+    private static final String INITIATOR_TAG = "initiator";
+
+    private NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
+    private FoodProcessingOperation operation;
+    private int progress;
+    private int totalTicks;
+    private ItemStack pendingOutput = ItemStack.EMPTY;
+    private ItemStack pendingReturn = ItemStack.EMPTY;
+    private final int[] pendingConsumed = new int[3];
+    @Nullable
+    private UUID initiator;
+
+    private final ContainerData dataAccess = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case DATA_STATION -> station().ordinal();
+                case DATA_OPERATION -> currentOperation().ordinal();
+                case DATA_PROGRESS -> progress;
+                case DATA_TOTAL -> totalTicks;
+                case DATA_RUNNING -> isRunning() ? 1 : 0;
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+            switch (index) {
+                case DATA_OPERATION -> operation = operationByOrdinal(value);
+                case DATA_PROGRESS -> progress = Math.max(0, value);
+                case DATA_TOTAL -> totalTicks = Math.max(0, value);
+                default -> {
+                }
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return DATA_COUNT;
+        }
+    };
+
+    public FoodProcessingBlockEntity(BlockPos pos, BlockState state) {
+        super(Craftbound.FOOD_PROCESSING_BLOCK_ENTITY.get(), pos, state);
+        operation = FoodProcessingStation.fromBlock(state.getBlock()).defaultOperation();
+    }
+
+    public FoodProcessingStation station() {
+        return FoodProcessingStation.fromBlock(getBlockState().getBlock());
+    }
+
+    public FoodProcessingOperation currentOperation() {
+        FoodProcessingStation station = station();
+        if (station != FoodProcessingStation.COOKING_TABLE) {
+            return station.defaultOperation();
+        }
+        return operation == FoodProcessingOperation.MIX ? FoodProcessingOperation.MIX : FoodProcessingOperation.CUT;
+    }
+
+    public boolean selectOperation(FoodProcessingOperation requested) {
+        if (isRunning() || station() != FoodProcessingStation.COOKING_TABLE
+                || (requested != FoodProcessingOperation.CUT && requested != FoodProcessingOperation.MIX)) {
+            return false;
+        }
+        operation = requested;
+        setChanged();
+        return true;
+    }
+
+    public boolean start(ServerPlayer player) {
+        if (level == null || isRunning()
+                || !FoodProducerSkills.has(player, FoodProducerSkills.BASIC_PROCESSING)) {
+            return false;
+        }
+
+        List<ItemStack> inputs = inputCopies();
+        FoodProcessingRecipes.Match match = FoodProcessingRecipes.find(currentOperation(), inputs).orElse(null);
+        if (match == null || match.qualityInputs().stream().anyMatch(FoodQualityData::isSpoiled)) {
+            return false;
+        }
+        if (match.toolRequired() && !isUsableKnife(items.get(TOOL))) {
+            return false;
+        }
+
+        int rank = Math.max(0, Math.min(3,
+                FoodProducerSkills.rank(player, FoodProducerSkills.PROCESSING_TECHNIQUE)));
+        ItemStack output = match.output().copy();
+        FoodIntermediateData.setSuccess(output);
+        if (rank >= 2 && appliesExtraOutput(currentOperation())) {
+            output.grow(rank - 1);
+        }
+        FoodQualityData.inheritMinimum(match.qualityInputs(), output, level.getGameTime());
+
+        pendingOutput = output;
+        pendingReturn = match.returnedContainer().copy();
+        System.arraycopy(match.consumed(), 0, pendingConsumed, 0, pendingConsumed.length);
+        totalTicks = Math.max(1, Math.round(currentOperation().baseTicks() * (1.0F - rank * 0.1F)));
+        progress = 0;
+        initiator = player.getUUID();
+        setChanged();
+        return true;
+    }
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, FoodProcessingBlockEntity processor) {
+        if (level.isClientSide) {
+            return;
+        }
+        if (level.getGameTime() % 20L == 0L) {
+            for (int slot = INPUT_0; slot <= INPUT_2; slot++) {
+                ItemStack input = processor.items.get(slot);
+                if (!input.isEmpty()) {
+                    FoodQualityData.advanceLoadedTime(input, level.getGameTime(), 1.0D);
+                }
+            }
+        }
+        if (!processor.isRunning()) {
+            return;
+        }
+        processor.progress++;
+        if (processor.progress >= processor.totalTicks && processor.canFinish()) {
+            processor.finish();
+        }
+        processor.setChanged();
+    }
+
+    private boolean canFinish() {
+        return canMerge(items.get(OUTPUT), pendingOutput) && canMerge(items.get(RETURN), pendingReturn);
+    }
+
+    private void finish() {
+        for (int slot = 0; slot < pendingConsumed.length; slot++) {
+            items.get(slot).shrink(pendingConsumed[slot]);
+        }
+        if (currentOperation() == FoodProcessingOperation.CUT) {
+            ItemStack knife = items.get(TOOL);
+            if (!knife.isEmpty()) {
+                knife.setDamageValue(knife.getDamageValue() + 1);
+                if (knife.getDamageValue() >= knife.getMaxDamage()) {
+                    items.set(TOOL, ItemStack.EMPTY);
+                }
+            }
+        }
+        mergeInto(OUTPUT, pendingOutput);
+        mergeInto(RETURN, pendingReturn);
+        if (level instanceof ServerLevel serverLevel && initiator != null) {
+            ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(initiator);
+            if (player != null) {
+                FoodProducerExperience.add(player, 1);
+            }
+        }
+        clearPending();
+    }
+
+    public boolean finishForTesting() {
+        if (!isRunning()) {
+            return false;
+        }
+        progress = Math.max(progress, totalTicks - 20);
+        setChanged();
+        return true;
+    }
+
+    public boolean isRunning() {
+        return !pendingOutput.isEmpty() && totalTicks > 0;
+    }
+
+    public int progress() {
+        return progress;
+    }
+
+    public int totalTicks() {
+        return totalTicks;
+    }
+
+    public ContainerData dataAccess() {
+        return dataAccess;
+    }
+
+    public boolean slotLocked(int slot) {
+        return isRunning() && slot >= INPUT_0 && slot <= TOOL;
+    }
+
+    @Override
+    protected Component getDefaultName() {
+        return Component.translatable("container.craftbound.food_processing");
+    }
+
+    @Override
+    protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        return new FoodProcessingMenu(containerId, inventory, this, dataAccess);
+    }
+
+    @Override
+    public int getContainerSize() {
+        return CONTAINER_SIZE;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return items.stream().allMatch(ItemStack::isEmpty);
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return items.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        if (slotLocked(slot)) return ItemStack.EMPTY;
+        ItemStack removed = ContainerHelper.removeItem(items, slot, amount);
+        if (!removed.isEmpty()) setChanged();
+        return removed;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        if (slotLocked(slot)) return ItemStack.EMPTY;
+        return ContainerHelper.takeItem(items, slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        if (slotLocked(slot)) return;
+        items.set(slot, stack);
+        if (stack.getCount() > getMaxStackSize()) stack.setCount(getMaxStackSize());
+        setChanged();
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        if (slotLocked(slot) || slot == OUTPUT || slot == RETURN) return false;
+        return slot != TOOL || stack.is(Craftbound.COOKING_KNIFE.get());
+    }
+
+    @Override
+    public void clearContent() {
+        if (!isRunning()) {
+            items.clear();
+            setChanged();
+        }
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return level != null && level.getBlockEntity(worldPosition) == this
+                && player.distanceToSqr(worldPosition.getX() + 0.5D,
+                        worldPosition.getY() + 0.5D, worldPosition.getZ() + 0.5D) <= 64.0D;
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        ContainerHelper.saveAllItems(tag, items);
+        tag.putString(OPERATION_TAG, currentOperation().serializedName());
+        tag.putInt(PROGRESS_TAG, progress);
+        tag.putInt(TOTAL_TAG, totalTicks);
+        if (!pendingOutput.isEmpty()) tag.put(PENDING_OUTPUT_TAG, pendingOutput.save(new CompoundTag()));
+        if (!pendingReturn.isEmpty()) tag.put(PENDING_RETURN_TAG, pendingReturn.save(new CompoundTag()));
+        for (int slot = 0; slot < pendingConsumed.length; slot++) tag.putInt(CONSUMED_TAG + slot, pendingConsumed[slot]);
+        if (initiator != null) tag.putUUID(INITIATOR_TAG, initiator);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(tag, items);
+        operation = operationByName(tag.getString(OPERATION_TAG));
+        progress = Math.max(0, tag.getInt(PROGRESS_TAG));
+        totalTicks = Math.max(0, tag.getInt(TOTAL_TAG));
+        pendingOutput = tag.contains(PENDING_OUTPUT_TAG) ? ItemStack.of(tag.getCompound(PENDING_OUTPUT_TAG)) : ItemStack.EMPTY;
+        pendingReturn = tag.contains(PENDING_RETURN_TAG) ? ItemStack.of(tag.getCompound(PENDING_RETURN_TAG)) : ItemStack.EMPTY;
+        for (int slot = 0; slot < pendingConsumed.length; slot++) pendingConsumed[slot] = tag.getInt(CONSUMED_TAG + slot);
+        initiator = tag.hasUUID(INITIATOR_TAG) ? tag.getUUID(INITIATOR_TAG) : null;
+    }
+
+    private List<ItemStack> inputCopies() {
+        List<ItemStack> inputs = new ArrayList<>(3);
+        for (int slot = INPUT_0; slot <= INPUT_2; slot++) inputs.add(items.get(slot).copy());
+        return inputs;
+    }
+
+    private void clearPending() {
+        pendingOutput = ItemStack.EMPTY;
+        pendingReturn = ItemStack.EMPTY;
+        java.util.Arrays.fill(pendingConsumed, 0);
+        progress = 0;
+        totalTicks = 0;
+        initiator = null;
+        setChanged();
+    }
+
+    private void mergeInto(int slot, ItemStack added) {
+        if (added.isEmpty()) return;
+        ItemStack stored = items.get(slot);
+        if (stored.isEmpty()) {
+            items.set(slot, added.copy());
+        } else {
+            stored.grow(added.getCount());
+        }
+    }
+
+    private boolean canMerge(ItemStack stored, ItemStack added) {
+        if (added.isEmpty()) return true;
+        if (stored.isEmpty()) return added.getCount() <= added.getMaxStackSize();
+        if (stored.getCount() + added.getCount() > stored.getMaxStackSize()) return false;
+        if (ItemStack.isSameItemSameTags(stored, added)) return true;
+        return level != null && FoodQualityData.isMergeCompatible(stored, added)
+                && FoodQualityData.prepareForMerge(stored, added, level.getGameTime(), 1.0D);
+    }
+
+    private static boolean isUsableKnife(ItemStack stack) {
+        return stack.is(Craftbound.COOKING_KNIFE.get())
+                && stack.getDamageValue() < stack.getMaxDamage();
+    }
+
+    private static boolean appliesExtraOutput(FoodProcessingOperation operation) {
+        return operation == FoodProcessingOperation.CUT
+                || operation == FoodProcessingOperation.GRIND
+                || operation == FoodProcessingOperation.PRESERVE;
+    }
+
+    private static FoodProcessingOperation operationByName(String name) {
+        for (FoodProcessingOperation value : FoodProcessingOperation.values()) {
+            if (value.serializedName().equals(name)) return value;
+        }
+        return FoodProcessingOperation.CUT;
+    }
+
+    private static FoodProcessingOperation operationByOrdinal(int ordinal) {
+        FoodProcessingOperation[] values = FoodProcessingOperation.values();
+        return ordinal >= 0 && ordinal < values.length ? values[ordinal] : FoodProcessingOperation.CUT;
+    }
+}

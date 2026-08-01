@@ -270,6 +270,31 @@
         "item": "minecraft:crafting_table"
       }
     },
-    "cost": 1
+    "cost": 1,
+    "rewards": [
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_table","lock_command":"recipe take @s craftbound:cooking_table"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_knife","lock_command":"recipe take @s craftbound:cooking_knife"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:hand_mill","lock_command":"recipe take @s craftbound:hand_mill"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:drying_rack","lock_command":"recipe take @s craftbound:drying_rack"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_pot","lock_command":"recipe take @s craftbound:cooking_pot"}}
+    ]
+  },
+  "processing_technique_1": {
+    "title":{"translate":"skill.craftbound.food_producer.processing_technique_1.title"},
+    "description":{"translate":"skill.craftbound.food_producer.processing_technique_1.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:cooking_knife"}},
+    "cost":1
+  },
+  "processing_technique_2": {
+    "title":{"translate":"skill.craftbound.food_producer.processing_technique_2.title"},
+    "description":{"translate":"skill.craftbound.food_producer.processing_technique_2.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:hand_mill"}},
+    "cost":1
+  },
+  "processing_technique_3": {
+    "title":{"translate":"skill.craftbound.food_producer.processing_technique_3.title"},
+    "description":{"translate":"skill.craftbound.food_producer.processing_technique_3.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:drying_rack"}},
+    "cost":1
   }
 }

@@ -53,5 +53,8 @@
     "x": 64,
     "y": 0,
     "definition": "basic_processing"
-  }
+  },
+  "processing_technique_1": { "x": 64, "y": 48, "definition": "processing_technique_1" },
+  "processing_technique_2": { "x": 64, "y": 80, "definition": "processing_technique_2" },
+  "processing_technique_3": { "x": 64, "y": 112, "definition": "processing_technique_3" }
 }

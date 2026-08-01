@@ -43,5 +43,9 @@
   ["meat_processing_1", "meat_processing_2"],
   ["meat_processing_2", "meat_processing_3"],
   ["meat_processing_3", "meat_processing_4"],
-  ["meat_processing_4", "meat_processing_5"]
+  ["meat_processing_4", "meat_processing_5"],
+
+  ["basic_processing", "processing_technique_1"],
+  ["processing_technique_1", "processing_technique_2"],
+  ["processing_technique_2", "processing_technique_3"]
 ]

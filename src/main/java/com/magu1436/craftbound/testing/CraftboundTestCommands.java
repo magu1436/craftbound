@@ -4,8 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityItems;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchAnimalData;
@@ -20,6 +23,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.Animal;
@@ -102,6 +106,12 @@ public final class CraftboundTestCommands {
                                         context.getSource(),
                                         IntegerArgumentType.getInteger(context, "amount")
                                 )))));
+
+        test.then(Commands.literal("processing")
+                .then(Commands.literal("status")
+                        .executes(context -> showNearestProcessingStatus(context.getSource())))
+                .then(Commands.literal("finish")
+                        .executes(context -> finishNearestProcessing(context.getSource()))));
 
         event.getDispatcher().register(Commands.literal("craftbound").then(test));
     }
@@ -371,6 +381,55 @@ public final class CraftboundTestCommands {
             return 0;
         }
         return showFoodProducerExperience(source);
+    }
+
+    private static int showNearestProcessingStatus(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        FoodProcessingBlockEntity processor = nearestProcessing(source);
+        if (processor == null) return 0;
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.processing.status",
+                processor.station().serializedName(),
+                processor.currentOperation().serializedName(),
+                processor.isRunning(),
+                processor.progress(),
+                processor.totalTicks()
+        ), false);
+        return processor.isRunning() ? 1 : 0;
+    }
+
+    private static int finishNearestProcessing(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        FoodProcessingBlockEntity processor = nearestProcessing(source);
+        if (processor == null) return 0;
+        if (!processor.finishForTesting()) {
+            source.sendFailure(Component.translatable("command.craftbound.test.processing.not_running"));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.translatable("command.craftbound.test.processing.finish"), false);
+        return 1;
+    }
+
+    @Nullable
+    private static FoodProcessingBlockEntity nearestProcessing(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        BlockPos center = player.blockPosition();
+        FoodProcessingBlockEntity nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+        for (BlockPos pos : BlockPos.betweenClosed(center.offset(-16, -16, -16), center.offset(16, 16, 16))) {
+            if (player.serverLevel().getBlockEntity(pos) instanceof FoodProcessingBlockEntity candidate) {
+                double distance = pos.distSqr(center);
+                if (distance < nearestDistance) {
+                    nearest = candidate;
+                    nearestDistance = distance;
+                }
+            }
+        }
+        if (nearest == null) {
+            source.sendFailure(Component.translatable("command.craftbound.test.processing.none"));
+        }
+        return nearest;
     }
 
     private static Animal nearestAnimal(CommandSourceStack source, Predicate<Animal> filter)
