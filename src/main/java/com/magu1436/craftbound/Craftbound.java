@@ -7,6 +7,8 @@ import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementP
 import com.magu1436.craftbound.occupations.adventurer.experience.AdventurerMobKillExperienceSource;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.occupations.architect.rewards.ArchitectRewardFactory;
+import com.magu1436.craftbound.occupations.architect.experience.ArchitectConstructionExperienceSource;
+import com.magu1436.craftbound.occupations.architect.ArchitectConfig;
 import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
@@ -97,12 +99,18 @@ public class Craftbound
             AdventurerConfig.SPEC,
             "craftbound-adventurer.toml"
         );
+        context.registerConfig(
+            ModConfig.Type.SERVER,
+            ArchitectConfig.SPEC,
+            "craftbound-architect.toml"
+        );
 
         // Attributes の登録
         CraftboundAttributes.register(modEventBus);
 
         // 経験値源の登録
         AdventurerMobKillExperienceSource.register();
+        ArchitectConstructionExperienceSource.register();
 
         // 報酬の登録
         AdventurerRewardsFactory.registerRewards();

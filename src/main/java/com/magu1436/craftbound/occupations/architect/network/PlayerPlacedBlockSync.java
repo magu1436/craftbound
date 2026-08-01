@@ -10,7 +10,7 @@ import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.network.packet.ForgetPlayerPlacedChunkPacket;
 import com.magu1436.craftbound.network.packet.PlayerPlacedChunkDeltaPacket;
 import com.magu1436.craftbound.network.packet.PlayerPlacedChunkSnapshotPacket;
-import com.magu1436.craftbound.occupations.architect.capability.PlayerPlacedBlockAccess;
+import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataAccess;
 
 /**
  * 設置履歴のサーバーからクライアントへの同期を集約する。
@@ -31,7 +31,7 @@ public final class PlayerPlacedBlockSync {
             new PlayerPlacedChunkSnapshotPacket(
                 level.dimension().location(),
                 chunk.getPos(),
-                PlayerPlacedBlockAccess.getPositions(chunk)
+                ConstructionChunkDataAccess.getPlayerPlacedPositions(chunk)
             )
         );
     }
