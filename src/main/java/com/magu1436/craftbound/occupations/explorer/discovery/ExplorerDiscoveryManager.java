@@ -5,35 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.explorer.data.ExplorerDiscoveryData;
 import com.magu1436.craftbound.occupations.explorer.integration.ExplorerExperienceGateway.ExperienceGrantResult;
 import com.magu1436.craftbound.occupations.explorer.integration.PufferfishExplorerExperienceGateway;
+import com.magu1436.craftbound.occupations.explorer.notification.ExplorerDiscoveryNotifier;
 import com.magu1436.craftbound.occupations.explorer.registry.ExplorerDiscoveryRegistry;
 import com.magu1436.craftbound.registry.CraftboundCapabilities;
 import com.mojang.logging.LogUtils;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import org.slf4j.Logger;
 
 /** 発見スキャン、経験値付与、履歴保存、通知を統括する。 */
-@Mod.EventBusSubscriber(
-    modid = Craftbound.MODID,
-    bus = Mod.EventBusSubscriber.Bus.FORGE
-)
 public final class ExplorerDiscoveryManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final long ERROR_LOG_INTERVAL_TICKS = 20L * 60L;
@@ -45,16 +31,19 @@ public final class ExplorerDiscoveryManager {
     private final ExplorerDiscoveryScanner scanner;
     private final ExplorerCandidateTracker candidateTracker;
     private final PufferfishExplorerExperienceGateway experienceGateway;
+    private final ExplorerDiscoveryNotifier notifier;
     private final Map<String, Long> lastErrorLogTimes = new HashMap<>();
 
     private ExplorerDiscoveryManager(
         ExplorerDiscoveryScanner scanner,
         ExplorerCandidateTracker candidateTracker,
-        PufferfishExplorerExperienceGateway experienceGateway
+        PufferfishExplorerExperienceGateway experienceGateway,
+        ExplorerDiscoveryNotifier notifier
     ) {
         this.scanner = scanner;
         this.candidateTracker = candidateTracker;
         this.experienceGateway = experienceGateway;
+        this.notifier = notifier;
     }
 
     private static ExplorerDiscoveryManager create() {
@@ -64,13 +53,19 @@ public final class ExplorerDiscoveryManager {
         ExplorerDiscoveryManager manager = new ExplorerDiscoveryManager(
             new ExplorerDiscoveryScanner(
                 new BiomeDiscoveryDetector(registry),
-                new DimensionDiscoveryDetector(registry)
+                new DimensionDiscoveryDetector(registry),
+                new StructureDiscoveryDetector(registry)
             ),
             tracker,
-            new PufferfishExplorerExperienceGateway()
+            new PufferfishExplorerExperienceGateway(),
+            new ExplorerDiscoveryNotifier()
         );
         registry.setReloadCompletedCallback(manager::onDataPackReload);
         return manager;
+    }
+
+    public static ExplorerDiscoveryManager instance() {
+        return INSTANCE;
     }
 
     public void tick(ServerPlayer player) {
@@ -95,6 +90,10 @@ public final class ExplorerDiscoveryManager {
 
     public void clear(ServerPlayer player) {
         candidateTracker.clear(player.getUUID());
+    }
+
+    public void clear(java.util.UUID playerId) {
+        candidateTracker.clear(playerId);
     }
 
     public void onDataPackReload() {
@@ -130,7 +129,7 @@ public final class ExplorerDiscoveryManager {
 
         if (experienceGateway.isAtMaximumLevel(player)) {
             recordDiscovery(data, target);
-            notifyDiscovery(player, target, false);
+            notifier.notify(player, target, false);
             candidateTracker.markCompleted(player.getUUID(), target);
             return;
         }
@@ -146,7 +145,7 @@ public final class ExplorerDiscoveryManager {
         }
 
         recordDiscovery(data, target);
-        notifyDiscovery(player, target, true);
+        notifier.notify(player, target, true);
         candidateTracker.markCompleted(player.getUUID(), target);
     }
 
@@ -208,68 +207,6 @@ public final class ExplorerDiscoveryManager {
                 >= target.maxDiscoveries();
     }
 
-    private static void notifyDiscovery(
-        ServerPlayer player,
-        DiscoveryTarget target,
-        boolean includeExperience
-    ) {
-        Component displayName = displayName(target);
-        String type = target.type().name().toLowerCase();
-        String suffix = includeExperience
-            ? "with_experience"
-            : "without_experience";
-        String key = "message.craftbound.explorer.discovery."
-            + type + "." + suffix;
-        Component message = includeExperience
-            ? Component.translatableWithFallback(
-                key,
-                "[Exploration] Discovered %1$s (+%2$s XP)",
-                displayName,
-                target.xp()
-            )
-            : Component.translatableWithFallback(
-                key,
-                "[Exploration] Discovered %1$s",
-                displayName
-            );
-        player.sendSystemMessage(
-            message.copy().withStyle(ChatFormatting.AQUA)
-        );
-        player.playNotifySound(
-            SoundEvents.EXPERIENCE_ORB_PICKUP,
-            SoundSource.PLAYERS,
-            0.6F,
-            1.0F
-        );
-    }
-
-    private static Component displayName(DiscoveryTarget target) {
-        String configuredKey = null;
-        if (target instanceof DiscoveryTarget.Biome biome) {
-            configuredKey = biome.translationKey();
-        } else if (target instanceof DiscoveryTarget.Dimension dimension) {
-            configuredKey = dimension.translationKey();
-        } else if (target instanceof DiscoveryTarget.Structure structure) {
-            configuredKey = structure.translationKey();
-        }
-        ResourceLocation id = target.targetId();
-        String fallback = id.toString();
-        if (configuredKey != null) {
-            return Component.translatableWithFallback(
-                configuredKey, fallback
-            );
-        }
-        String prefix = target.type() == DiscoveryTarget.DiscoveryType.BIOME
-            ? "biome."
-            : target.type() == DiscoveryTarget.DiscoveryType.DIMENSION
-                ? "dimension."
-                : "structure.";
-        return Component.translatableWithFallback(
-            prefix + id.getNamespace() + "." + id.getPath(),
-            fallback
-        );
-    }
-
     private void logGrantFailure(
         ServerPlayer player,
         DiscoveryTarget target,
@@ -302,55 +239,4 @@ public final class ExplorerDiscoveryManager {
         };
     }
 
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (
-            event.phase == TickEvent.Phase.END
-                && event.player instanceof ServerPlayer player
-        ) {
-            INSTANCE.tick(player);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            INSTANCE.clear(player);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onChangedDimension(
-        PlayerEvent.PlayerChangedDimensionEvent event
-    ) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            INSTANCE.clear(player);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onClone(PlayerEvent.Clone event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            INSTANCE.clear(player);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            INSTANCE.clear(player);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onGameModeChanged(
-        PlayerEvent.PlayerChangeGameModeEvent event
-    ) {
-        if (
-            event.getNewGameMode() != GameType.SURVIVAL
-                && event.getEntity() instanceof ServerPlayer player
-        ) {
-            INSTANCE.clear(player);
-        }
-    }
 }

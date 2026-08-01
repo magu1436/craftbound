@@ -9,20 +9,23 @@ import net.minecraft.server.level.ServerPlayer;
 public final class ExplorerDiscoveryScanner {
     private final BiomeDiscoveryDetector biomeDetector;
     private final DimensionDiscoveryDetector dimensionDetector;
+    private final StructureDiscoveryDetector structureDetector;
 
     public ExplorerDiscoveryScanner(
         BiomeDiscoveryDetector biomeDetector,
-        DimensionDiscoveryDetector dimensionDetector
+        DimensionDiscoveryDetector dimensionDetector,
+        StructureDiscoveryDetector structureDetector
     ) {
         this.biomeDetector = biomeDetector;
         this.dimensionDetector = dimensionDetector;
+        this.structureDetector = structureDetector;
     }
 
     public DiscoveryScanResult scan(ServerPlayer player) {
         return new DiscoveryScanResult(
             biomeDetector.detect(player),
             dimensionDetector.detect(player),
-            Map.of()
+            structureDetector.detect(player)
         );
     }
 
