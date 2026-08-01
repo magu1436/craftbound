@@ -1,0 +1,33 @@
+{
+    "normal": {
+        "unidirectional": [
+            ["scaffolding_mobility_1", "scaffolding_mobility_2"],
+            ["scaffolding_mobility_2", "scaffolding_mobility_3"],
+            ["scaffolding_mobility_3", "scaffolding_mobility_4"],
+            ["scaffolding_mobility_4", "scaffolding_mobility_5"],
+
+            ["scaffolding_mobility_1", "fall_protection_1"],
+            ["fall_protection_1", "fall_protection_2"],
+            ["fall_protection_2", "fall_protection_3"],
+            ["fall_protection_3", "fall_protection_4"],
+            ["fall_protection_4", "fall_protection_5"],
+
+            ["fall_protection_3", "firework_conservation_1"],
+            ["firework_conservation_1", "firework_conservation_2"],
+            ["firework_conservation_2", "firework_conservation_3"],
+            ["firework_conservation_3", "firework_conservation_4"],
+            ["firework_conservation_4", "firework_conservation_5"],
+            
+            ["placement_reach_1", "placement_reach_2"],
+            ["placement_reach_2", "placement_reach_3"],
+            ["placement_reach_3", "placement_reach_4"],
+            ["placement_reach_4", "placement_reach_5"],
+
+            ["placement_reach_1", "demolition_1"],
+            ["demolition_1", "demolition_2"],
+            ["demolition_2", "demolition_3"],
+            ["demolition_3", "demolition_4"],
+            ["demolition_4", "demolition_5"]
+        ]
+    }
+}
