@@ -64,7 +64,8 @@ public abstract class ItemStackToolCareMixin {
         argsOnly = true
     )
     private int craftbound$preventToolCareDurabilityConsumption(
-        int amount,
+        int adjustedAmount,
+        int originalAmount,
         RandomSource random,
         @Nullable ServerPlayer player
     ) {
@@ -76,6 +77,6 @@ public abstract class ItemStackToolCareMixin {
         ) {
             return 0;
         }
-        return amount;
+        return adjustedAmount;
     }
 }
