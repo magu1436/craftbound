@@ -71,14 +71,7 @@ public final class PlayerPlacedBlockAccess {
                 continue;
             }
 
-            int removedFromChunk = chunk
-                .getCapability(CraftboundCapabilities.PLAYER_PLACED_BLOCKS)
-                .map(data -> data.removeAll(entry.getValue()))
-                .orElse(0);
-            if (removedFromChunk > 0) {
-                chunk.setUnsaved(true);
-                removedCount += removedFromChunk;
-            }
+            removedCount += removeAll(chunk, entry.getValue()).size();
         }
 
         return removedCount;
@@ -90,6 +83,20 @@ public final class PlayerPlacedBlockAccess {
             .getCapability(CraftboundCapabilities.PLAYER_PLACED_BLOCKS)
             .map(PlayerPlacedBlockData::getPositions)
             .orElseGet(() -> new long[0]);
+    }
+
+    public static LongArrayList addAll(
+        LevelChunk chunk,
+        LongCollection packedPositions
+    ) {
+        return updateAll(chunk, packedPositions, true);
+    }
+
+    public static LongArrayList removeAll(
+        LevelChunk chunk,
+        LongCollection packedPositions
+    ) {
+        return updateAll(chunk, packedPositions, false);
     }
 
     private static boolean update(
@@ -122,5 +129,36 @@ public final class PlayerPlacedBlockAccess {
             pos.getX() >> 4,
             pos.getZ() >> 4
         );
+    }
+
+    private static LongArrayList updateAll(
+        LevelChunk chunk,
+        LongCollection packedPositions,
+        boolean add
+    ) {
+        Objects.requireNonNull(chunk, "chunk is null");
+        Objects.requireNonNull(
+            packedPositions,
+            "packed positions is null"
+        );
+
+        LongArrayList changedPositions = new LongArrayList();
+        chunk.getCapability(CraftboundCapabilities.PLAYER_PLACED_BLOCKS)
+            .ifPresent(data -> {
+                for (long packedPos : packedPositions) {
+                    BlockPos pos = BlockPos.of(packedPos);
+                    boolean changed = add
+                        ? data.add(pos)
+                        : data.remove(pos);
+                    if (changed) {
+                        changedPositions.add(packedPos);
+                    }
+                }
+            });
+
+        if (!changedPositions.isEmpty()) {
+            chunk.setUnsaved(true);
+        }
+        return changedPositions;
     }
 }
