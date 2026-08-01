@@ -81,9 +81,9 @@ public sealed interface DiscoveryTarget
         public Structure {
             validate(targetId, xp, dwellTicks);
             Objects.requireNonNull(instanceKey, "instance key is null");
-            if (maxDiscoveries == 0 || maxDiscoveries < -1) {
+            if (maxDiscoveries < -1) {
                 throw new IllegalArgumentException(
-                    "max discoveries must be -1 or greater than 0"
+                    "max discoveries must be -1 or greater"
                 );
             }
         }
