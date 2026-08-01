@@ -172,7 +172,6 @@ public final class CraftboundAttributes {
         public static final String SOUL_SAND_TRAVERSAL_NAME = "soul_sand_traversal";
         public static final String BUSHWHACKING_NAME = "bushwhacking";
         public static final String POWDER_SNOW_TRAVERSAL_NAME = "powder_snow_traversal";
-        public static final String SURE_FOOTED_NAME = "sure_footed";
         public static final String COLD_ADAPTATION_NAME = "cold_adaptation";
 
         /**
@@ -206,9 +205,6 @@ public final class CraftboundAttributes {
 
         public static final RegistryObject<Attribute> POWDER_SNOW_TRAVERSAL =
             createCraftboundAttribute(POWDER_SNOW_TRAVERSAL_NAME, 1.0D);
-
-        public static final RegistryObject<Attribute> SURE_FOOTED =
-            createCraftboundAttribute(SURE_FOOTED_NAME, 5.0D);
 
         public static final RegistryObject<Attribute> COLD_ADAPTATION =
             createCraftboundAttribute(COLD_ADAPTATION_NAME, 1.0D);
@@ -294,7 +290,6 @@ public final class CraftboundAttributes {
         event.add(EntityType.PLAYER, SOUL_SAND_TRAVERSAL.get());
         event.add(EntityType.PLAYER, BUSHWHACKING.get());
         event.add(EntityType.PLAYER, POWDER_SNOW_TRAVERSAL.get());
-        event.add(EntityType.PLAYER, SURE_FOOTED.get());
         event.add(EntityType.PLAYER, COLD_ADAPTATION.get());
         event.add(EntityType.PLAYER, FALL_DAMAGE_REDUCTION.get());
         event.add(EntityType.PLAYER, SCAFFOLDING_MOBILITY.get());
