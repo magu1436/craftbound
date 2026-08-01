@@ -3,6 +3,7 @@ package com.magu1436.craftbound.registry;
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.adventurer.capability.IAdventurerData;
 import com.magu1436.craftbound.occupations.architect.capability.PlayerPlacedBlockData;
+import com.magu1436.craftbound.occupations.explorer.data.ExplorerDiscoveryData;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -27,6 +28,10 @@ public final class CraftboundCapabilities {
         PLAYER_PLACED_BLOCKS =
             CapabilityManager.get(new CapabilityToken<>() {});
 
+    public static final Capability<ExplorerDiscoveryData>
+        EXPLORER_DISCOVERY_DATA =
+            CapabilityManager.get(new CapabilityToken<>() {});
+
     private CraftboundCapabilities() {
     }
 
@@ -34,5 +39,6 @@ public final class CraftboundCapabilities {
     public static void register(RegisterCapabilitiesEvent event) {
         event.register(IAdventurerData.class);
         event.register(PlayerPlacedBlockData.class);
+        event.register(ExplorerDiscoveryData.class);
     }
 }

@@ -5,6 +5,7 @@ import com.magu1436.craftbound.common.CraftboundUtilities;
 import com.magu1436.craftbound.common.capability.PlayerCapabilityData;
 import com.magu1436.craftbound.common.capability.PlayerCapabilityProvider;
 import com.magu1436.craftbound.occupations.adventurer.capability.AdventurerData;
+import com.magu1436.craftbound.occupations.explorer.data.ExplorerDiscoveryProvider;
 import com.magu1436.craftbound.registry.CraftboundCapabilities;
 
 import net.minecraft.world.entity.Entity;
@@ -24,6 +25,8 @@ import net.minecraftforge.fml.common.Mod;
 )
 public final class CraftboundPlayerCapabilityEventHandler {
     private static final String ADVENTURER_DATA_ID = "adventurer_data";
+    private static final String EXPLORER_DISCOVERY_DATA_ID =
+        "explorer_discovery_data";
 
     private CraftboundPlayerCapabilityEventHandler() {
     }
@@ -46,6 +49,16 @@ public final class CraftboundPlayerCapabilityEventHandler {
             provider
         );
         event.addListener(provider::invalidate);
+
+        ExplorerDiscoveryProvider explorerProvider =
+            new ExplorerDiscoveryProvider();
+        event.addCapability(
+            CraftboundUtilities.createResourceLocation(
+                EXPLORER_DISCOVERY_DATA_ID
+            ),
+            explorerProvider
+        );
+        event.addListener(explorerProvider::invalidate);
     }
 
     @SubscribeEvent
@@ -64,6 +77,11 @@ public final class CraftboundPlayerCapabilityEventHandler {
                 original,
                 event.getEntity(),
                 CraftboundCapabilities.ADVENTURER_DATA
+            );
+            copyOnDeath(
+                original,
+                event.getEntity(),
+                CraftboundCapabilities.EXPLORER_DISCOVERY_DATA
             );
         } finally {
             original.invalidateCaps();
