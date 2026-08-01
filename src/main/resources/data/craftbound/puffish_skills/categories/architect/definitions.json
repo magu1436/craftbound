@@ -295,7 +295,7 @@
         "description": "落下ダメージを軽減する",
         "rewards": [
             {
-                "type": "craftbound:fall_protection_reward",
+                "type": "craftbound:fall_damage_reduction_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "b030d6a6-cdfd-aa61-ea48-47d7cd182800"
@@ -314,7 +314,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "craftbound:fall_protection_reward",
+                "type": "craftbound:fall_damage_reduction_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "d78df217-0154-e7f9-2c99-7ee2099cc3aa"
@@ -333,7 +333,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "craftbound:fall_protection_reward",
+                "type": "craftbound:fall_damage_reduction_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "a7506736-f811-c9ef-3ac6-c7e0f8ab2c64"
@@ -352,7 +352,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "craftbound:fall_protection_reward",
+                "type": "craftbound:fall_damage_reduction_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "8875cb28-6ca7-5039-7e3c-316bf37ff1f3"
@@ -371,7 +371,7 @@
         "description": "落下ダメージをさらに軽減する",
         "rewards": [
             {
-                "type": "craftbound:fall_protection_reward",
+                "type": "craftbound:fall_damage_reduction_reward",
                 "data": {
                     "amount": 0.10,
                     "modifier_uuid": "5f790b8d-8f70-d985-9315-c59fe3757155"
