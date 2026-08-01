@@ -1,12 +1,9 @@
 package com.magu1436.craftbound.event;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
@@ -19,7 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import com.magu1436.craftbound.Craftbound;
-import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataAccess;
+import com.magu1436.craftbound.occupations.architect.ConstructionTrackingService;
 import com.magu1436.craftbound.occupations.architect.events.PlayerPlacedBlockRemovalQueue;
 import com.magu1436.craftbound.occupations.architect.network.PlayerPlacedBlockSync;
 
@@ -43,16 +40,24 @@ public final class CraftboundPlayerPlacedBlockEventHandler {
             return;
         }
 
-        LongArrayList positions = new LongArrayList();
         if (event instanceof BlockEvent.EntityMultiPlaceEvent multiEvent) {
             for (BlockSnapshot snapshot
                 : multiEvent.getReplacedBlockSnapshots()) {
-                positions.add(snapshot.getPos().asLong());
+                handlePlacedPosition(
+                    player,
+                    level,
+                    snapshot.getPos(),
+                    level.getBlockState(snapshot.getPos())
+                );
             }
         } else {
-            positions.add(event.getPos().asLong());
+            handlePlacedPosition(
+                player,
+                level,
+                event.getPos(),
+                event.getPlacedBlock()
+            );
         }
-        addAndSync(level, positions);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -113,44 +118,12 @@ public final class CraftboundPlayerPlacedBlockEventHandler {
         );
     }
 
-    private static void addAndSync(
+    private static void handlePlacedPosition(
+        ServerPlayer player,
         ServerLevel level,
-        LongArrayList positions
+        BlockPos pos,
+        BlockState state
     ) {
-        Long2ObjectOpenHashMap<LongArrayList> positionsByChunk =
-            new Long2ObjectOpenHashMap<>();
-        for (long packedPos : positions) {
-            BlockPos pos = BlockPos.of(packedPos);
-            positionsByChunk
-                .computeIfAbsent(
-                    ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4),
-                    ignored -> new LongArrayList()
-                )
-                .add(packedPos);
-        }
-
-        for (var entry : positionsByChunk.long2ObjectEntrySet()) {
-            ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
-            LevelChunk chunk = level.getChunkSource().getChunkNow(
-                chunkPos.x,
-                chunkPos.z
-            );
-            if (chunk == null) {
-                continue;
-            }
-
-            LongArrayList actuallyAdded =
-                ConstructionChunkDataAccess.markAllPlayerPlaced(
-                chunk,
-                entry.getValue()
-            );
-            if (!actuallyAdded.isEmpty()) {
-                PlayerPlacedBlockSync.sendAdded(
-                    level,
-                    chunk,
-                    actuallyAdded
-                );
-            }
-        }
+        ConstructionTrackingService.onPlaced(player, level, pos, state);
     }
 }

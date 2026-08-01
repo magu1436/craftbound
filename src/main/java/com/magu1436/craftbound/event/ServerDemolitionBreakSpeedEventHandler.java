@@ -3,7 +3,7 @@ package com.magu1436.craftbound.event;
 import java.util.Optional;
 
 import com.magu1436.craftbound.Craftbound;
-import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkDataAccess;
+import com.magu1436.craftbound.occupations.architect.ConstructionTrackingService;
 import com.magu1436.craftbound.occupations.architect.demolition.DemolitionConditions;
 
 import net.minecraft.core.BlockPos;
@@ -39,7 +39,11 @@ public final class ServerDemolitionBreakSpeedEventHandler {
         }
 
         BlockPos pos = position.get();
-        if (!ConstructionChunkDataAccess.isPlayerPlaced(level, pos)
+        if (!ConstructionTrackingService.isPlayerPlaced(
+                level,
+                pos,
+                event.getState()
+            )
             || !DemolitionConditions.canApply(
                 event,
                 pos,
