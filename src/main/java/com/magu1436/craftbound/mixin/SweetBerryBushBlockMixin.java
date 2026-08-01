@@ -1,6 +1,8 @@
 package com.magu1436.craftbound.mixin;
 
 import com.magu1436.craftbound.occupations.explorer.BushwhackingService;
+import com.magu1436.craftbound.occupations.explorer.TraversalMomentumAccess;
+import com.magu1436.craftbound.occupations.explorer.TraversalSlowdownAdjustment;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.SweetBerryBushBlock;
@@ -32,12 +34,18 @@ public abstract class SweetBerryBushBlockMixin {
         BlockState state,
         Vec3 vanillaFactors
     ) {
-        entity.makeStuckInBlock(
-            state,
-            BushwhackingService.adjustSpeedFactors(
+        TraversalSlowdownAdjustment adjustment =
+            BushwhackingService.createAdjustment(
                 entity,
                 vanillaFactors
-            )
+            );
+        entity.makeStuckInBlock(
+            state,
+            adjustment.speedFactors()
         );
+        ((TraversalMomentumAccess) entity)
+            .craftbound$setHorizontalMomentumRetention(
+                adjustment.horizontalMomentumRetention()
+            );
     }
 }

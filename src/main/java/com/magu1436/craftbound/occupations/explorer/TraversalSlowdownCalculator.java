@@ -30,6 +30,22 @@ public final class TraversalSlowdownCalculator {
         return new Vec3(x, y, z);
     }
 
+    public static TraversalSlowdownAdjustment createAdjustment(
+        Vec3 vanillaFactors,
+        double reduction,
+        boolean adjustVertical
+    ) {
+        double clampedReduction = clampReduction(reduction);
+        return new TraversalSlowdownAdjustment(
+            adjustFactors(
+                vanillaFactors,
+                clampedReduction,
+                adjustVertical
+            ),
+            clampedReduction
+        );
+    }
+
     private static double adjustFactor(
         double vanillaFactor,
         double reduction
@@ -38,11 +54,15 @@ public final class TraversalSlowdownCalculator {
             return vanillaFactor;
         }
 
-        double clampedReduction = Math.max(
+        double clampedReduction = clampReduction(reduction);
+        return 1.0D
+            - (1.0D - vanillaFactor) * (1.0D - clampedReduction);
+    }
+
+    private static double clampReduction(double reduction) {
+        return Math.max(
             0.0D,
             Math.min(reduction, 1.0D)
         );
-        return 1.0D
-            - (1.0D - vanillaFactor) * (1.0D - clampedReduction);
     }
 }

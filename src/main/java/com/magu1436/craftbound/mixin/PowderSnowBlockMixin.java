@@ -1,6 +1,8 @@
 package com.magu1436.craftbound.mixin;
 
 import com.magu1436.craftbound.occupations.explorer.PowderSnowTraversalService;
+import com.magu1436.craftbound.occupations.explorer.TraversalMomentumAccess;
+import com.magu1436.craftbound.occupations.explorer.TraversalSlowdownAdjustment;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.PowderSnowBlock;
@@ -32,12 +34,18 @@ public abstract class PowderSnowBlockMixin {
         BlockState state,
         Vec3 vanillaFactors
     ) {
-        entity.makeStuckInBlock(
-            state,
-            PowderSnowTraversalService.adjustSpeedFactors(
+        TraversalSlowdownAdjustment adjustment =
+            PowderSnowTraversalService.createAdjustment(
                 entity,
                 vanillaFactors
-            )
+            );
+        entity.makeStuckInBlock(
+            state,
+            adjustment.speedFactors()
         );
+        ((TraversalMomentumAccess) entity)
+            .craftbound$setHorizontalMomentumRetention(
+                adjustment.horizontalMomentumRetention()
+            );
     }
 }

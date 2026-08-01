@@ -14,18 +14,18 @@ public final class PowderSnowTraversalService {
     private PowderSnowTraversalService() {
     }
 
-    public static Vec3 adjustSpeedFactors(
+    public static TraversalSlowdownAdjustment createAdjustment(
         Entity entity,
         Vec3 vanillaFactors
     ) {
         if (!(entity instanceof Player player)) {
-            return vanillaFactors;
+            return new TraversalSlowdownAdjustment(vanillaFactors, 0.0D);
         }
 
         double reduction = player.getAttributeValue(
             CraftboundAttributes.POWDER_SNOW_TRAVERSAL.get()
         );
-        return TraversalSlowdownCalculator.adjustFactors(
+        return TraversalSlowdownCalculator.createAdjustment(
             vanillaFactors,
             reduction,
             false
