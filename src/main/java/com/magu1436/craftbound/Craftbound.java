@@ -12,6 +12,10 @@ import com.magu1436.craftbound.occupations.architect.ArchitectConfig;
 import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
+import com.magu1436.craftbound.registry.CraftboundBlockEntities;
+import com.magu1436.craftbound.registry.CraftboundBlocks;
+import com.magu1436.craftbound.registry.CraftboundItems;
+import com.magu1436.craftbound.registry.CraftboundMenus;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.Blocks;
@@ -59,6 +63,12 @@ public class Craftbound
             ArchitectConfig.SPEC,
             "craftbound-architect.toml"
         );
+
+        // ブロックやアイテム関連のレジストリの登録
+        CraftboundItems.register(modEventBus);
+        CraftboundBlocks.register(modEventBus);
+        CraftboundBlockEntities.register(modEventBus);
+        CraftboundMenus.register(modEventBus);
 
         // Attributes の登録
         CraftboundAttributes.register(modEventBus);
