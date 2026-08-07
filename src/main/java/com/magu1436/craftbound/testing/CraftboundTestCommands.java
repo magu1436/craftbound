@@ -31,6 +31,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -416,8 +418,12 @@ public final class CraftboundTestCommands {
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         FoodProcessingBlockEntity processor = nearestProcessing(source);
         if (processor == null) return 0;
+        BlockPos pos = processor.getBlockPos();
         source.sendSuccess(() -> Component.translatable(
                 "command.craftbound.test.processing.status",
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
                 processor.station().serializedName(),
                 processor.currentOperation().serializedName(),
                 processor.isRunning(),
@@ -492,6 +498,12 @@ public final class CraftboundTestCommands {
     private static FoodProcessingBlockEntity nearestProcessing(CommandSourceStack source)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
+        HitResult hit = player.pick(16.0D, 1.0F, false);
+        if (hit instanceof BlockHitResult blockHit
+                && player.serverLevel().getBlockEntity(blockHit.getBlockPos())
+                        instanceof FoodProcessingBlockEntity lookedAt) {
+            return lookedAt;
+        }
         BlockPos center = player.blockPosition();
         FoodProcessingBlockEntity nearest = null;
         double nearestDistance = Double.MAX_VALUE;

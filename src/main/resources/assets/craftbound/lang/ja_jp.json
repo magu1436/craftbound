@@ -184,7 +184,7 @@
   "tooltip.craftbound.cooking.effect": "効果: %s %s（標準%s秒）",
   "tooltip.craftbound.processing.source": "素材: %s",
   "tooltip.craftbound.processing.rating.success": "加工評価: 成功",
-  "command.craftbound.test.processing.status": "設備=%s 工程=%s 実行中=%s 進行=%s/%s tick 燃焼=%s tick",
+  "command.craftbound.test.processing.status": "位置=(%s,%s,%s) 設備=%s 工程=%s 実行中=%s 進行=%s/%s tick 燃焼=%s tick",
   "command.craftbound.test.processing.finish": "最寄りの加工を残り約1秒へ進めました。",
   "command.craftbound.test.processing.not_running": "最寄りの加工設備は処理中ではありません。",
   "command.craftbound.test.processing.none": "16ブロック以内に加工設備がありません。",

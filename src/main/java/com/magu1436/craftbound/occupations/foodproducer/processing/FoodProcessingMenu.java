@@ -185,12 +185,36 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return processor == null || !processor.slotLocked(getSlotIndex());
+            return processor == null || processor.playerCanModifySlot(getSlotIndex());
         }
 
         @Override
         public boolean mayPickup(Player player) {
-            return processor == null || !processor.slotLocked(getSlotIndex());
+            return processor == null || processor.playerCanModifySlot(getSlotIndex());
+        }
+
+        @Override
+        public ItemStack remove(int amount) {
+            int slot = getSlotIndex();
+            if (processor != null
+                    && slot >= FoodProcessingBlockEntity.INPUT_0
+                    && slot <= FoodProcessingBlockEntity.INPUT_2) {
+                return processor.removeInputForPlayer(slot, amount);
+            }
+            return super.remove(amount);
+        }
+
+        @Override
+        public void set(ItemStack stack) {
+            int slot = getSlotIndex();
+            if (processor != null
+                    && slot >= FoodProcessingBlockEntity.INPUT_0
+                    && slot <= FoodProcessingBlockEntity.INPUT_2) {
+                processor.setInputForPlayer(slot, stack);
+                setChanged();
+                return;
+            }
+            super.set(stack);
         }
     }
 

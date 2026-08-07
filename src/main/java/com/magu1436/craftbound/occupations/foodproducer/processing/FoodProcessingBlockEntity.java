@@ -57,6 +57,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private static final String TOTAL_TAG = "total";
     private static final String PENDING_OUTPUT_TAG = "pending_output";
     private static final String PENDING_RETURN_TAG = "pending_return";
+    private static final String PENDING_INPUT_TAG = "pending_input_";
     private static final String CONSUMED_TAG = "consumed_";
     private static final String INITIATOR_TAG = "initiator";
     private static final String PENDING_EXPERIENCE_TAG = "pending_experience";
@@ -69,6 +70,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private int totalTicks;
     private ItemStack pendingOutput = ItemStack.EMPTY;
     private ItemStack pendingReturn = ItemStack.EMPTY;
+    private final NonNullList<ItemStack> pendingInputs = NonNullList.withSize(3, ItemStack.EMPTY);
     private final int[] pendingConsumed = new int[3];
     private int pendingExperience;
     private int burnTime;
@@ -188,6 +190,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         pendingOutput = output;
         pendingReturn = match.returnedContainer().copy();
         System.arraycopy(match.consumed(), 0, pendingConsumed, 0, pendingConsumed.length);
+        capturePendingInputs();
         totalTicks = currentOperation() == FoodProcessingOperation.HEAT
                 ? currentOperation().baseTicks()
                 : Math.max(1, Math.round(currentOperation().baseTicks() * (1.0F - rank * 0.1F)));
@@ -201,11 +204,16 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (level.isClientSide) {
             return;
         }
+        boolean changed = false;
+        if (processor.station() == FoodProcessingStation.COOKING_POT && processor.burnTime > 0) {
+            processor.burnTime--;
+            changed = true;
+        }
         if (level.getGameTime() % 20L == 0L) {
             boolean qualityChanged = false;
             for (int slot = INPUT_0; slot <= INPUT_2; slot++) {
                 ItemStack input = processor.items.get(slot);
-                if (!input.isEmpty()) {
+                if (!input.isEmpty() && (!processor.isRunning() || processor.pendingInputs.get(slot).isEmpty())) {
                     qualityChanged |= FoodQualityData.advanceLoadedTime(
                             input,
                             level.getGameTime(),
@@ -214,21 +222,32 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 }
             }
             if (qualityChanged) {
-                processor.setChanged();
+                changed = true;
             }
         }
         if (!processor.isRunning()) {
+            if (changed) processor.setChanged();
             return;
         }
+
+        if (!processor.hasRequiredInputs()) {
+            processor.decayOrCancel();
+            if (changed) processor.setChanged();
+            return;
+        }
+
         if (processor.progress >= processor.totalTicks) {
             if (processor.canFinish()) processor.finish();
+            else if (changed) processor.setChanged();
             return;
         }
+
         if (processor.currentOperation() == FoodProcessingOperation.HEAT) {
             if (processor.burnTime <= 0 && !processor.consumeFuel()) {
+                processor.decayOrCancel();
+                if (changed) processor.setChanged();
                 return;
             }
-            processor.burnTime--;
         }
         processor.progress++;
         if (processor.progress >= processor.totalTicks && processor.canFinish()) processor.finish();
@@ -298,6 +317,24 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
 
     public boolean slotLocked(int slot) {
         return isRunning() && slot >= INPUT_0 && slot <= TOOL;
+    }
+
+    public boolean playerCanModifySlot(int slot) {
+        return !isRunning() || slot >= INPUT_0 && slot <= INPUT_2 || slot > TOOL;
+    }
+
+    ItemStack removeInputForPlayer(int slot, int amount) {
+        if (slot < INPUT_0 || slot > INPUT_2) return ItemStack.EMPTY;
+        ItemStack removed = ContainerHelper.removeItem(items, slot, amount);
+        if (!removed.isEmpty()) setChanged();
+        return removed;
+    }
+
+    void setInputForPlayer(int slot, ItemStack stack) {
+        if (slot < INPUT_0 || slot > INPUT_2) return;
+        items.set(slot, stack);
+        if (stack.getCount() > getMaxStackSize()) stack.setCount(getMaxStackSize());
+        setChanged();
     }
 
     @Override
@@ -378,7 +415,12 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         tag.putInt(TOTAL_TAG, totalTicks);
         if (!pendingOutput.isEmpty()) tag.put(PENDING_OUTPUT_TAG, pendingOutput.save(new CompoundTag()));
         if (!pendingReturn.isEmpty()) tag.put(PENDING_RETURN_TAG, pendingReturn.save(new CompoundTag()));
-        for (int slot = 0; slot < pendingConsumed.length; slot++) tag.putInt(CONSUMED_TAG + slot, pendingConsumed[slot]);
+        for (int slot = 0; slot < pendingConsumed.length; slot++) {
+            if (!pendingInputs.get(slot).isEmpty()) {
+                tag.put(PENDING_INPUT_TAG + slot, pendingInputs.get(slot).save(new CompoundTag()));
+            }
+            tag.putInt(CONSUMED_TAG + slot, pendingConsumed[slot]);
+        }
         if (initiator != null) tag.putUUID(INITIATOR_TAG, initiator);
         tag.putInt(PENDING_EXPERIENCE_TAG, pendingExperience);
         tag.putInt(BURN_TIME_TAG, burnTime);
@@ -395,7 +437,12 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         totalTicks = Math.max(0, tag.getInt(TOTAL_TAG));
         pendingOutput = tag.contains(PENDING_OUTPUT_TAG) ? ItemStack.of(tag.getCompound(PENDING_OUTPUT_TAG)) : ItemStack.EMPTY;
         pendingReturn = tag.contains(PENDING_RETURN_TAG) ? ItemStack.of(tag.getCompound(PENDING_RETURN_TAG)) : ItemStack.EMPTY;
-        for (int slot = 0; slot < pendingConsumed.length; slot++) pendingConsumed[slot] = tag.getInt(CONSUMED_TAG + slot);
+        for (int slot = 0; slot < pendingConsumed.length; slot++) {
+            pendingInputs.set(slot, tag.contains(PENDING_INPUT_TAG + slot)
+                    ? ItemStack.of(tag.getCompound(PENDING_INPUT_TAG + slot))
+                    : ItemStack.EMPTY);
+            pendingConsumed[slot] = tag.getInt(CONSUMED_TAG + slot);
+        }
         initiator = tag.hasUUID(INITIATOR_TAG) ? tag.getUUID(INITIATOR_TAG) : null;
         pendingExperience = Math.max(0, tag.getInt(PENDING_EXPERIENCE_TAG));
         burnTime = Math.max(0, tag.getInt(BURN_TIME_TAG));
@@ -411,12 +458,52 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private void clearPending() {
         pendingOutput = ItemStack.EMPTY;
         pendingReturn = ItemStack.EMPTY;
+        for (int slot = 0; slot < pendingInputs.size(); slot++) pendingInputs.set(slot, ItemStack.EMPTY);
         java.util.Arrays.fill(pendingConsumed, 0);
         progress = 0;
         totalTicks = 0;
         initiator = null;
         pendingExperience = 0;
         setChanged();
+    }
+
+    private void capturePendingInputs() {
+        for (int slot = 0; slot < pendingConsumed.length; slot++) {
+            if (pendingConsumed[slot] <= 0) {
+                pendingInputs.set(slot, ItemStack.EMPTY);
+                continue;
+            }
+            ItemStack required = items.get(slot).copy();
+            required.setCount(pendingConsumed[slot]);
+            pendingInputs.set(slot, required);
+        }
+    }
+
+    private boolean hasRequiredInputs() {
+        for (int slot = 0; slot < pendingInputs.size(); slot++) {
+            ItemStack required = pendingInputs.get(slot);
+            if (required.isEmpty()) {
+                if (pendingConsumed[slot] > 0) return false;
+                continue;
+            }
+            ItemStack current = items.get(slot);
+            if (current.getCount() < required.getCount()
+                    || !ItemStack.isSameItemSameTags(current, required)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void decayOrCancel() {
+        if (progress > 0) {
+            progress = Math.max(0, progress - 2);
+        }
+        if (progress == 0) {
+            clearPending();
+        } else {
+            setChanged();
+        }
     }
 
     private void applyFinalCookingQuality(

@@ -184,7 +184,7 @@
   "tooltip.craftbound.cooking.effect": "Effect: %s %s (base %s sec)",
   "tooltip.craftbound.processing.source": "Source: %s",
   "tooltip.craftbound.processing.rating.success": "Processing rating: Success",
-  "command.craftbound.test.processing.status": "station=%s operation=%s running=%s progress=%s/%s ticks burn=%s ticks",
+  "command.craftbound.test.processing.status": "position=(%s,%s,%s) station=%s operation=%s running=%s progress=%s/%s ticks burn=%s ticks",
   "command.craftbound.test.processing.finish": "Advanced the nearest process to about one second remaining.",
   "command.craftbound.test.processing.not_running": "The nearest processor is not running.",
   "command.craftbound.test.processing.none": "No processing station found within 16 blocks.",
