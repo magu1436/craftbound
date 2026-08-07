@@ -1,0 +1,43 @@
+{
+  "format_version": 1,
+  "rules": [
+    {
+      "biomes": [
+        "minecraft:the_void"
+      ],
+      "enabled": false
+    },
+    {
+      "biomes": [
+        "minecraft:mushroom_fields",
+        "minecraft:ice_spikes",
+        "minecraft:deep_dark"
+      ],
+      "experience_tier": "craftbound:rare",
+      "dwell_ticks": 100,
+      "enabled": true
+    },
+    {
+      "biomes": [
+        "minecraft:cherry_grove",
+        "minecraft:badlands",
+        "minecraft:eroded_badlands",
+        "minecraft:wooded_badlands",
+        "minecraft:bamboo_jungle",
+        "minecraft:flower_forest",
+        "minecraft:lush_caves",
+        "minecraft:dripstone_caves",
+        "minecraft:old_growth_birch_forest",
+        "minecraft:old_growth_pine_taiga",
+        "minecraft:old_growth_spruce_taiga",
+        "minecraft:windswept_gravelly_hills",
+        "minecraft:windswept_forest",
+        "minecraft:sparse_jungle",
+        "minecraft:sunflower_plains"
+      ],
+      "experience_tier": "craftbound:uncommon",
+      "dwell_ticks": 100,
+      "enabled": true
+    }
+  ]
+}

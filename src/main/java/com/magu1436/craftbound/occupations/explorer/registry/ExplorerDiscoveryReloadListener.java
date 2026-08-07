@@ -82,23 +82,23 @@ public final class ExplorerDiscoveryReloadListener
         ExplorerDefinitionErrors errors = new ExplorerDefinitionErrors();
         return new ExplorerDiscoveryDefinitions(
             loadTiers(resourceManager, errors),
-            loadRules(
+            loadRuleFiles(
                 resourceManager,
                 BIOME_DIRECTORY,
                 errors,
-                BiomeDiscoveryRule::parse
+                BiomeDiscoveryRule::parseFile
             ),
-            loadRules(
+            loadRuleFiles(
                 resourceManager,
                 STRUCTURE_DIRECTORY,
                 errors,
-                StructureDiscoveryRule::parse
+                StructureDiscoveryRule::parseFile
             ),
-            loadRules(
+            loadRuleFiles(
                 resourceManager,
                 DIMENSION_DIRECTORY,
                 errors,
-                DimensionDiscoveryRule::parse
+                DimensionDiscoveryRule::parseFile
             ),
             errors
         );
@@ -158,20 +158,23 @@ public final class ExplorerDiscoveryReloadListener
         Map<ResourceLocation, BiomeDiscoveryRule> unique = new HashMap<>();
         Set<ResourceLocation> conflicts = new HashSet<>();
         for (BiomeDiscoveryRule rule : rules) {
-            if (!biomeRegistry.containsKey(rule.biomeId())) {
-                errors.add(
-                    rule.definitionId(),
-                    "Unknown biome: " + rule.biomeId()
+            for (ResourceLocation biomeId : rule.biomeIds()) {
+                if (!biomeRegistry.containsKey(biomeId)) {
+                    errors.add(
+                        rule.definitionId(), "Unknown biome: " + biomeId
+                    );
+                    continue;
+                }
+                BiomeDiscoveryRule previous = unique.putIfAbsent(
+                    biomeId, rule
                 );
-                continue;
-            }
-            BiomeDiscoveryRule previous = unique.putIfAbsent(
-                rule.biomeId(), rule
-            );
-            if (previous != null) {
-                conflicts.add(rule.biomeId());
-                addConflict(errors, rule.definitionId(), previous.definitionId(),
-                    "biome", rule.biomeId());
+                if (previous != null) {
+                    conflicts.add(biomeId);
+                    addConflict(
+                        errors, rule.definitionId(), previous.definitionId(),
+                        "biome", biomeId
+                    );
+                }
             }
         }
 
@@ -210,32 +213,40 @@ public final class ExplorerDiscoveryReloadListener
         );
         Map<ResourceLocation, StructureDiscoveryRule> direct = new HashMap<>();
         Set<ResourceLocation> directConflicts = new HashSet<>();
-        List<StructureDiscoveryRule> tagRules = new ArrayList<>();
+        List<SelectedStructureRule> tagRules = new ArrayList<>();
 
         for (StructureDiscoveryRule rule : rules) {
-            if (rule.selector() instanceof StructureSelector.Tag) {
-                tagRules.add(rule);
-                continue;
-            }
-            ResourceLocation id = ((StructureSelector.Direct) rule.selector())
-                .structureId();
-            if (!structures.containsKey(id)) {
-                errors.add(rule.definitionId(), "Unknown structure: " + id);
-                continue;
-            }
-            StructureDiscoveryRule previous = direct.putIfAbsent(id, rule);
-            if (previous != null) {
-                directConflicts.add(id);
-                addConflict(errors, rule.definitionId(), previous.definitionId(),
-                    "structure", id);
+            for (StructureSelector selector : rule.selectors()) {
+                if (selector instanceof StructureSelector.Tag tag) {
+                    tagRules.add(new SelectedStructureRule(rule, tag));
+                    continue;
+                }
+                ResourceLocation id = ((StructureSelector.Direct) selector)
+                    .structureId();
+                if (!structures.containsKey(id)) {
+                    errors.add(
+                        rule.definitionId(), "Unknown structure: " + id
+                    );
+                    continue;
+                }
+                StructureDiscoveryRule previous = direct.putIfAbsent(
+                    id, rule
+                );
+                if (previous != null) {
+                    directConflicts.add(id);
+                    addConflict(
+                        errors, rule.definitionId(), previous.definitionId(),
+                        "structure", id
+                    );
+                }
             }
         }
 
         Map<ResourceLocation, List<StructureDiscoveryRule>> expanded =
             new HashMap<>();
-        for (StructureDiscoveryRule rule : tagRules) {
-            ResourceLocation tagId = ((StructureSelector.Tag) rule.selector())
-                .tagId();
+        for (SelectedStructureRule selected : tagRules) {
+            StructureDiscoveryRule rule = selected.rule();
+            ResourceLocation tagId = selected.selector().tagId();
             TagKey<Structure> tagKey = TagKey.create(
                 Registries.STRUCTURE, tagId
             );
@@ -325,20 +336,24 @@ public final class ExplorerDiscoveryReloadListener
         Map<ResourceLocation, DimensionDiscoveryRule> unique = new HashMap<>();
         Set<ResourceLocation> conflicts = new HashSet<>();
         for (DimensionDiscoveryRule rule : rules) {
-            if (!dimensionIds.contains(rule.dimensionId())) {
-                errors.add(
-                    rule.definitionId(),
-                    "Unknown dimension: " + rule.dimensionId()
+            for (ResourceLocation dimensionId : rule.dimensionIds()) {
+                if (!dimensionIds.contains(dimensionId)) {
+                    errors.add(
+                        rule.definitionId(),
+                        "Unknown dimension: " + dimensionId
+                    );
+                    continue;
+                }
+                DimensionDiscoveryRule previous = unique.putIfAbsent(
+                    dimensionId, rule
                 );
-                continue;
-            }
-            DimensionDiscoveryRule previous = unique.putIfAbsent(
-                rule.dimensionId(), rule
-            );
-            if (previous != null) {
-                conflicts.add(rule.dimensionId());
-                addConflict(errors, rule.definitionId(), previous.definitionId(),
-                    "dimension", rule.dimensionId());
+                if (previous != null) {
+                    conflicts.add(dimensionId);
+                    addConflict(
+                        errors, rule.definitionId(), previous.definitionId(),
+                        "dimension", dimensionId
+                    );
+                }
             }
         }
 
@@ -393,11 +408,11 @@ public final class ExplorerDiscoveryReloadListener
         return result;
     }
 
-    private static <T> List<T> loadRules(
+    private static <T> List<T> loadRuleFiles(
         ResourceManager resources,
         String directory,
         ExplorerDefinitionErrors errors,
-        RuleParser<T> parser
+        RuleFileParser<T> parser
     ) {
         List<T> result = new ArrayList<>();
         resources.listResources(
@@ -408,12 +423,7 @@ public final class ExplorerDiscoveryReloadListener
             if (json == null) {
                 return;
             }
-            ExplorerParseResult<T> parsed = parser.parse(
-                fileId, json, errors
-            );
-            if (parsed.isSuccess()) {
-                result.add(parsed.value());
-            }
+            result.addAll(parser.parse(fileId, json, errors));
         });
         return result;
     }
@@ -466,11 +476,17 @@ public final class ExplorerDiscoveryReloadListener
     }
 
     @FunctionalInterface
-    private interface RuleParser<T> {
-        ExplorerParseResult<T> parse(
+    private interface RuleFileParser<T> {
+        List<T> parse(
             ResourceLocation definitionId,
             JsonObject json,
             ExplorerDefinitionErrors errors
         );
+    }
+
+    private record SelectedStructureRule(
+        StructureDiscoveryRule rule,
+        StructureSelector.Tag selector
+    ) {
     }
 }
