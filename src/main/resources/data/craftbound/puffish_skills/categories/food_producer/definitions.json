@@ -332,5 +332,29 @@
     "description":{"translate":"skill.craftbound.food_producer.recipe_research_1.description"},
     "icon":{"type":"item","data":{"item":"minecraft:book"}},
     "cost":1
+  },
+  "recipe_research_2": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_2.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_2.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  },
+  "recipe_research_3": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_3.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_3.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  },
+  "recipe_research_4": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_4.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_4.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  },
+  "recipe_research_5": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_5.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_5.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
   }
 }

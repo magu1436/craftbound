@@ -1,0 +1,14 @@
+{
+  "result": "prepared",
+  "required_recipe_rank": 5,
+  "name_key": "item.craftbound.provisional_master_table",
+  "inputs": [
+    { "item": "craftbound:sliced_meat", "count": 2 },
+    { "item": "craftbound:chopped_vegetable", "count": 1 },
+    { "item": "craftbound:dough", "count": 1 }
+  ],
+  "food": { "nutrition": 12, "saturation_gain": 12.0 },
+  "effect": { "id": "minecraft:haste", "amplifier": 1, "duration_seconds": 600 },
+  "preserved": false,
+  "experience": 5
+}

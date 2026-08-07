@@ -1,0 +1,15 @@
+{
+  "result": "prepared",
+  "required_recipe_rank": 4,
+  "name_key": "item.craftbound.provisional_cocoa_tonic_pudding",
+  "inputs": [
+    { "item": "minecraft:cocoa_beans", "count": 1 },
+    { "item": "minecraft:sugar", "count": 1 },
+    { "item": "minecraft:milk_bucket", "count": 1 }
+  ],
+  "returned_container": { "item": "minecraft:bucket", "count": 1 },
+  "food": { "nutrition": 10, "saturation_gain": 10.0 },
+  "effect": { "id": "minecraft:luck", "amplifier": 1, "duration_seconds": 300 },
+  "preserved": false,
+  "experience": 5
+}

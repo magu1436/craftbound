@@ -43,10 +43,27 @@ public final class FoodCookingRecipeManager extends SimpleJsonResourceReloadList
     }
 
     public static Optional<FoodProcessingRecipes.Match> findMix(List<ItemStack> inputs) {
-        return recipes.values().stream()
-                .map(recipe -> recipe.match(inputs))
-                .filter(java.util.Objects::nonNull)
-                .findFirst();
+        FoodProcessingRecipes.Match selected = null;
+        int selectedConsumption = -1;
+        for (FoodCookingRecipeDefinition recipe : recipes.values()) {
+            FoodProcessingRecipes.Match candidate = recipe.match(inputs);
+            if (candidate == null) continue;
+            int consumption = totalConsumption(candidate);
+            if (consumption > selectedConsumption) {
+                selected = candidate;
+                selectedConsumption = consumption;
+            }
+        }
+        return Optional.ofNullable(selected);
+    }
+
+    /** 同じ材料種を使う料理では、現在の投入数を最も多く消費するレシピを優先する。 */
+    private static int totalConsumption(FoodProcessingRecipes.Match match) {
+        int total = 0;
+        for (int count : match.consumed()) {
+            total += count;
+        }
+        return total;
     }
 
     public static Optional<FoodCookingRecipeDefinition> get(ResourceLocation id) {
