@@ -2,6 +2,7 @@ package com.magu1436.craftbound.occupations.foodproducer.quality;
 
 import com.magu1436.craftbound.Craftbound;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
@@ -21,7 +22,13 @@ public final class FoodQualityTooltipEvents {
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
-        FoodQualityData.get(stack).ifPresent(quality -> {
+        long gameTime = event.getEntity() != null
+                ? event.getEntity().level().getGameTime()
+                : Minecraft.getInstance().level == null
+                        ? 0L
+                        : Minecraft.getInstance().level.getGameTime();
+        FoodQualityData.snapshot(stack, gameTime).ifPresent(snapshot -> {
+            FoodQuality quality = snapshot.quality();
             event.getToolTip().add(Component.translatable(
                     "tooltip.craftbound.food_quality",
                     Component.translatable(qualityTranslationKey(quality)).withStyle(qualityColor(quality))
@@ -30,11 +37,11 @@ public final class FoodQualityTooltipEvents {
             if (quality != FoodQuality.SPOILED) {
                 event.getToolTip().add(Component.translatable(
                         "tooltip.craftbound.quality_remaining",
-                        formatDuration(FoodQualityData.getRemainingRealTicks(stack))
+                        formatDuration(snapshot.remainingRealTicks())
                 ).withStyle(ChatFormatting.DARK_GRAY));
                 event.getToolTip().add(Component.translatable(
                         "tooltip.craftbound.spoilage_remaining",
-                        formatDuration(FoodQualityData.getRemainingUntilSpoiledRealTicks(stack))
+                        formatDuration(snapshot.remainingUntilSpoiledRealTicks())
                 ).withStyle(ChatFormatting.DARK_GRAY));
             }
             if (!FoodQualityData.isClockRunning(stack)) {

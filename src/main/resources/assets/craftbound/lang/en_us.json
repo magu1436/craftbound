@@ -38,6 +38,7 @@
   "command.craftbound.test.quality.set": "Set %s to %s and froze its quality clock.",
   "command.craftbound.test.quality.get": "%s: %s (test frozen: %s)",
   "command.craftbound.test.quality.resumed": "Resumed the quality clock for %s.",
+  "command.craftbound.test.quality.countdown": "Set %s to degrade in %s seconds.",
   "command.craftbound.test.food.get": "Hunger: %s / 20, saturation: %s",
   "command.craftbound.test.food.set": "Set hunger to %s / 20 and saturation to %s.",
   "command.craftbound.test.ranch.invalid_animal": "The target is not a ranch animal.",

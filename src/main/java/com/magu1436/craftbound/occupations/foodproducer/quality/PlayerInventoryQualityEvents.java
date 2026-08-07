@@ -44,7 +44,7 @@ public final class PlayerInventoryQualityEvents {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            advanceInventory(player);
+            pauseInventoryClock(player);
         }
     }
 
@@ -95,6 +95,12 @@ public final class PlayerInventoryQualityEvents {
                 FoodQualityData.resetClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER));
     }
 
+    private static void pauseInventoryClock(ServerPlayer player) {
+        long gameTime = player.serverLevel().getGameTime();
+        forEachInventoryStack(player.getInventory(), stack ->
+                FoodQualityData.pauseClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER));
+    }
+
     private static void forEachInventoryStack(Inventory inventory, java.util.function.Consumer<ItemStack> action) {
         inventory.items.forEach(action);
         inventory.armor.forEach(action);
@@ -127,7 +133,6 @@ public final class PlayerInventoryQualityEvents {
         int limit = Math.min(inventory.getMaxStackSize(), existing.getMaxStackSize());
         return !existing.isEmpty()
                 && existing.getCount() < limit
-                && FoodQualityData.isMergeCompatible(existing, pickedUp)
                 && FoodQualityData.prepareForMerge(
                         existing,
                         pickedUp,

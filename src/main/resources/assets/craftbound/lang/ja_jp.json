@@ -38,6 +38,7 @@
   "command.craftbound.test.quality.set": "%sを%sに設定し、品質時計を固定しました。",
   "command.craftbound.test.quality.get": "%s：%s（テスト固定：%s）",
   "command.craftbound.test.quality.resumed": "%sの品質時計を再開しました。",
+  "command.craftbound.test.quality.countdown": "%sの次の品質低下までを%s秒に設定しました。",
   "command.craftbound.test.food.get": "満腹度：%s / 20、隠し満腹度：%s",
   "command.craftbound.test.food.set": "満腹度を%s / 20、隠し満腹度を%sに設定しました。",
   "command.craftbound.test.ranch.invalid_animal": "対象は牧畜可能な動物ではありません。",

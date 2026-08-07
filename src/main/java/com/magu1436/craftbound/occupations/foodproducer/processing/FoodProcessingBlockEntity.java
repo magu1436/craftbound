@@ -143,6 +143,17 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
             return false;
         }
 
+        boolean qualityChanged = false;
+        for (int slot = INPUT_0; slot <= INPUT_2; slot++) {
+            qualityChanged |= FoodQualityData.advanceLoadedTime(
+                    items.get(slot),
+                    level.getGameTime(),
+                    1.0D
+            );
+        }
+        if (qualityChanged) {
+            setChanged();
+        }
         List<ItemStack> inputs = inputCopies();
         FoodProcessingRecipes.Match match = FoodProcessingRecipes.find(currentOperation(), inputs).orElse(null);
         if (match == null || match.qualityInputs().stream().anyMatch(FoodQualityData::isSpoiled)) {
@@ -191,11 +202,19 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
             return;
         }
         if (level.getGameTime() % 20L == 0L) {
+            boolean qualityChanged = false;
             for (int slot = INPUT_0; slot <= INPUT_2; slot++) {
                 ItemStack input = processor.items.get(slot);
                 if (!input.isEmpty()) {
-                    FoodQualityData.advanceLoadedTime(input, level.getGameTime(), 1.0D);
+                    qualityChanged |= FoodQualityData.advanceLoadedTime(
+                            input,
+                            level.getGameTime(),
+                            1.0D
+                    );
                 }
+            }
+            if (qualityChanged) {
+                processor.setChanged();
             }
         }
         if (!processor.isRunning()) {
@@ -467,7 +486,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (stored.isEmpty()) return added.getCount() <= added.getMaxStackSize();
         if (stored.getCount() + added.getCount() > stored.getMaxStackSize()) return false;
         if (ItemStack.isSameItemSameTags(stored, added)) return true;
-        return level != null && FoodQualityData.isMergeCompatible(stored, added)
+        return level != null
                 && FoodQualityData.prepareForMerge(stored, added, level.getGameTime(), 1.0D);
     }
 

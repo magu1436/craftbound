@@ -173,8 +173,11 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
         }
 
         ItemStack feed = ranch.items.get(FEED_SLOT);
-        if (!feed.isEmpty()) {
-            FoodQualityData.advanceLoadedTime(feed, level.getGameTime(), 1.0D);
+        if (!feed.isEmpty() && FoodQualityData.advanceLoadedTime(
+                feed,
+                level.getGameTime(),
+                1.0D
+        )) {
             ranch.setChanged();
         }
         ranch.processManagedAnimals(level.getGameTime());

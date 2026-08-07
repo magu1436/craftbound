@@ -61,7 +61,13 @@ public final class CraftboundTestCommands {
                 .then(Commands.literal("get")
                         .executes(context -> showHeldQuality(context.getSource())))
                 .then(Commands.literal("resume")
-                        .executes(context -> resumeHeldQuality(context.getSource()))));
+                        .executes(context -> resumeHeldQuality(context.getSource())))
+                .then(Commands.literal("countdown")
+                        .then(Commands.argument("seconds", IntegerArgumentType.integer(1, 600))
+                                .executes(context -> setHeldQualityCountdown(
+                                        context.getSource(),
+                                        IntegerArgumentType.getInteger(context, "seconds")
+                                )))));
 
         test.then(Commands.literal("food")
                 .then(Commands.literal("get")
@@ -161,11 +167,15 @@ public final class CraftboundTestCommands {
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         ItemStack stack = player.getMainHandItem();
-        FoodQuality quality = FoodQualityData.get(stack).orElse(null);
-        if (quality == null) {
+        FoodQualityData.Snapshot snapshot = FoodQualityData.snapshot(
+                stack,
+                player.serverLevel().getGameTime()
+        ).orElse(null);
+        if (snapshot == null) {
             source.sendFailure(Component.translatable("command.craftbound.test.quality.untracked"));
             return 0;
         }
+        FoodQuality quality = snapshot.quality();
         source.sendSuccess(() -> Component.translatable(
                 "command.craftbound.test.quality.get",
                 stack.getHoverName(),
@@ -431,6 +441,28 @@ public final class CraftboundTestCommands {
         source.sendSuccess(() -> Component.translatable(
                 "command.craftbound.test.cooking.prepare",
                 qualityName(quality)
+        ), false);
+        return 1;
+    }
+
+    private static int setHeldQualityCountdown(CommandSourceStack source, int seconds)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ItemStack stack = player.getMainHandItem();
+        if (!FoodQualityData.setRemainingForTesting(
+                stack,
+                seconds * 20L,
+                player.serverLevel().getGameTime()
+        )) {
+            source.sendFailure(Component.translatable("command.craftbound.test.quality.untracked"));
+            return 0;
+        }
+        player.getInventory().setChanged();
+        player.containerMenu.broadcastChanges();
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.quality.countdown",
+                stack.getHoverName(),
+                seconds
         ), false);
         return 1;
     }

@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -40,6 +41,7 @@ public abstract class ComposterBlockMixin {
             CallbackInfoReturnable<InteractionResult> callback
     ) {
         ItemStack stack = player.getItemInHand(hand);
+        craftbound$advanceQuality(stack, level);
         int currentLevel = state.getValue(ComposterBlock.LEVEL);
         if (!FoodQualityData.isSpoiled(stack) || currentLevel >= 7) {
             return;
@@ -65,6 +67,7 @@ public abstract class ComposterBlockMixin {
             BlockPos position,
             CallbackInfoReturnable<BlockState> callback
     ) {
+        FoodQualityData.advanceLoadedTime(stack, level.getGameTime(), 1.0D);
         if (!FoodQualityData.isSpoiled(stack) || state.getValue(ComposterBlock.LEVEL) >= 7) {
             return;
         }
@@ -97,6 +100,7 @@ public abstract class ComposterBlockMixin {
             ItemStack stack,
             CallbackInfoReturnable<BlockState> callback
     ) {
+        craftbound$advanceQuality(stack, level);
         int currentLevel = state.getValue(ComposterBlock.LEVEL);
         if (!FoodQualityData.isSpoiled(stack) || currentLevel >= 7) {
             return;
@@ -162,6 +166,7 @@ public abstract class ComposterBlockMixin {
 
         @Override
         public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+            craftbound$advanceQuality(stack, level);
             return !changed
                     && side == Direction.UP
                     && (FoodQualityData.isSpoiled(stack)
@@ -179,12 +184,19 @@ public abstract class ComposterBlockMixin {
             if (stack.isEmpty()) {
                 return;
             }
+            craftbound$advanceQuality(stack, level);
             changed = true;
             BlockState updatedState = FoodQualityData.isSpoiled(stack)
                     ? craftbound$addGuaranteedItem(null, state, level, position)
                     : craftbound$addNormalItem(state, level, position, stack);
             level.levelEvent(1500, position, updatedState != state ? 1 : 0);
             removeItemNoUpdate(0);
+        }
+    }
+
+    private static void craftbound$advanceQuality(ItemStack stack, LevelAccessor level) {
+        if (level instanceof ServerLevel serverLevel) {
+            FoodQualityData.advanceLoadedTime(stack, serverLevel.getGameTime(), 1.0D);
         }
     }
 

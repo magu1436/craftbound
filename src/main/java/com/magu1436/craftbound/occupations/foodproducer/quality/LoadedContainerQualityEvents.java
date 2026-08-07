@@ -162,8 +162,11 @@ public final class LoadedContainerQualityEvents {
         for (int slot = 0; slot < container.getContainerSize(); slot++) {
             ItemStack stack = container.getItem(slot);
             if (FoodQualityItems.isQualityTarget(stack)) {
-                FoodQualityData.advanceLoadedTime(stack, gameTime, NORMAL_CONTAINER_MULTIPLIER);
-                changed = true;
+                changed |= FoodQualityData.advanceLoadedTime(
+                        stack,
+                        gameTime,
+                        NORMAL_CONTAINER_MULTIPLIER
+                );
             }
         }
         if (changed) {
@@ -180,9 +183,11 @@ public final class LoadedContainerQualityEvents {
         for (int slot = 0; slot < container.getContainerSize(); slot++) {
             ItemStack stack = container.getItem(slot);
             if (FoodQualityItems.isQualityTarget(stack)) {
-                FoodQualityData.advanceLoadedTime(stack, gameTime, NORMAL_CONTAINER_MULTIPLIER);
-                FoodQualityData.pauseClock(stack, gameTime, NORMAL_CONTAINER_MULTIPLIER);
-                changed = true;
+                changed |= FoodQualityData.pauseClock(
+                        stack,
+                        gameTime,
+                        NORMAL_CONTAINER_MULTIPLIER
+                );
             }
         }
         if (changed) {

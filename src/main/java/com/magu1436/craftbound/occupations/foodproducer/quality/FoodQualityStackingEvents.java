@@ -22,8 +22,7 @@ public final class FoodQualityStackingEvents {
         ItemStack stackedOn = event.getStackedOnItem();
         if (carried.isEmpty()
                 || stackedOn.isEmpty()
-                || !event.getSlot().mayPlace(carried)
-                || !FoodQualityData.isMergeCompatible(stackedOn, carried)) {
+                || !event.getSlot().mayPlace(carried)) {
             return;
         }
 
