@@ -199,5 +199,15 @@
   "skill.craftbound.food_producer.quality_cooking_4.title": "Quality Cooking IV",
   "skill.craftbound.food_producer.quality_cooking_4.description": "Final heating in a cooking pot has a 40% chance to raise quality by one tier.",
   "skill.craftbound.food_producer.quality_cooking_5.title": "Quality Cooking V",
-  "skill.craftbound.food_producer.quality_cooking_5.description": "Final heating in a cooking pot has a 50% chance to raise quality by one tier."
+  "skill.craftbound.food_producer.quality_cooking_5.description": "Final heating in a cooking pot has a 50% chance to raise quality by one tier.",
+  "skill.craftbound.food_producer.recipe_research_1.title": "Recipe Research I",
+  "skill.craftbound.food_producer.recipe_research_1.description": "Unlocks provisional rank-I dishes for development. Ingredients and effects are not final.",
+  "item.craftbound.provisional_dried_fruit_wrap": "Prototype Dried Fruit Wrap",
+  "item.craftbound.provisional_work_stew": "Prototype Work Stew",
+  "item.craftbound.provisional_berry_bread": "Prototype Berry Travel Bread",
+  "item.craftbound.provisional_meat_skewer": "Prototype Meat and Vegetable Skewer",
+  "item.craftbound.provisional_mushroom_soup": "Prototype Mushroom Tonic Soup",
+  "command.craftbound.test.cooking.ingredients": "Gave provisional ingredients for %s.",
+  "command.craftbound.test.cooking.ingredients.unknown": "Food recipe %s was not found.",
+  "command.craftbound.test.cooking.ingredients.unavailable": "Could not create test ingredients for food recipe %s."
 }

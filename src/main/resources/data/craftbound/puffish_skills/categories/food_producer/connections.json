@@ -53,5 +53,7 @@
   ["quality_cooking_1", "quality_cooking_2"],
   ["quality_cooking_2", "quality_cooking_3"],
   ["quality_cooking_3", "quality_cooking_4"],
-  ["quality_cooking_4", "quality_cooking_5"]
+  ["quality_cooking_4", "quality_cooking_5"],
+
+  ["basic_processing", "recipe_research_1"]
 ]

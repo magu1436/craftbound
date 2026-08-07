@@ -101,6 +101,9 @@ public final class FoodProcessingRecipes {
     }
 
     private static Optional<Match> mix(List<ItemStack> inputs) {
+        Optional<Match> cooking = FoodCookingRecipeManager.findMix(inputs);
+        if (cooking.isPresent()) return cooking;
+
         int flourSlot = findSlot(inputs, Craftbound.WHEAT_FLOUR.get());
         int waterSlot = findSlot(inputs, Items.POTION);
         if (flourSlot < 0 || waterSlot < 0 || flourSlot == waterSlot || occupiedCount(inputs) != 2) {
@@ -119,7 +122,8 @@ public final class FoodProcessingRecipes {
                 consumed,
                 new ItemStack(Items.GLASS_BOTTLE),
                 false,
-                qualityInputs(inputs, consumed)
+                qualityInputs(inputs, consumed),
+                0
         ));
     }
 
@@ -136,7 +140,8 @@ public final class FoodProcessingRecipes {
                 consumed,
                 FoodCookingData.returnedContainer(input),
                 false,
-                qualityInputs(inputs, consumed)
+                qualityInputs(inputs, consumed),
+                FoodCookingData.requiredRecipeRank(input)
         ));
     }
 
@@ -154,7 +159,8 @@ public final class FoodProcessingRecipes {
                 consumed,
                 ItemStack.EMPTY,
                 toolRequired,
-                qualityInputs(inputs, consumed)
+                qualityInputs(inputs, consumed),
+                0
         );
     }
 
@@ -196,7 +202,8 @@ public final class FoodProcessingRecipes {
             int[] consumed,
             ItemStack returnedContainer,
             boolean toolRequired,
-            List<ItemStack> qualityInputs
+            List<ItemStack> qualityInputs,
+            int requiredRecipeRank
     ) {
     }
 }

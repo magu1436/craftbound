@@ -61,5 +61,6 @@
   "quality_cooking_2": { "x": 112, "y": 80, "definition": "quality_cooking_2" },
   "quality_cooking_3": { "x": 112, "y": 112, "definition": "quality_cooking_3" },
   "quality_cooking_4": { "x": 112, "y": 144, "definition": "quality_cooking_4" },
-  "quality_cooking_5": { "x": 112, "y": 176, "definition": "quality_cooking_5" }
+  "quality_cooking_5": { "x": 112, "y": 176, "definition": "quality_cooking_5" },
+  "recipe_research_1": { "x": 160, "y": 48, "definition": "recipe_research_1" }
 }

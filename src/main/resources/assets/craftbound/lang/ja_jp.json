@@ -199,5 +199,15 @@
   "skill.craftbound.food_producer.quality_cooking_4.title": "品質調理 IV",
   "skill.craftbound.food_producer.quality_cooking_4.description": "調理鍋での最終加熱時、40%の確率で品質を1段階上昇させます。",
   "skill.craftbound.food_producer.quality_cooking_5.title": "品質調理 V",
-  "skill.craftbound.food_producer.quality_cooking_5.description": "調理鍋での最終加熱時、50%の確率で品質を1段階上昇させます。"
+  "skill.craftbound.food_producer.quality_cooking_5.description": "調理鍋での最終加熱時、50%の確率で品質を1段階上昇させます。",
+  "skill.craftbound.food_producer.recipe_research_1.title": "レシピ研究 I",
+  "skill.craftbound.food_producer.recipe_research_1.description": "開発用の仮ランクI料理を作れるようになります。材料と効果は正式調整前です。",
+  "item.craftbound.provisional_dried_fruit_wrap": "仮・乾燥果物包み",
+  "item.craftbound.provisional_work_stew": "仮・作業肉煮込み",
+  "item.craftbound.provisional_berry_bread": "仮・ベリー旅パン",
+  "item.craftbound.provisional_meat_skewer": "仮・肉と野菜の串焼き",
+  "item.craftbound.provisional_mushroom_soup": "仮・キノコ薬膳スープ",
+  "command.craftbound.test.cooking.ingredients": "%sの仮レシピ材料を渡しました。",
+  "command.craftbound.test.cooking.ingredients.unknown": "料理定義%sが見つかりません。",
+  "command.craftbound.test.cooking.ingredients.unavailable": "料理定義%sのテスト材料を生成できません。"
 }

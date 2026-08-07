@@ -326,5 +326,11 @@
     "description":{"translate":"skill.craftbound.food_producer.quality_cooking_5.description"},
     "icon":{"type":"item","data":{"item":"craftbound:cooking_pot"}},
     "cost":1
+  },
+  "recipe_research_1": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_1.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_1.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
   }
 }

@@ -161,6 +161,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (match == null || match.qualityInputs().stream().anyMatch(FoodQualityData::isSpoiled)) {
             return false;
         }
+        if (match.requiredRecipeRank() > FoodProducerSkills.recipeResearchRank(player)) {
+            return false;
+        }
         if (match.toolRequired() && !isUsableKnife(items.get(TOOL))) {
             return false;
         }
@@ -184,7 +187,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
             pendingExperience = FoodCookingData.experience(output);
         } else {
             FoodQualityData.inheritMinimum(match.qualityInputs(), output, level.getGameTime());
-            pendingExperience = 1;
+            pendingExperience = output.getItem() instanceof FoodDishItem
+                    ? FoodCookingData.experience(output)
+                    : 1;
         }
 
         pendingOutput = output;

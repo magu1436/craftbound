@@ -57,6 +57,10 @@ public final class FoodProducerSkills {
         return rank(player, FERTILITY_MANAGEMENT);
     }
 
+    public static int recipeResearchRank(ServerPlayer player) {
+        return rank(player, RECIPE_RESEARCH);
+    }
+
     public static int rank(ServerPlayer player, List<String> skillIds) {
         return PuffishSkillsUtilities.getHighestUnlockedRank(player, CATEGORY_ID, skillIds);
     }

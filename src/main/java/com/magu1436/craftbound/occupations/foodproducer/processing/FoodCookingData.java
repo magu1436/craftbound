@@ -2,6 +2,8 @@ package com.magu1436.craftbound.occupations.foodproducer.processing;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
@@ -28,6 +30,7 @@ public final class FoodCookingData {
     private static final String RATING = "rating";
     private static final String PRESERVED = "preserved";
     private static final String EXPERIENCE = "experience";
+    private static final String REQUIRED_RECIPE_RANK = "required_recipe_rank";
     private static final String RETURN_ITEM = "return_item";
     private static final String RETURN_COUNT = "return_count";
     private static final String DIET_VALUES = "diet_values";
@@ -49,7 +52,8 @@ public final class FoodCookingData {
                 FoodQuality.HIGH,
                 FoodIntermediateData.SUCCESS_RATING,
                 false,
-                5
+                5,
+                0
         );
         setReturnedContainer(stack, Items.BOWL, 1);
         FoodQualityData.initialize(stack, baseQuality, gameTime);
@@ -74,26 +78,29 @@ public final class FoodCookingData {
             String nameKey,
             int nutrition,
             float saturationGain,
-            ResourceLocation effectId,
+            @Nullable ResourceLocation effectId,
             int effectAmplifier,
             int effectDuration,
             FoodQuality qualityCap,
             int rating,
             boolean preserved,
-            int experience
+            int experience,
+            int requiredRecipeRank
     ) {
         CompoundTag data = stack.getOrCreateTagElement(ROOT);
         data.putString(RECIPE_ID, recipeId.toString());
         data.putString(NAME_KEY, nameKey);
         data.putInt(NUTRITION, Math.max(1, nutrition));
         data.putFloat(SATURATION_GAIN, Math.max(0.0F, saturationGain));
-        data.putString(EFFECT_ID, effectId.toString());
+        if (effectId == null) data.remove(EFFECT_ID);
+        else data.putString(EFFECT_ID, effectId.toString());
         data.putInt(EFFECT_AMPLIFIER, Math.max(0, effectAmplifier));
         data.putInt(EFFECT_DURATION, Math.max(0, effectDuration));
         data.putInt(QUALITY_CAP, qualityCap.value());
         data.putInt(RATING, Math.max(0, Math.min(3, rating)));
         data.putBoolean(PRESERVED, preserved);
         data.putInt(EXPERIENCE, Math.max(0, experience));
+        data.putInt(REQUIRED_RECIPE_RANK, Math.max(0, Math.min(5, requiredRecipeRank)));
         data.put(DIET_VALUES, new CompoundTag());
     }
 
@@ -159,6 +166,11 @@ public final class FoodCookingData {
     public static int experience(ItemStack stack) {
         CompoundTag data = stack.getTagElement(ROOT);
         return data == null ? 0 : Math.max(0, data.getInt(EXPERIENCE));
+    }
+
+    public static int requiredRecipeRank(ItemStack stack) {
+        CompoundTag data = stack.getTagElement(ROOT);
+        return data == null ? 0 : Math.max(0, Math.min(5, data.getInt(REQUIRED_RECIPE_RANK)));
     }
 
     public static void setReturnedContainer(ItemStack stack, Item item, int count) {

@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingData;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingRecipeManager;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingTestHooks;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
@@ -25,8 +26,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.food.FoodData;
@@ -129,6 +132,12 @@ public final class CraftboundTestCommands {
         cookingPrepare.then(cookingQualityLiteral("low", FoodQuality.LOW));
         test.then(Commands.literal("cooking")
                 .then(cookingPrepare)
+                .then(Commands.literal("ingredients")
+                        .then(Commands.argument("recipe", ResourceLocationArgument.id())
+                                .executes(context -> giveTestCookingIngredients(
+                                        context.getSource(),
+                                        ResourceLocationArgument.getId(context, "recipe")
+                                ))))
                 .then(Commands.literal("force_upgrade")
                         .executes(context -> forceNextCookingUpgrade(context.getSource()))));
 
@@ -449,6 +458,32 @@ public final class CraftboundTestCommands {
                 qualityName(quality)
         ), false);
         return 1;
+    }
+
+    private static int giveTestCookingIngredients(CommandSourceStack source, ResourceLocation recipeId)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        var recipe = FoodCookingRecipeManager.get(recipeId).orElse(null);
+        if (recipe == null) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.cooking.ingredients.unknown", recipeId.toString()
+            ));
+            return 0;
+        }
+        List<ItemStack> inputs = recipe.createTestInputs(player.serverLevel().getGameTime());
+        if (inputs.stream().anyMatch(ItemStack::isEmpty)) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.cooking.ingredients.unavailable", recipeId.toString()
+            ));
+            return 0;
+        }
+        for (ItemStack stack : inputs) {
+            if (!player.addItem(stack)) player.drop(stack, false);
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.ingredients", recipeId.toString()
+        ), false);
+        return inputs.size();
     }
 
     private static int setHeldQualityCountdown(CommandSourceStack source, int seconds)

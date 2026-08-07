@@ -1,0 +1,24 @@
+{
+  "result": "prepared",
+  "required_recipe_rank": 1,
+  "name_key": "item.craftbound.provisional_meat_skewer",
+  "inputs": [
+    { "item": "craftbound:sliced_meat", "count": 1 },
+    {
+      "item": "craftbound:chopped_vegetable",
+      "source_item": "minecraft:carrot",
+      "count": 1
+    }
+  ],
+  "food": {
+    "nutrition": 6,
+    "saturation_gain": 5.0
+  },
+  "effect": {
+    "id": "minecraft:strength",
+    "amplifier": 0,
+    "duration_seconds": 120
+  },
+  "preserved": false,
+  "experience": 5
+}
