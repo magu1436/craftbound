@@ -349,7 +349,7 @@ Pufferfish's Skills 0.18.1をMVPの必須依存Modとする。未導入または
 - ディメンションもホワイトリストとし、対象IDを明示的に登録する。
 - データ定義はデータパックから追加と上書きができ、サーバーの `/reload` で再読み込みできるようにする。
 
-定義は、原則として1対象または1ルールにつき1ファイルとし、次のパスから読み込む。
+発見対象定義は、1ファイルの `rules` 配列に複数のルールを記述できる。各ルールの `biomes`、`structures`、または `dimensions` 配列で、同じ設定を共有する複数の対象を指定できる。次のパスから読み込む。
 
 ```text
 data/<namespace>/craftbound/explorer/experience_tiers/
@@ -394,6 +394,36 @@ data/<namespace>/craftbound/explorer/dimensions/
 
 #### 9.2.2 バイオーム
 
+複数のバイオームを1ファイルへまとめる場合は、次のように記述する。
+
+```json
+{
+  "format_version": 1,
+  "rules": [
+    {
+      "biomes": [
+        "minecraft:mushroom_fields",
+        "minecraft:ice_spikes",
+        "minecraft:deep_dark"
+      ],
+      "experience_tier": "craftbound:rare",
+      "dwell_ticks": 100,
+      "enabled": true
+    },
+    {
+      "biomes": [
+        "minecraft:the_void"
+      ],
+      "enabled": false
+    }
+  ]
+}
+```
+
+`rules` は空でない配列とし、各ルールには `biome` または `biomes` のどちらか一方だけを指定する。`biomes` も空でない配列とし、同じバイオームIDを重複して含めてはならない。既存データパックとの互換性のため、単一バイオームをファイル直下の `biome` で指定する形式も引き続き受理する。
+
+単一バイオーム形式は次のように記述できる。
+
 ```json
 {
   "format_version": 1,
@@ -404,49 +434,64 @@ data/<namespace>/craftbound/explorer/dimensions/
 }
 ```
 
-バイオームを自動対象から除外する定義は次のように記述できる。
-
-```json
-{
-  "format_version": 1,
-  "biome": "example:technical_biome",
-  "enabled": false
-}
-```
-
 #### 9.2.3 構造物
 
 ```json
 {
   "format_version": 1,
-  "structure": "minecraft:ancient_city",
-  "max_discoveries": 5,
-  "experience_tier": "craftbound:rare",
-  "dwell_ticks": 100,
-  "enabled": true
+  "rules": [
+    {
+      "structures": [
+        "minecraft:ancient_city",
+        "minecraft:stronghold",
+        "#example:large_dungeons"
+      ],
+      "max_discoveries": 3,
+      "experience_tier": "craftbound:rare",
+      "dwell_ticks": 100,
+      "enabled": true
+    }
+  ]
 }
 ```
 
-タグを対象にする場合は、`structure` に `#namespace:tag_name` 形式を使用できるようにする。
+各ルールには `structure` または `structures` のどちらか一方だけを指定する。構造物タグはどちらの形式でも `#namespace:tag_name` と記述する。単一 `structure` をファイル直下に指定する従来形式も引き続き受理する。
 
 #### 9.2.4 ディメンション
 
 ```json
 {
   "format_version": 1,
-  "dimension": "minecraft:the_nether",
-  "experience_tier": "craftbound:special",
-  "xp": 600,
-  "dwell_ticks": 60,
-  "enabled": true
+  "rules": [
+    {
+      "dimensions": [
+        "minecraft:the_nether"
+      ],
+      "experience_tier": "craftbound:special",
+      "xp": 600,
+      "dwell_ticks": 60,
+      "enabled": true
+    },
+    {
+      "dimensions": [
+        "minecraft:the_end"
+      ],
+      "experience_tier": "craftbound:special",
+      "xp": 1000,
+      "dwell_ticks": 60,
+      "enabled": true
+    }
+  ]
 }
 ```
+
+各ルールには `dimension` または `dimensions` のどちらか一方だけを指定する。単一 `dimension` をファイル直下に指定する従来形式も引き続き受理する。すべての複数対象配列は空でない配列とし、同じ対象または構造物セレクターを重複して含めてはならない。
 
 ### 9.3 上書きと重複定義
 
 - 同じリソースパスの定義は、データパック優先順位が高いファイルで全体を置き換える。フィールド単位の暗黙マージは行わない。
 - 個別リソースIDの定義とタグ定義が同じ対象へ一致した場合は、個別リソースIDの定義を使用する。
-- 異なるリソースパスから同じ個別リソースIDが重複定義された場合は、その対象を設定エラーとする。
+- 同一ファイル内または異なるリソースパスから同じ個別リソースIDが重複定義された場合は、その対象を設定エラーとする。
 - 個別定義がなく、複数のタグ定義が同じ対象へ一致した場合は、その対象を設定エラーとする。
 - 設定エラーは該当対象だけを無効にし、サーバー全体を停止させない。
 - エラーは対象ごとに繰り返し出力せず、データ読み込み時に集約して報告する。

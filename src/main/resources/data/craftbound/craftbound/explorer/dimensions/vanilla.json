@@ -1,0 +1,23 @@
+{
+  "format_version": 1,
+  "rules": [
+    {
+      "dimensions": [
+        "minecraft:the_nether"
+      ],
+      "experience_tier": "craftbound:special",
+      "xp": 600,
+      "dwell_ticks": 60,
+      "enabled": true
+    },
+    {
+      "dimensions": [
+        "minecraft:the_end"
+      ],
+      "experience_tier": "craftbound:special",
+      "xp": 1000,
+      "dwell_ticks": 60,
+      "enabled": true
+    }
+  ]
+}

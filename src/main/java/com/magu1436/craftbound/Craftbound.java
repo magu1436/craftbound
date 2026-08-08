@@ -5,6 +5,7 @@ import com.magu1436.craftbound.occupations.adventurer.AdventurerConfig;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyRules;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyService;
 import com.magu1436.craftbound.occupations.adventurer.experience.AdventurerMobKillExperienceSource;
+import com.magu1436.craftbound.occupations.explorer.integration.PufferfishExplorerExperienceGateway;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.occupations.architect.rewards.ArchitectRewardFactory;
 import com.magu1436.craftbound.occupations.architect.experience.ArchitectConstructionExperienceSource;
@@ -75,6 +76,7 @@ public class Craftbound
 
         // 経験値源の登録
         AdventurerMobKillExperienceSource.register();
+        PufferfishExplorerExperienceGateway.register();
         ArchitectConstructionExperienceSource.register();
 
         // 報酬の登録
