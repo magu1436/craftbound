@@ -35,6 +35,7 @@ public record FoodCookingRecipeDefinition(
         int effectAmplifier,
         int effectDuration,
         boolean preserved,
+        FoodAutomationPolicy automationPolicy,
         int experience,
         ItemStack returnedContainer
 ) {
@@ -86,6 +87,9 @@ public record FoodCookingRecipeDefinition(
                 effectAmplifier,
                 effectDuration,
                 GsonHelper.getAsBoolean(json, "preserved", false),
+                FoodAutomationPolicy.fromName(GsonHelper.getAsString(
+                        json, "automation_policy", "manual_only"
+                )),
                 Math.max(0, GsonHelper.getAsInt(json, "experience", 0)),
                 returnedContainer
         );
@@ -137,7 +141,8 @@ public record FoodCookingRecipeDefinition(
                 returnedContainer.copy(),
                 false,
                 qualityInputs,
-                requiredRecipeRank
+                requiredRecipeRank,
+                automationPolicy
         );
     }
 

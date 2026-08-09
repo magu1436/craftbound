@@ -9,6 +9,7 @@
     "CampfireBlockEntityMixin",
     "ComposterBlockMixin",
     "CraftingMenuMixin",
+    "DropperBlockMixin",
     "HopperBlockEntityMixin",
     "accessor.CraftingMenuAccessor",
     "accessor.TransientCraftingContainerAccessor"

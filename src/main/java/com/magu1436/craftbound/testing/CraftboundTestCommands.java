@@ -123,6 +123,8 @@ public final class CraftboundTestCommands {
         test.then(Commands.literal("processing")
                 .then(Commands.literal("status")
                         .executes(context -> showNearestProcessingStatus(context.getSource())))
+                .then(Commands.literal("create_start")
+                        .executes(context -> startNearestCreateAutomation(context.getSource())))
                 .then(Commands.literal("finish")
                         .executes(context -> finishNearestProcessing(context.getSource()))));
 
@@ -436,6 +438,7 @@ public final class CraftboundTestCommands {
                 processor.station().serializedName(),
                 processor.currentOperation().serializedName(),
                 processor.isRunning(),
+                processor.isAutomated(),
                 processor.progress(),
                 processor.totalTicks(),
                 processor.burnTime()
@@ -526,6 +529,22 @@ public final class CraftboundTestCommands {
             return 0;
         }
         source.sendSuccess(() -> Component.translatable("command.craftbound.test.processing.finish"), false);
+        return 1;
+    }
+
+    private static int startNearestCreateAutomation(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        FoodProcessingBlockEntity processor = nearestProcessing(source);
+        if (processor == null) return 0;
+        if (!processor.startCreateAutomation()) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.processing.create_rejected"
+            ));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.processing.create_started"
+        ), false);
         return 1;
     }
 

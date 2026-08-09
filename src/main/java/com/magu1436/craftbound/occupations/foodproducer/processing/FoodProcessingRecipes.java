@@ -35,6 +35,27 @@ public final class FoodProcessingRecipes {
         };
     }
 
+    public static Optional<AutomatedMatch> findCreateAutomation(
+            FoodProcessingStation station,
+            List<ItemStack> inputs
+    ) {
+        return switch (station) {
+            case COOKING_TABLE -> automated(FoodProcessingOperation.MIX, inputs)
+                    .or(() -> automated(FoodProcessingOperation.CUT, inputs));
+            case DRYING_RACK -> automated(FoodProcessingOperation.PRESERVE, inputs);
+            case HAND_MILL, COOKING_POT -> Optional.empty();
+        };
+    }
+
+    private static Optional<AutomatedMatch> automated(
+            FoodProcessingOperation operation,
+            List<ItemStack> inputs
+    ) {
+        return find(operation, inputs)
+                .filter(match -> match.automationPolicy() == FoodAutomationPolicy.CREATE_LOW_QUALITY)
+                .map(match -> new AutomatedMatch(operation, match));
+    }
+
     private static Optional<Match> cut(List<ItemStack> inputs) {
         int slot = onlyOccupiedSlot(inputs);
         if (slot < 0) return Optional.empty();
@@ -57,7 +78,8 @@ public final class FoodProcessingRecipes {
             return Optional.empty();
         }
         if (input.getCount() < required) return Optional.empty();
-        return Optional.of(match(output, slot, required, true, inputs));
+        return Optional.of(match(output, slot, required, true, inputs,
+                FoodAutomationPolicy.CREATE_LOW_QUALITY));
     }
 
     private static Optional<Match> grind(List<ItemStack> inputs) {
@@ -66,13 +88,15 @@ public final class FoodProcessingRecipes {
         ItemStack input = inputs.get(slot);
         if (input.is(Items.WHEAT) && input.getCount() >= 2) {
             return Optional.of(match(
-                    new ItemStack(Craftbound.WHEAT_FLOUR.get()), slot, 2, false, inputs
+                    new ItemStack(Craftbound.WHEAT_FLOUR.get()), slot, 2, false, inputs,
+                    FoodAutomationPolicy.MANUAL_ONLY
             ));
         }
         if (input.is(Craftbound.SLICED_MEAT.get()) && input.getCount() >= 2) {
             ItemStack output = new ItemStack(Craftbound.GROUND_MEAT.get());
             FoodIntermediateData.copySource(input, output);
-            return Optional.of(match(output, slot, 2, false, inputs));
+            return Optional.of(match(output, slot, 2, false, inputs,
+                    FoodAutomationPolicy.MANUAL_ONLY));
         }
         return Optional.empty();
     }
@@ -97,7 +121,8 @@ public final class FoodProcessingRecipes {
         }
         if (input.getCount() < required) return Optional.empty();
         FoodIntermediateData.copySource(input, output);
-        return Optional.of(match(output, slot, required, false, inputs));
+        return Optional.of(match(output, slot, required, false, inputs,
+                FoodAutomationPolicy.CREATE_LOW_QUALITY));
     }
 
     private static Optional<Match> mix(List<ItemStack> inputs) {
@@ -123,7 +148,8 @@ public final class FoodProcessingRecipes {
                 new ItemStack(Items.GLASS_BOTTLE),
                 false,
                 qualityInputs(inputs, consumed),
-                0
+                0,
+                FoodAutomationPolicy.MANUAL_ONLY
         ));
     }
 
@@ -141,7 +167,8 @@ public final class FoodProcessingRecipes {
                 FoodCookingData.returnedContainer(input),
                 false,
                 qualityInputs(inputs, consumed),
-                FoodCookingData.requiredRecipeRank(input)
+                FoodCookingData.requiredRecipeRank(input),
+                FoodAutomationPolicy.MANUAL_ONLY
         ));
     }
 
@@ -150,7 +177,8 @@ public final class FoodProcessingRecipes {
             int slot,
             int count,
             boolean toolRequired,
-            List<ItemStack> inputs
+            List<ItemStack> inputs,
+            FoodAutomationPolicy automationPolicy
     ) {
         int[] consumed = new int[3];
         consumed[slot] = count;
@@ -160,7 +188,8 @@ public final class FoodProcessingRecipes {
                 ItemStack.EMPTY,
                 toolRequired,
                 qualityInputs(inputs, consumed),
-                0
+                0,
+                automationPolicy
         );
     }
 
@@ -203,7 +232,11 @@ public final class FoodProcessingRecipes {
             ItemStack returnedContainer,
             boolean toolRequired,
             List<ItemStack> qualityInputs,
-            int requiredRecipeRank
+            int requiredRecipeRank,
+            FoodAutomationPolicy automationPolicy
     ) {
+    }
+
+    public record AutomatedMatch(FoodProcessingOperation operation, Match match) {
     }
 }

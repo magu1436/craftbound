@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.mixin;
 
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -8,13 +9,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** 牧畜ブロックへの搬入時だけ、品質時計NBTを考慮したスタック統合を行う。 */
+/** 牧畜飼料の品質統合と、加工設備に対するバニラホッパーの遮断を行う。 */
 @Mixin(HopperBlockEntity.class)
 public abstract class HopperBlockEntityMixin {
 
@@ -36,6 +38,10 @@ public abstract class HopperBlockEntityMixin {
     ) {
         BlockPos destinationPos = hopperPos.relative(hopperState.getValue(HopperBlock.FACING));
         BlockEntity destination = level.getBlockEntity(destinationPos);
+        if (destination instanceof FoodProcessingBlockEntity) {
+            callback.setReturnValue(false);
+            return;
+        }
         if (!(destination instanceof RanchBlockEntity ranch)) {
             return;
         }
@@ -51,5 +57,29 @@ public abstract class HopperBlockEntityMixin {
         }
 
         callback.setReturnValue(false);
+    }
+
+    @Inject(
+            method = {
+                    "suckInItems(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/entity/Hopper;)Z",
+                    "m_155552_(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/entity/Hopper;)Z"
+            },
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private static void craftbound$blockExtractionFromFoodProcessor(
+            Level level,
+            Hopper hopper,
+            CallbackInfoReturnable<Boolean> callback
+    ) {
+        BlockPos sourcePos = BlockPos.containing(
+                hopper.getLevelX(),
+                hopper.getLevelY() + 1.0D,
+                hopper.getLevelZ()
+        );
+        if (level.getBlockEntity(sourcePos) instanceof FoodProcessingBlockEntity) {
+            callback.setReturnValue(false);
+        }
     }
 }

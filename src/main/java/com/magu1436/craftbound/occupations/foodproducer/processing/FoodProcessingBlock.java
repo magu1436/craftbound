@@ -19,6 +19,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.fml.ModList;
 
 /** FoodProducer の初期加工設備に共通する設置ブロック。 */
 public final class FoodProcessingBlock extends BaseEntityBlock {
@@ -44,9 +46,21 @@ public final class FoodProcessingBlock extends BaseEntityBlock {
         if (!level.isClientSide
                 && player instanceof ServerPlayer serverPlayer
                 && level.getBlockEntity(pos) instanceof FoodProcessingBlockEntity processor) {
+            if (isCreateDeployer(player)) {
+                processor.startCreateAutomation();
+                return InteractionResult.CONSUME;
+            }
             NetworkHooks.openScreen(serverPlayer, processor, pos);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    private static boolean isCreateDeployer(Player player) {
+        return ModList.get().isLoaded("create")
+                && player instanceof FakePlayer
+                && player.getClass().getName().equals(
+                        "com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer"
+                );
     }
 
     @Override

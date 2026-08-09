@@ -1,5 +1,6 @@
 {
   "result": "prepared",
+  "automation_policy": "manual_only",
   "required_recipe_rank": 2,
   "name_key": "item.craftbound.provisional_fortified_meat_soup",
   "inputs": [

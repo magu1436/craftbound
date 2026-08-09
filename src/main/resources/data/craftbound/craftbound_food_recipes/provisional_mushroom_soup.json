@@ -1,5 +1,6 @@
 {
   "result": "prepared",
+  "automation_policy": "manual_only",
   "required_recipe_rank": 1,
   "name_key": "item.craftbound.provisional_mushroom_soup",
   "inputs": [

@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
@@ -14,6 +16,7 @@ import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExper
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -30,8 +33,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
-/** 手動で開始する初期中間素材加工。開始時の材料・ランク・品質を固定する。 */
+/** 手動加工とCreate自動加工を管理し、開始時の材料・ランク・品質を固定する。 */
 public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
 
     public static final int INPUT_0 = 0;
@@ -63,6 +72,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private static final String PENDING_EXPERIENCE_TAG = "pending_experience";
     private static final String BURN_TIME_TAG = "burn_time";
     private static final String BURN_TOTAL_TAG = "burn_total";
+    private static final String AUTOMATED_TAG = "automated";
 
     private NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
     private FoodProcessingOperation operation;
@@ -75,8 +85,10 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private int pendingExperience;
     private int burnTime;
     private int burnTotal;
+    private boolean automated;
     @Nullable
     private UUID initiator;
+    private LazyOptional<IItemHandler> createItemHandler = LazyOptional.of(this::createItemHandler);
 
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -201,6 +213,52 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 : Math.max(1, Math.round(currentOperation().baseTicks() * (1.0F - rank * 0.1F)));
         progress = 0;
         initiator = player.getUUID();
+        automated = false;
+        setChanged();
+        return true;
+    }
+
+    /** Createのデプロイヤーから開始する、保存食系列専用の低品質処理。 */
+    public boolean startCreateAutomation() {
+        if (level == null || isRunning()) return false;
+
+        boolean qualityChanged = false;
+        for (int slot = INPUT_0; slot <= INPUT_2; slot++) {
+            qualityChanged |= FoodQualityData.advanceLoadedTime(
+                    items.get(slot),
+                    level.getGameTime(),
+                    1.0D
+            );
+        }
+        if (qualityChanged) setChanged();
+
+        FoodProcessingRecipes.AutomatedMatch automatedMatch = FoodProcessingRecipes
+                .findCreateAutomation(station(), inputCopies())
+                .orElse(null);
+        if (automatedMatch == null) return false;
+
+        FoodProcessingRecipes.Match match = automatedMatch.match();
+        if (match.qualityInputs().stream().anyMatch(FoodQualityData::isSpoiled)) return false;
+        if (match.toolRequired() && !isUsableKnife(items.get(TOOL))) return false;
+
+        ItemStack output = match.output().copy();
+        if (output.getItem() instanceof FoodIntermediateItem) {
+            FoodIntermediateData.setSuccess(output);
+        }
+        if (!FoodQualityData.initialize(output, FoodQuality.LOW, level.getGameTime())) {
+            return false;
+        }
+
+        operation = automatedMatch.operation();
+        pendingOutput = output;
+        pendingReturn = match.returnedContainer().copy();
+        System.arraycopy(match.consumed(), 0, pendingConsumed, 0, pendingConsumed.length);
+        capturePendingInputs();
+        totalTicks = currentOperation().baseTicks();
+        progress = 0;
+        initiator = null;
+        pendingExperience = 0;
+        automated = true;
         setChanged();
         return true;
     }
@@ -314,6 +372,10 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
 
     public int burnTotal() {
         return burnTotal;
+    }
+
+    public boolean isAutomated() {
+        return automated;
     }
 
     public ContainerData dataAccess() {
@@ -430,6 +492,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         tag.putInt(PENDING_EXPERIENCE_TAG, pendingExperience);
         tag.putInt(BURN_TIME_TAG, burnTime);
         tag.putInt(BURN_TOTAL_TAG, burnTotal);
+        tag.putBoolean(AUTOMATED_TAG, automated);
     }
 
     @Override
@@ -452,6 +515,27 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         pendingExperience = Math.max(0, tag.getInt(PENDING_EXPERIENCE_TAG));
         burnTime = Math.max(0, tag.getInt(BURN_TIME_TAG));
         burnTotal = Math.max(0, tag.getInt(BURN_TOTAL_TAG));
+        automated = tag.getBoolean(AUTOMATED_TAG);
+    }
+
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction side) {
+        if (capability == ForgeCapabilities.ITEM_HANDLER && ModList.get().isLoaded("create")) {
+            return createItemHandler.cast();
+        }
+        return super.getCapability(capability, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        createItemHandler.invalidate();
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
+        createItemHandler = LazyOptional.of(this::createItemHandler);
     }
 
     private List<ItemStack> inputCopies() {
@@ -469,6 +553,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         totalTicks = 0;
         initiator = null;
         pendingExperience = 0;
+        automated = false;
         setChanged();
     }
 
@@ -580,6 +665,67 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (ItemStack.isSameItemSameTags(stored, added)) return true;
         return level != null
                 && FoodQualityData.prepareForMerge(stored, added, level.getGameTime(), 1.0D);
+    }
+
+    private IItemHandler createItemHandler() {
+        return new CreateItemHandler(this);
+    }
+
+    /** Createの搬送にだけ公開する。バニラのホッパーはMixin側で遮断する。 */
+    private final class CreateItemHandler extends InvWrapper {
+
+        private CreateItemHandler(FoodProcessingBlockEntity processor) {
+            super(processor);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            if (isRunning()) return false;
+            if (slot == TOOL) return stack.is(Craftbound.COOKING_KNIFE.get());
+            return slot >= INPUT_0 && slot <= INPUT_2
+                    && !stack.is(Craftbound.COOKING_KNIFE.get());
+        }
+
+        @Override
+        @NotNull
+        public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            if (stack.isEmpty() || !isItemValid(slot, stack)) return stack;
+
+            ItemStack stored = items.get(slot);
+            int limit = Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+            int space = stored.isEmpty() ? limit : limit - stored.getCount();
+            if (space <= 0) return stack;
+
+            long gameTime = level == null ? 0L : level.getGameTime();
+            ItemStack prepared = stack.copy();
+            if (stored.isEmpty()) {
+                FoodQualityData.advanceLoadedTime(prepared, gameTime, 1.0D);
+            } else {
+                ItemStack storedForCheck = simulate ? stored.copy() : stored;
+                if (!FoodQualityData.prepareForMerge(storedForCheck, prepared, gameTime, 1.0D)) {
+                    return stack;
+                }
+            }
+
+            int inserted = Math.min(space, stack.getCount());
+            if (!simulate) {
+                ItemStack merged = prepared.copy();
+                merged.setCount(inserted + (stored.isEmpty() ? 0 : stored.getCount()));
+                setItem(slot, merged);
+            }
+
+            if (inserted >= stack.getCount()) return ItemStack.EMPTY;
+            ItemStack remainder = stack.copy();
+            remainder.shrink(inserted);
+            return remainder;
+        }
+
+        @Override
+        @NotNull
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (slot != OUTPUT && slot != RETURN) return ItemStack.EMPTY;
+            return super.extractItem(slot, amount, simulate);
+        }
     }
 
     private static boolean isUsableKnife(ItemStack stack) {

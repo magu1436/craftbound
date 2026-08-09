@@ -1,5 +1,6 @@
 {
   "result": "dish",
+  "automation_policy": "create_low_quality",
   "required_recipe_rank": 1,
   "name_key": "item.craftbound.provisional_dried_fruit_wrap",
   "inputs": [

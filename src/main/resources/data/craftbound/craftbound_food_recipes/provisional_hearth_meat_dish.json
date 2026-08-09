@@ -1,5 +1,6 @@
 {
   "result": "prepared",
+  "automation_policy": "manual_only",
   "required_recipe_rank": 3,
   "name_key": "item.craftbound.provisional_hearth_meat_dish",
   "inputs": [
