@@ -4,6 +4,7 @@ import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.adventurer.data.DeathlineClearEffectDefinitions;
 import com.magu1436.craftbound.occupations.adventurer.data.DeathlineExcludedDamageDefinitions;
 import com.magu1436.craftbound.occupations.explorer.data.ToolCareBlockDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefinitions;
 
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,5 +30,6 @@ public final class CraftboundDataReloadEventHandler {
             DeathlineExcludedDamageDefinitions.INSTANCE
         );
         event.addListener(ToolCareBlockDefinitions.INSTANCE);
+        event.addListener(MetalMaterialDefinitions.INSTANCE);
     }
 }
