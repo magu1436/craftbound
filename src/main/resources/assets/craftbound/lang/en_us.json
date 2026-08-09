@@ -18,6 +18,7 @@
   "message.craftbound.explorer.discovery.structure.with_experience": "[Exploration] Discovered a new structure: %1$s (+%2$s XP)",
   "message.craftbound.explorer.discovery.structure.without_experience": "[Exploration] Discovered a new structure: %1$s",
   "item.craftbound.crucible": "Crucible",
+  "block.craftbound.blacksmith_furnace": "Blacksmith Furnace",
   "screen.craftbound.crucible": "Crucible",
   "screen.craftbound.crucible.metal": "Metal: %s",
   "screen.craftbound.crucible.amount": "Amount: %s / %s",

@@ -12,6 +12,7 @@
     "key.categories.craftbound": "Craftbound",
     "key.craftbound.emergency_evasion": "緊急回避",
     "item.craftbound.crucible": "るつぼ",
+    "block.craftbound.blacksmith_furnace": "金属溶鉱炉",
     "screen.craftbound.crucible": "るつぼ",
     "screen.craftbound.crucible.metal": "金属: %s",
     "screen.craftbound.crucible.amount": "量: %s / %s",
