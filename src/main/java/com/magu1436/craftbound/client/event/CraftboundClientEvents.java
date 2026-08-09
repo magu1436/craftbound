@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.blacksmith.client.CrucibleScreen;
+import com.magu1436.craftbound.registry.CraftboundMenus;
 
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -22,10 +24,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public final class CraftboundClientEvents {
 
     private static final List<ScreenRegistration> SCREENS = List.of(
-        // screen(
-        //     CraftboundMenus.FORGE_STATION::get,
-        //     ForgeStationScreen::new
-        // )
+        screen(
+            CraftboundMenus.CRUCIBLE::get,
+            CrucibleScreen::new
+        )
     );
 
     private CraftboundClientEvents() {

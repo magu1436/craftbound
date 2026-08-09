@@ -11,5 +11,14 @@
   "attribute.name.craftbound.field_resupply": "Field Resupply",
   "key.categories.craftbound": "Craftbound",
   "key.craftbound.emergency_evasion": "Emergency Evasion",
-  "item.craftbound.crucible": "Crucible"
+  "item.craftbound.crucible": "Crucible",
+  "screen.craftbound.crucible": "Crucible",
+  "screen.craftbound.crucible.metal": "Metal: %s",
+  "screen.craftbound.crucible.amount": "Amount: %s / %s",
+  "screen.craftbound.crucible.state": "State: %s",
+  "screen.craftbound.crucible.state.empty": "Empty",
+  "screen.craftbound.crucible.discard": "Discard",
+  "screen.craftbound.crucible.discard_warning": "All contents will be lost.",
+  "screen.craftbound.crucible.discard_confirm": "Confirm discard",
+  "screen.craftbound.crucible.invalid_state": "This crucible can no longer be used."
 }
