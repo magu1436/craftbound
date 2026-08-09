@@ -10,5 +10,6 @@
   "attribute.name.craftbound.ranged_footwork": "Ranged Footwork",
   "attribute.name.craftbound.field_resupply": "Field Resupply",
   "key.categories.craftbound": "Craftbound",
-  "key.craftbound.emergency_evasion": "Emergency Evasion"
+  "key.craftbound.emergency_evasion": "Emergency Evasion",
+  "item.craftbound.crucible": "Crucible"
 }
