@@ -17,6 +17,8 @@
     "screen.craftbound.crucible.amount": "量: %s / %s",
     "screen.craftbound.crucible.state": "状態: %s",
     "screen.craftbound.crucible.state.empty": "空",
+    "screen.craftbound.crucible.state.unheated": "未加熱",
+    "screen.craftbound.crucible.state.heated": "加熱済み",
     "screen.craftbound.crucible.discard": "廃棄",
     "screen.craftbound.crucible.discard_warning": "内容物はすべて失われます。",
     "screen.craftbound.crucible.discard_confirm": "廃棄を確定",

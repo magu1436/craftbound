@@ -1,5 +1,8 @@
 package com.magu1436.craftbound.occupations.blacksmith.client;
 
+import java.util.Optional;
+import java.util.Locale;
+
 import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleState;
 import com.magu1436.craftbound.occupations.blacksmith.crucible.menu.CrucibleMenu;
 
@@ -7,11 +10,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public final class CrucibleScreen
     extends AbstractContainerScreen<CrucibleMenu> {
 
+    private static final int DISCARD_CONFIRM_TICKS = 100;
     private static final int BACKGROUND_COLOR = 0xFFC6C6C6;
     private static final int BORDER_LIGHT = 0xFFFFFFFF;
     private static final int BORDER_DARK = 0xFF555555;
@@ -20,6 +25,9 @@ public final class CrucibleScreen
     private static final int INPUT_SLOT_Y = 35;
     private static final int PLAYER_SLOTS_X = 7;
     private static final int PLAYER_SLOTS_Y = 83;
+
+    private Button discardButton;
+    private int discardConfirmationTicks;
 
     public CrucibleScreen(
         CrucibleMenu menu,
@@ -35,13 +43,24 @@ public final class CrucibleScreen
     @Override
     protected void init() {
         super.init();
-        Button discardButton = Button.builder(
+        discardButton = Button.builder(
             Component.translatable("screen.craftbound.crucible.discard"),
-            button -> {
-            }
+            button -> handleDiscardClick()
         ).bounds(leftPos + 112, topPos + 33, 52, 20).build();
-        discardButton.active = false;
         addRenderableWidget(discardButton);
+        updateDiscardButton();
+    }
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        if (discardConfirmationTicks > 0) {
+            discardConfirmationTicks--;
+            if (discardConfirmationTicks == 0) {
+                updateDiscardButton();
+            }
+        }
+        updateDiscardButtonAvailability();
     }
 
     @Override
@@ -53,6 +72,17 @@ public final class CrucibleScreen
     ) {
         renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
+        if (discardConfirmationTicks > 0) {
+            graphics.drawCenteredString(
+                font,
+                Component.translatable(
+                    "screen.craftbound.crucible.discard_warning"
+                ),
+                width / 2,
+                topPos + 62,
+                0xA00000
+            );
+        }
         renderTooltip(graphics, mouseX, mouseY);
     }
 
@@ -90,9 +120,29 @@ public final class CrucibleScreen
             0x404040,
             false
         );
+
+        Optional<CrucibleState> stateResult = menu.getCrucibleState();
+        if (stateResult.isEmpty()) {
+            graphics.drawString(
+                font,
+                Component.translatable(
+                    "screen.craftbound.crucible.invalid_state"
+                ),
+                52,
+                34,
+                0xA00000,
+                false
+            );
+            return;
+        }
+
+        CrucibleState state = stateResult.get();
         graphics.drawString(
             font,
-            Component.translatable("screen.craftbound.crucible.metal", "-"),
+            Component.translatable(
+                "screen.craftbound.crucible.metal",
+                metalName(state.metalId())
+            ),
             52,
             27,
             0x404040,
@@ -102,7 +152,7 @@ public final class CrucibleScreen
             font,
             Component.translatable(
                 "screen.craftbound.crucible.amount",
-                0,
+                state.amount(),
                 CrucibleState.MAX_CAPACITY
             ),
             52,
@@ -114,13 +164,74 @@ public final class CrucibleScreen
             font,
             Component.translatable(
                 "screen.craftbound.crucible.state",
-                Component.translatable("screen.craftbound.crucible.state.empty")
+                Component.translatable(
+                        "screen.craftbound.crucible.state."
+                        + state.processState().name().toLowerCase(Locale.ROOT)
+                )
             ),
             52,
             53,
             0x404040,
             false
         );
+    }
+
+    private void handleDiscardClick() {
+        if (!hasContents()) {
+            clearDiscardConfirmation();
+            return;
+        }
+        if (discardConfirmationTicks == 0) {
+            discardConfirmationTicks = DISCARD_CONFIRM_TICKS;
+            updateDiscardButton();
+            return;
+        }
+
+        if (minecraft != null && minecraft.gameMode != null) {
+            minecraft.gameMode.handleInventoryButtonClick(
+                menu.containerId,
+                CrucibleMenu.DISCARD_BUTTON_ID
+            );
+        }
+        clearDiscardConfirmation();
+    }
+
+    private void updateDiscardButtonAvailability() {
+        if (discardButton == null) {
+            return;
+        }
+        discardButton.active = hasContents();
+        if (!discardButton.active && discardConfirmationTicks > 0) {
+            clearDiscardConfirmation();
+        }
+    }
+
+    private void updateDiscardButton() {
+        if (discardButton == null) {
+            return;
+        }
+        discardButton.setMessage(Component.translatable(
+            discardConfirmationTicks > 0
+                ? "screen.craftbound.crucible.discard_confirm"
+                : "screen.craftbound.crucible.discard"
+        ));
+    }
+
+    private void clearDiscardConfirmation() {
+        discardConfirmationTicks = 0;
+        updateDiscardButton();
+    }
+
+    private boolean hasContents() {
+        return menu.getCrucibleState()
+            .map(state -> state.amount() > 0)
+            .orElse(false);
+    }
+
+    private Component metalName(ResourceLocation metalId) {
+        return metalId == null
+            ? Component.literal("-")
+            : Component.literal(metalId.toString());
     }
 
     private void drawPlayerInventorySlots(GuiGraphics graphics) {

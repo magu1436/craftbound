@@ -17,6 +17,8 @@
   "screen.craftbound.crucible.amount": "Amount: %s / %s",
   "screen.craftbound.crucible.state": "State: %s",
   "screen.craftbound.crucible.state.empty": "Empty",
+  "screen.craftbound.crucible.state.unheated": "Unheated",
+  "screen.craftbound.crucible.state.heated": "Heated",
   "screen.craftbound.crucible.discard": "Discard",
   "screen.craftbound.crucible.discard_warning": "All contents will be lost.",
   "screen.craftbound.crucible.discard_confirm": "Confirm discard",
