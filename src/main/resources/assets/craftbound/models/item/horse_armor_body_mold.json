@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "craftbound:item/horse_armor_body_mold"}
+}

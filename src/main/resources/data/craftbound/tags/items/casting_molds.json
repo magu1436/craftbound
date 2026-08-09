@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "craftbound:sword_blade_mold",
+    "craftbound:pickaxe_head_mold",
+    "craftbound:axe_head_mold",
+    "craftbound:shovel_head_mold",
+    "craftbound:hoe_head_mold",
+    "craftbound:helmet_body_mold",
+    "craftbound:chestplate_body_mold",
+    "craftbound:leggings_body_mold",
+    "craftbound:boots_body_mold",
+    "craftbound:horse_armor_body_mold",
+    "craftbound:iron_ring_mold",
+    "craftbound:crossbow_trigger_mold",
+    "craftbound:shield_boss_mold",
+    "craftbound:shears_blades_mold",
+    "craftbound:fire_striker_mold",
+    "craftbound:brush_head_mold"
+  ]
+}

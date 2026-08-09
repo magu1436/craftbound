@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {"item": "craftbound:blank_mold"},
+  "result": "craftbound:boots_body_mold",
+  "count": 1
+}
