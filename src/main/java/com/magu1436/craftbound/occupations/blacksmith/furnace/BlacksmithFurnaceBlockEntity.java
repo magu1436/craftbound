@@ -1,14 +1,24 @@
 package com.magu1436.craftbound.occupations.blacksmith.furnace;
 
+import java.util.Optional;
+
 import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleItem;
+import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleProcessState;
+import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleState;
 import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleStateService;
+import com.magu1436.craftbound.occupations.blacksmith.melting.MeltingGameService;
+import com.magu1436.craftbound.occupations.blacksmith.melting.state.HeatingStatus;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
+import com.magu1436.craftbound.registry.CraftboundBlockTags;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +75,11 @@ public final class BlacksmithFurnaceBlockEntity extends BlockEntity {
     }
 
     public void refreshHeatSource() {
-        // Implemented in step 3; this method is the cache-update boundary.
+        if (level != null) {
+            hasHeatSource = level.getBlockState(worldPosition.below()).is(
+                CraftboundBlockTags.BLACKSMITH_HEAT_SOURCES
+            );
+        }
     }
 
     public boolean hasCrucible() {
@@ -80,7 +94,9 @@ public final class BlacksmithFurnaceBlockEntity extends BlockEntity {
         ServerPlayer player,
         InteractionHand hand
     ) {
-        if (hand != InteractionHand.MAIN_HAND || hasCrucible()) {
+        if (hand != InteractionHand.MAIN_HAND
+            || hasCrucible()
+            || invalidStoredState) {
             return false;
         }
 
@@ -144,10 +160,7 @@ public final class BlacksmithFurnaceBlockEntity extends BlockEntity {
         if (pendingHeatingTicks == 0L) {
             return true;
         }
-        if (!CrucibleStateService.advanceHeating(
-            crucible,
-            pendingHeatingTicks
-        )) {
+        if (!MeltingGameService.commitHeating(crucible, pendingHeatingTicks)) {
             return false;
         }
         pendingHeatingTicks = 0L;
@@ -167,6 +180,79 @@ public final class BlacksmithFurnaceBlockEntity extends BlockEntity {
         BlockState state,
         BlacksmithFurnaceBlockEntity furnace
     ) {
-        // Heating is implemented in step 3.
+        if (!(level instanceof ServerLevel serverLevel)
+            || !furnace.hasCrucible()
+            || furnace.invalidStoredState
+            || !furnace.hasHeatSource) {
+            return;
+        }
+
+        Optional<CrucibleState> stateResult =
+            CrucibleStateService.read(furnace.crucible);
+        if (stateResult.isEmpty()) {
+            furnace.invalidStoredState = true;
+            LOGGER.error(
+                "Stopping blacksmith furnace at {} because its stored crucible state is invalid",
+                pos
+            );
+            return;
+        }
+        if (stateResult.get().processState() == CrucibleProcessState.EMPTY) {
+            return;
+        }
+
+        long candidatePendingHeatingTicks = saturatedIncrement(
+            furnace.pendingHeatingTicks
+        );
+        Optional<HeatingStatus> statusResult = MeltingGameService.evaluate(
+            furnace.crucible,
+            candidatePendingHeatingTicks
+        );
+        if (statusResult.isEmpty()) {
+            return;
+        }
+
+        furnace.pendingHeatingTicks = candidatePendingHeatingTicks;
+        furnace.processWarning(serverLevel, statusResult.get());
+        furnace.setChanged();
+    }
+
+    private void processWarning(ServerLevel level, HeatingStatus status) {
+        if (!status.warningRequired()) {
+            warningSoundCooldownTicks = 0;
+            return;
+        }
+
+        if (pendingHeatingTicks % 10L == 0L) {
+            level.sendParticles(
+                ParticleTypes.LARGE_SMOKE,
+                worldPosition.getX() + 0.5D,
+                worldPosition.getY() + 1.05D,
+                worldPosition.getZ() + 0.5D,
+                1,
+                0.15D,
+                0.05D,
+                0.15D,
+                0.01D
+            );
+        }
+
+        if (warningSoundCooldownTicks <= 0) {
+            level.playSound(
+                null,
+                worldPosition,
+                SoundEvents.ANVIL_HIT,
+                SoundSource.BLOCKS,
+                0.8F,
+                0.9F + level.random.nextFloat() * 0.2F
+            );
+            warningSoundCooldownTicks = 40 + level.random.nextInt(61);
+        } else {
+            warningSoundCooldownTicks--;
+        }
+    }
+
+    private static long saturatedIncrement(long value) {
+        return value == Long.MAX_VALUE ? Long.MAX_VALUE : value + 1L;
     }
 }
