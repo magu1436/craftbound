@@ -348,6 +348,8 @@ public final class CrucibleStateService {
     public static boolean consumeForCasting(ItemStack crucible, int amount);
 
     public static boolean discardAll(ItemStack crucible);
+
+    public static boolean resetToEmpty(ItemStack crucible);
 }
 ```
 

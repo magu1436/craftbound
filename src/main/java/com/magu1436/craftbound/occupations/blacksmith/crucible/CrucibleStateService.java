@@ -13,6 +13,13 @@ public final class CrucibleStateService {
     private CrucibleStateService() {
     }
 
+    /**
+     * Reads a validated snapshot of the crucible contents.
+     *
+     * @param crucible target item stack
+     * @return the state, or empty when the stack is not a crucible or its
+     *     stored data is invalid
+     */
     public static Optional<CrucibleState> read(ItemStack crucible) {
         if (!isCrucible(crucible)) {
             return Optional.empty();
@@ -20,6 +27,19 @@ public final class CrucibleStateService {
         return CrucibleStateCodec.read(crucible);
     }
 
+    /**
+     * Inserts whole input items into a crucible.
+     * State-changing callers must invoke this on the logical server.
+     * The input stack itself is not shrunk by this method; callers consume
+     * exactly {@link CrucibleInsertResult#acceptedItemCount()} items after a
+     * successful result.
+     *
+     * @param crucible target crucible
+     * @param input candidate input stack
+     * @param requestedItemCount maximum number of input items to insert
+     * @param resolver server-owned metal material definitions
+     * @return insertion result and the resulting crucible state
+     */
     public static CrucibleInsertResult insert(
         ItemStack crucible,
         ItemStack input,
@@ -115,6 +135,14 @@ public final class CrucibleStateService {
         );
     }
 
+    /**
+     * Adds heating time without evaluating or storing heating quality.
+     * This API must be called on the logical server by the melting process.
+     *
+     * @param crucible target crucible
+     * @param ticks positive number of heating ticks to add
+     * @return {@code true} when the crucible state was updated
+     */
     public static boolean advanceHeating(ItemStack crucible, long ticks) {
         if (ticks <= 0L) {
             return false;
@@ -157,6 +185,16 @@ public final class CrucibleStateService {
         ));
     }
 
+    /**
+     * Atomically consumes material units for casting. No state is changed
+     * when the requested amount is invalid or unavailable. This API must be
+     * called on the logical server after the casting process has validated
+     * the metal and heating requirements.
+     *
+     * @param crucible target crucible
+     * @param amount positive material-unit amount to consume
+     * @return {@code true} when the full requested amount was consumed
+     */
     public static boolean consumeForCasting(ItemStack crucible, int amount) {
         if (amount <= 0) {
             return false;
@@ -171,7 +209,7 @@ public final class CrucibleStateService {
             return false;
         }
         if (updated.get().processState() == CrucibleProcessState.EMPTY) {
-            CrucibleStateCodec.remove(crucible);
+            return resetToEmpty(crucible);
         } else {
             CrucibleStateCodec.write(crucible, updated.get());
         }
@@ -198,6 +236,15 @@ public final class CrucibleStateService {
         ));
     }
 
+    /**
+     * Discards all contents through the common empty-state reset path.
+     * This API must be called on the logical server after confirmation and
+     * menu validity have been checked.
+     *
+     * @param crucible target crucible
+     * @return {@code true} when the crucible was valid, including when it was
+     *     already empty
+     */
     public static boolean discardAll(ItemStack crucible) {
         Optional<CrucibleState> result = read(crucible);
         if (result.isEmpty()) {
@@ -205,6 +252,22 @@ public final class CrucibleStateService {
         }
         if (result.get().processState() == CrucibleProcessState.EMPTY) {
             return true;
+        }
+        return resetToEmpty(crucible);
+    }
+
+    /**
+     * Removes the complete stored contents and normalizes the crucible to
+     * {@link CrucibleProcessState#EMPTY}. Invalid data is never overwritten.
+     * This API must be called on the logical server.
+     *
+     * @param crucible target crucible
+     * @return {@code true} when the crucible was valid and is now empty
+     */
+    public static boolean resetToEmpty(ItemStack crucible) {
+        Optional<CrucibleState> result = read(crucible);
+        if (result.isEmpty()) {
+            return false;
         }
         CrucibleStateCodec.remove(crucible);
         return true;

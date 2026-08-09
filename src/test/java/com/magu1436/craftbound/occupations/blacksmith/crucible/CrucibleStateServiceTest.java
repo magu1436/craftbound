@@ -85,6 +85,24 @@ class CrucibleStateServiceTest {
     }
 
     @Test
+    void heatingOverflowSaturatesWithoutBecomingNegative() {
+        CrucibleState current = state(IRON, 5, Long.MAX_VALUE - 1L);
+
+        CrucibleState heated = CrucibleStateService.advanceState(current, 2L)
+            .orElseThrow();
+
+        assertEquals(Long.MAX_VALUE, heated.heatingTicks());
+    }
+
+    @Test
+    void emptyCrucibleCannotBeHeated() {
+        assertTrue(
+            CrucibleStateService.advanceState(CrucibleState.empty(), 1L)
+                .isEmpty()
+        );
+    }
+
+    @Test
     void partialConsumptionPreservesProcessingState() {
         CrucibleState current = state(IRON, 5, 40L);
 
