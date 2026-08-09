@@ -82,6 +82,10 @@ public final class BlacksmithFurnaceBlockEntity extends BlockEntity {
         }
     }
 
+    public boolean hasHeatSource() {
+        return hasHeatSource;
+    }
+
     public boolean hasCrucible() {
         return !crucible.isEmpty();
     }
