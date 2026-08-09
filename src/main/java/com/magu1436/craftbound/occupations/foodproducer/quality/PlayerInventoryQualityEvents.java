@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.occupations.foodproducer.quality;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageItemData;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -62,12 +63,8 @@ public final class PlayerInventoryQualityEvents {
         if (event.getPlayer() instanceof ServerPlayer player) {
             ItemStack stack = event.getEntity().getItem();
             long gameTime = player.serverLevel().getGameTime();
-            FoodQualityData.advanceLoadedTime(
-                    stack,
-                    gameTime,
-                    PLAYER_INVENTORY_MULTIPLIER
-            );
-            FoodQualityData.pauseClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER);
+            advanceStack(stack, gameTime);
+            pauseStack(stack, gameTime);
         }
     }
 
@@ -75,30 +72,23 @@ public final class PlayerInventoryQualityEvents {
     @SubscribeEvent
     public static void onItemEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide() && event.getEntity() instanceof ItemEntity itemEntity) {
-            FoodQualityData.pauseClock(
-                    itemEntity.getItem(),
-                    event.getLevel().getGameTime(),
-                    PLAYER_INVENTORY_MULTIPLIER
-            );
+            pauseStack(itemEntity.getItem(), event.getLevel().getGameTime());
         }
     }
 
     private static void advanceInventory(ServerPlayer player) {
         long gameTime = player.serverLevel().getGameTime();
-        forEachInventoryStack(player.getInventory(), stack ->
-                FoodQualityData.advanceLoadedTime(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER));
+        forEachInventoryStack(player.getInventory(), stack -> advanceStack(stack, gameTime));
     }
 
     private static void resetInventoryClock(ServerPlayer player) {
         long gameTime = player.serverLevel().getGameTime();
-        forEachInventoryStack(player.getInventory(), stack ->
-                FoodQualityData.resetClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER));
+        forEachInventoryStack(player.getInventory(), stack -> resetStack(stack, gameTime));
     }
 
     private static void pauseInventoryClock(ServerPlayer player) {
         long gameTime = player.serverLevel().getGameTime();
-        forEachInventoryStack(player.getInventory(), stack ->
-                FoodQualityData.pauseClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER));
+        forEachInventoryStack(player.getInventory(), stack -> pauseStack(stack, gameTime));
     }
 
     private static void forEachInventoryStack(Inventory inventory, java.util.function.Consumer<ItemStack> action) {
@@ -121,7 +111,7 @@ public final class PlayerInventoryQualityEvents {
                 return;
             }
         }
-        FoodQualityData.resetClock(pickedUp, gameTime, PLAYER_INVENTORY_MULTIPLIER);
+        resetStack(pickedUp, gameTime);
     }
 
     private static boolean prepareExistingStack(
@@ -139,5 +129,20 @@ public final class PlayerInventoryQualityEvents {
                         gameTime,
                         PLAYER_INVENTORY_MULTIPLIER
                 );
+    }
+
+    private static void advanceStack(ItemStack stack, long gameTime) {
+        FoodQualityData.advanceLoadedTime(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER);
+        PreservationStorageItemData.advanceLoadedTime(stack, gameTime);
+    }
+
+    private static void resetStack(ItemStack stack, long gameTime) {
+        FoodQualityData.resetClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER);
+        PreservationStorageItemData.resetClock(stack, gameTime);
+    }
+
+    private static void pauseStack(ItemStack stack, long gameTime) {
+        FoodQualityData.pauseClock(stack, gameTime, PLAYER_INVENTORY_MULTIPLIER);
+        PreservationStorageItemData.pauseClock(stack, gameTime);
     }
 }

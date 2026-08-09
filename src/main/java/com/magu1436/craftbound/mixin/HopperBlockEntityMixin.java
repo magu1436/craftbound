@@ -2,6 +2,7 @@ package com.magu1436.craftbound.mixin;
 
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** 牧畜飼料の品質統合と、加工設備に対するバニラホッパーの遮断を行う。 */
+/** 品質対応設備への搬入と、加工設備に対するバニラホッパーの遮断を行う。 */
 @Mixin(HopperBlockEntity.class)
 public abstract class HopperBlockEntityMixin {
 
@@ -39,6 +40,20 @@ public abstract class HopperBlockEntityMixin {
         BlockPos destinationPos = hopperPos.relative(hopperState.getValue(HopperBlock.FACING));
         BlockEntity destination = level.getBlockEntity(destinationPos);
         if (destination instanceof FoodProcessingBlockEntity) {
+            callback.setReturnValue(false);
+            return;
+        }
+        if (destination instanceof PreservationStorageBlockEntity storage) {
+            for (int slot = 0; slot < hopper.getContainerSize(); slot++) {
+                ItemStack source = hopper.getItem(slot);
+                if (!source.isEmpty()
+                        && storage.insertOneFromHopper(source)) {
+                    source.shrink(1);
+                    hopper.setChanged();
+                    callback.setReturnValue(true);
+                    return;
+                }
+            }
             callback.setReturnValue(false);
             return;
         }

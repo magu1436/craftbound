@@ -20,6 +20,7 @@ import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchManagementEve
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchManager;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExperience;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -127,6 +128,10 @@ public final class CraftboundTestCommands {
                         .executes(context -> startNearestCreateAutomation(context.getSource())))
                 .then(Commands.literal("finish")
                         .executes(context -> finishNearestProcessing(context.getSource()))));
+
+        test.then(Commands.literal("storage")
+                .then(Commands.literal("status")
+                        .executes(context -> showNearestStorageStatus(context.getSource()))));
 
         LiteralArgumentBuilder<CommandSourceStack> cookingPrepare = Commands.literal("prepare");
         cookingPrepare.then(cookingQualityLiteral("high", FoodQuality.HIGH));
@@ -546,6 +551,69 @@ public final class CraftboundTestCommands {
                 "command.craftbound.test.processing.create_started"
         ), false);
         return 1;
+    }
+
+    private static int showNearestStorageStatus(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        PreservationStorageBlockEntity storage = nearestStorage(source);
+        if (storage == null) return 0;
+
+        int occupiedSlots = 0;
+        int totalItems = 0;
+        for (int slot = 0; slot < storage.getContainerSize(); slot++) {
+            ItemStack stack = storage.getItem(slot);
+            if (!stack.isEmpty()) {
+                occupiedSlots++;
+                totalItems += stack.getCount();
+            }
+        }
+        BlockPos pos = storage.getBlockPos();
+        int finalOccupiedSlots = occupiedSlots;
+        int finalTotalItems = totalItems;
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.storage.status",
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                storage.getDisplayName(),
+                (int) storage.preservationMultiplier(),
+                finalOccupiedSlots,
+                PreservationStorageBlockEntity.CONTAINER_SIZE,
+                finalTotalItems
+        ), false);
+        return 1;
+    }
+
+    @Nullable
+    private static PreservationStorageBlockEntity nearestStorage(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        HitResult hit = player.pick(16.0D, 1.0F, false);
+        if (hit instanceof BlockHitResult blockHit
+                && player.serverLevel().getBlockEntity(blockHit.getBlockPos())
+                        instanceof PreservationStorageBlockEntity lookedAt) {
+            return lookedAt;
+        }
+        BlockPos center = player.blockPosition();
+        PreservationStorageBlockEntity nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+        for (BlockPos pos : BlockPos.betweenClosed(
+                center.offset(-16, -16, -16),
+                center.offset(16, 16, 16)
+        )) {
+            if (player.serverLevel().getBlockEntity(pos)
+                    instanceof PreservationStorageBlockEntity candidate) {
+                double distance = pos.distSqr(center);
+                if (distance < nearestDistance) {
+                    nearest = candidate;
+                    nearestDistance = distance;
+                }
+            }
+        }
+        if (nearest == null) {
+            source.sendFailure(Component.translatable("command.craftbound.test.storage.none"));
+        }
+        return nearest;
     }
 
     @Nullable

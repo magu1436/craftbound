@@ -239,5 +239,13 @@
   "item.craftbound.provisional_alchemist_table": "Prototype Alchemist's Table",
   "command.craftbound.test.cooking.ingredients": "Gave provisional ingredients for %s.",
   "command.craftbound.test.cooking.ingredients.unknown": "Food recipe %s was not found.",
-  "command.craftbound.test.cooking.ingredients.unavailable": "Could not create test ingredients for food recipe %s."
+  "command.craftbound.test.cooking.ingredients.unavailable": "Could not create test ingredients for food recipe %s.",
+  "block.craftbound.preservation_storage_1": "Preservation Storage I",
+  "block.craftbound.preservation_storage_2": "Preservation Storage II",
+  "container.craftbound.preservation_storage_1": "Preservation Storage I",
+  "container.craftbound.preservation_storage_2": "Preservation Storage II",
+  "screen.craftbound.preservation_storage.multiplier": "Preservation: %sx",
+  "tooltip.craftbound.preservation_storage.contents": "Stored: %s items",
+  "command.craftbound.test.storage.status": "Position=(%s,%s,%s) Storage=%s Preservation=%sx Slots=%s/%s Total=%s",
+  "command.craftbound.test.storage.none": "No preservation storage was found within 16 blocks."
 }

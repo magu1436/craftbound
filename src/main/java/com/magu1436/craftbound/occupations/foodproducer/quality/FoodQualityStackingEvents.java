@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.occupations.foodproducer.quality;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageMenu;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.ItemStackedOnOtherEvent;
@@ -35,11 +36,16 @@ public final class FoodQualityStackingEvents {
         }
 
         // 個数移動とメニュー同期はバニラへ任せ、比較直前に時計NBTだけを揃える.
+        double multiplier = NORMAL_STORAGE_MULTIPLIER;
+        if (event.getPlayer().containerMenu instanceof PreservationStorageMenu storageMenu
+                && storageMenu.isStorageSlot(event.getSlot())) {
+            multiplier = storageMenu.preservationMultiplier();
+        }
         FoodQualityData.prepareForMerge(
                 stackedOn,
                 carried,
                 event.getPlayer().level().getGameTime(),
-                NORMAL_STORAGE_MULTIPLIER
+                multiplier
         );
     }
 }

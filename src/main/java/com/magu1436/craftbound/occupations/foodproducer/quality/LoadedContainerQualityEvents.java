@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationMultiplierContainer;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageItemData;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +25,7 @@ import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** 読み込み済みの通常コンテナ内にある品質対象アイテムの時計を進める. */
+/** 読み込み済みコンテナと、アイテム化した保存設備の内部品質時計を進める。 */
 @Mod.EventBusSubscriber(modid = Craftbound.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class LoadedContainerQualityEvents {
 
@@ -159,15 +161,17 @@ public final class LoadedContainerQualityEvents {
 
     private static void advanceContainer(Container container, BlockEntity blockEntity, long gameTime) {
         boolean changed = false;
+        double multiplier = preservationMultiplier(blockEntity);
         for (int slot = 0; slot < container.getContainerSize(); slot++) {
             ItemStack stack = container.getItem(slot);
             if (FoodQualityItems.isQualityTarget(stack)) {
                 changed |= FoodQualityData.advanceLoadedTime(
                         stack,
                         gameTime,
-                        NORMAL_CONTAINER_MULTIPLIER
+                        multiplier
                 );
             }
+            changed |= PreservationStorageItemData.advanceLoadedTime(stack, gameTime);
         }
         if (changed) {
             blockEntity.setChanged();
@@ -180,19 +184,27 @@ public final class LoadedContainerQualityEvents {
             long gameTime
     ) {
         boolean changed = false;
+        double multiplier = preservationMultiplier(blockEntity);
         for (int slot = 0; slot < container.getContainerSize(); slot++) {
             ItemStack stack = container.getItem(slot);
             if (FoodQualityItems.isQualityTarget(stack)) {
                 changed |= FoodQualityData.pauseClock(
                         stack,
                         gameTime,
-                        NORMAL_CONTAINER_MULTIPLIER
+                        multiplier
                 );
             }
+            changed |= PreservationStorageItemData.pauseClock(stack, gameTime);
         }
         if (changed) {
             blockEntity.setChanged();
         }
+    }
+
+    private static double preservationMultiplier(BlockEntity blockEntity) {
+        return blockEntity instanceof PreservationMultiplierContainer preserving
+                ? preserving.preservationMultiplier()
+                : NORMAL_CONTAINER_MULTIPLIER;
     }
 
     private record ScheduledContainer(long pos, long dueTime) {

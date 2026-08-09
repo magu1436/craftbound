@@ -16,6 +16,11 @@ import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockRecipe;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchMenu;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchScreen;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlock;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockItem;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageMenu;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.registries.Registries;
@@ -146,6 +151,48 @@ public class Craftbound
     public static final RegistryObject<MenuType<FoodProcessingMenu>> FOOD_PROCESSING_MENU = MENU_TYPES.register(
             "food_processing", () -> IForgeMenuType.create(FoodProcessingMenu::new)
     );
+    public static final RegistryObject<Block> PRESERVATION_STORAGE_1 = BLOCKS.register(
+            "preservation_storage_1",
+            () -> new PreservationStorageBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.WOOD)
+                            .strength(2.5F)
+                            .sound(SoundType.WOOD),
+                    3.0D
+            )
+    );
+    public static final RegistryObject<Block> PRESERVATION_STORAGE_2 = BLOCKS.register(
+            "preservation_storage_2",
+            () -> new PreservationStorageBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.METAL)
+                            .strength(3.5F)
+                            .sound(SoundType.METAL),
+                    5.0D
+            )
+    );
+    public static final RegistryObject<Item> PRESERVATION_STORAGE_1_ITEM = ITEMS.register(
+            "preservation_storage_1",
+            () -> new PreservationStorageBlockItem(PRESERVATION_STORAGE_1.get(), new Item.Properties())
+    );
+    public static final RegistryObject<Item> PRESERVATION_STORAGE_2_ITEM = ITEMS.register(
+            "preservation_storage_2",
+            () -> new PreservationStorageBlockItem(PRESERVATION_STORAGE_2.get(), new Item.Properties())
+    );
+    public static final RegistryObject<BlockEntityType<PreservationStorageBlockEntity>>
+            PRESERVATION_STORAGE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+                    "preservation_storage",
+                    () -> BlockEntityType.Builder.of(
+                            PreservationStorageBlockEntity::new,
+                            PRESERVATION_STORAGE_1.get(),
+                            PRESERVATION_STORAGE_2.get()
+                    ).build(null)
+            );
+    public static final RegistryObject<MenuType<PreservationStorageMenu>> PRESERVATION_STORAGE_MENU =
+            MENU_TYPES.register(
+                    "preservation_storage",
+                    () -> IForgeMenuType.create(PreservationStorageMenu::new)
+            );
     public static final RegistryObject<RecipeSerializer<BasicProcessingEquipmentRecipe>>
             BASIC_PROCESSING_EQUIPMENT_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(
                     "basic_processing_equipment", BasicProcessingEquipmentRecipe.Serializer::new
@@ -211,6 +258,8 @@ public class Craftbound
             event.accept(HAND_MILL_ITEM);
             event.accept(DRYING_RACK_ITEM);
             event.accept(COOKING_POT_ITEM);
+            event.accept(PRESERVATION_STORAGE_1_ITEM);
+            event.accept(PRESERVATION_STORAGE_2_ITEM);
         }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
         {
@@ -246,6 +295,10 @@ public class Craftbound
         {
             event.enqueueWork(() -> MenuScreens.register(RANCH_MENU.get(), RanchScreen::new));
             event.enqueueWork(() -> MenuScreens.register(FOOD_PROCESSING_MENU.get(), FoodProcessingScreen::new));
+            event.enqueueWork(() -> MenuScreens.register(
+                    PRESERVATION_STORAGE_MENU.get(),
+                    PreservationStorageScreen::new
+            ));
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());

@@ -239,5 +239,13 @@
   "item.craftbound.provisional_alchemist_table": "仮・錬金術師の食卓",
   "command.craftbound.test.cooking.ingredients": "%sの仮レシピ材料を渡しました。",
   "command.craftbound.test.cooking.ingredients.unknown": "料理定義%sが見つかりません。",
-  "command.craftbound.test.cooking.ingredients.unavailable": "料理定義%sのテスト材料を生成できません。"
+  "command.craftbound.test.cooking.ingredients.unavailable": "料理定義%sのテスト材料を生成できません。",
+  "block.craftbound.preservation_storage_1": "保存設備 I",
+  "block.craftbound.preservation_storage_2": "保存設備 II",
+  "container.craftbound.preservation_storage_1": "保存設備 I",
+  "container.craftbound.preservation_storage_2": "保存設備 II",
+  "screen.craftbound.preservation_storage.multiplier": "保存倍率：%s倍",
+  "tooltip.craftbound.preservation_storage.contents": "保管中：%s個",
+  "command.craftbound.test.storage.status": "位置=(%s,%s,%s) 設備=%s 保存倍率=%s倍 使用スロット=%s/%s 合計=%s個",
+  "command.craftbound.test.storage.none": "16ブロック以内に保存設備がありません。"
 }
