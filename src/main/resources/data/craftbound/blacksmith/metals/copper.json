@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "ingredients": [
+    { "item": "minecraft:copper_ingot", "size": 1 },
+    { "item": "minecraft:copper_block", "size": 9 },
+    { "item": "minecraft:raw_copper", "size": 1 }
+  ],
+  "lump_loss_ratio": 0.5,
+  "lump_loss_rounding": "ceil",
+  "castable_after_ticks": 180,
+  "score_curve": [
+    { "ticks": 180, "score": 40 },
+    { "ticks": 260, "score": 100 },
+    { "ticks": 320, "score": 100 },
+    { "ticks": 420, "score": 40 },
+    { "ticks": 500, "score": 0 }
+  ],
+  "danger_after_ticks": 420,
+  "destroy_after_ticks": 500,
+  "heating_evaluator": "craftbound:linear_curve"
+}

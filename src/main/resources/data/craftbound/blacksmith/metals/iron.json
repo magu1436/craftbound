@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "ingredients": [
+    { "item": "minecraft:iron_ingot", "size": 1 },
+    { "item": "minecraft:iron_block", "size": 9 },
+    { "item": "minecraft:raw_iron", "size": 1 }
+  ],
+  "lump_loss_ratio": 0.5,
+  "lump_loss_rounding": "ceil",
+  "castable_after_ticks": 200,
+  "score_curve": [
+    { "ticks": 200, "score": 40 },
+    { "ticks": 300, "score": 100 },
+    { "ticks": 360, "score": 100 },
+    { "ticks": 480, "score": 40 },
+    { "ticks": 560, "score": 0 }
+  ],
+  "danger_after_ticks": 480,
+  "destroy_after_ticks": 560,
+  "heating_evaluator": "craftbound:linear_curve"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "ingredients": [
+    { "item": "minecraft:gold_ingot", "size": 1 },
+    { "item": "minecraft:gold_block", "size": 9 },
+    { "item": "minecraft:raw_gold", "size": 1 }
+  ],
+  "lump_loss_ratio": 0.5,
+  "lump_loss_rounding": "ceil",
+  "castable_after_ticks": 160,
+  "score_curve": [
+    { "ticks": 160, "score": 40 },
+    { "ticks": 240, "score": 100 },
+    { "ticks": 280, "score": 100 },
+    { "ticks": 380, "score": 40 },
+    { "ticks": 440, "score": 0 }
+  ],
+  "danger_after_ticks": 380,
+  "destroy_after_ticks": 440,
+  "heating_evaluator": "craftbound:linear_curve"
+}

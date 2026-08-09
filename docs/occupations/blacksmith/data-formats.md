@@ -88,7 +88,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 | 項目 | 必須 | 内容 |
 |---|---|---|
 | `schema_version` | 必須 | JSON形式のバージョン |
-| `ingredient` | 必須 | 金属として受け付けるアイテムまたはタグ |
+| `ingredients` | 必須 | 金属として受け付けるアイテムまたはタグと、1個あたりの素材単位数の配列 |
 | `lump_loss_ratio` | 必須 | 金属塊化した際に失う割合 |
 | `lump_loss_rounding` | 必須 | 損失量の端数処理 |
 | `castable_after_ticks` | 必須 | 鋳造可能になる最小加熱時間 |
@@ -102,9 +102,11 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 ```json
 {
   "schema_version": 1,
-  "ingredient": {
-    "item": "minecraft:iron_ingot"
-  },
+  "ingredients": [
+    { "item": "minecraft:iron_ingot", "size": 1 },
+    { "item": "minecraft:iron_block", "size": 9 },
+    { "item": "minecraft:raw_iron", "size": 1 }
+  ],
   "lump_loss_ratio": 0.5,
   "lump_loss_rounding": "ceil",
   "castable_after_ticks": 200,
@@ -218,7 +220,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 この関数は粗加工パーツを鋳型から取り出す際に一度だけ呼び出す。取り出し時の冷却ティックと計算結果を粗加工パーツへ保存し、その後の時間経過では更新しない。
 
-`failure_lump.units_per_item` は、元の金属定義の `ingredient` を基準とした金属塊1個あたりの素材量を表す。鉄製ピッケルヘッドでは「金属塊・小」を1個返却し、`units_per_item: 1` を鉄インゴット1個分として扱う。金属塊は金属IDをデータとして保持し、同じ金属かつ同じサイズのものだけをスタック可能とする。中・大の金属塊が表す素材量は未決定とする。
+`failure_lump.units_per_item` は、元の金属定義の `ingredients[].size` と同じ素材単位を基準とした金属塊1個あたりの素材量を表す。鉄製ピッケルヘッドでは「金属塊・小」を1個返却し、`units_per_item: 1` を鉄インゴット1個分として扱う。金属塊は金属IDをデータとして保持し、同じ金属かつ同じサイズのものだけをスタック可能とする。中・大の金属塊が表す素材量は未決定とする。
 
 `cooling.surface_solid_ticks` 到達時には一度だけ蒸気音を再生し、蒸気パーティクルを多い状態から少ない状態へ変更する。`cooling.safe_ticks` 到達時には、安全冷却の正解を公開する音や通知を発生させない。
 
