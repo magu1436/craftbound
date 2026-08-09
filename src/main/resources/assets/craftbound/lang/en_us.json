@@ -18,6 +18,10 @@
   "message.craftbound.explorer.discovery.structure.with_experience": "[Exploration] Discovered a new structure: %1$s (+%2$s XP)",
   "message.craftbound.explorer.discovery.structure.without_experience": "[Exploration] Discovered a new structure: %1$s",
   "item.craftbound.crucible": "Crucible",
+  "block.craftbound.blacksmith_furnace": "Blacksmith Furnace",
+  "jade.craftbound.blacksmith_furnace.heat_source": "Heat Source: %s",
+  "jade.craftbound.heat_source.present": "Present",
+  "jade.craftbound.heat_source.absent": "Absent",
   "screen.craftbound.crucible": "Crucible",
   "screen.craftbound.crucible.metal": "Metal: %s",
   "screen.craftbound.crucible.amount": "Amount: %s / %s",
@@ -28,5 +32,6 @@
   "screen.craftbound.crucible.discard": "Discard",
   "screen.craftbound.crucible.discard_warning": "All contents will be lost.",
   "screen.craftbound.crucible.discard_confirm": "Confirm discard",
-  "screen.craftbound.crucible.invalid_state": "This crucible can no longer be used."
+  "screen.craftbound.crucible.invalid_state": "This crucible can no longer be used.",
+  "config.jade.plugin_craftbound.blacksmith_furnace_heat_source": "Blacksmith Furnace Heat Source"
 }

@@ -10,6 +10,14 @@ import net.minecraft.world.level.block.Block;
  * Craftboundが発動条件に使用するブロックタグ。
  */
 public final class CraftboundBlockTags {
+    public static final TagKey<Block> BLACKSMITH_HEAT_SOURCES =
+        TagKey.create(
+            Registries.BLOCK,
+            CraftboundUtilities.createResourceLocation(
+                "blacksmith_heat_sources"
+            )
+        );
+
     public static final TagKey<Block> ARCHITECT_DEMOLITION_BLACKLIST =
         TagKey.create(
             Registries.BLOCK,

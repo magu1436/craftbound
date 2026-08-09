@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "craftbound:block/blacksmith_furnace_top",
+    "front": "craftbound:block/blacksmith_furnace_front",
+    "side": "craftbound:block/blacksmith_furnace_side"
+  }
+}

@@ -1,13 +1,11 @@
 package com.magu1436.craftbound.registry;
 
-import java.util.function.Supplier;
-
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlock;
 
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -20,24 +18,23 @@ public class CraftboundBlocks {
             DeferredRegister.create(ForgeRegistries.BLOCKS, Craftbound.MODID);
     
     public static final RegistryObject<Block> SAMPLE_BLOCK = 
-            registerBlock(
+            BLOCKS.register(
                 "sample_block", 
                 () -> new Block(
                     BlockBehaviour.Properties.copy(Blocks.SMITHING_TABLE).strength(3.5F)
                 )
             );
 
-    private static <T extends Block> RegistryObject<T> registerBlock (
-        String name,
-        Supplier<T> blockSupplier
-    ) {
-        RegistryObject<T> block = BLOCKS.register(name, blockSupplier);
-        CraftboundItems.ITEMS.register(
-            name,
-            () -> new BlockItem(block.get(), new Item.Properties())
-        );
-        return block;
-    }
+    public static final RegistryObject<BlacksmithFurnaceBlock> BLACKSMITH_FURNACE =
+            BLOCKS.register(
+                "blacksmith_furnace",
+                () -> new BlacksmithFurnaceBlock(
+                    BlockBehaviour.Properties.of()
+                        .strength(3.5F, 6.0F)
+                        .sound(SoundType.METAL)
+                        .requiresCorrectToolForDrops()
+                )
+            );
 
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
