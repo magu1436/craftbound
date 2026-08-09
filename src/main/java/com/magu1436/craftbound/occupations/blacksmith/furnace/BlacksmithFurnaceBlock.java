@@ -3,13 +3,16 @@ package com.magu1436.craftbound.occupations.blacksmith.furnace;
 import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
+import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleItem;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -95,7 +98,57 @@ public final class BlacksmithFurnaceBlock extends BaseEntityBlock {
         InteractionHand hand,
         BlockHitResult hit
     ) {
-        return InteractionResult.PASS;
+        if (hand != InteractionHand.MAIN_HAND) {
+            return InteractionResult.PASS;
+        }
+
+        ItemStack heldItem = player.getMainHandItem();
+        if (level.isClientSide) {
+            return heldItem.isEmpty()
+                || heldItem.getItem() instanceof CrucibleItem
+                    ? InteractionResult.SUCCESS
+                    : InteractionResult.PASS;
+        }
+
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (!(blockEntity instanceof BlacksmithFurnaceBlockEntity furnace)) {
+            return InteractionResult.PASS;
+        }
+
+        boolean insertionCandidate = !furnace.hasCrucible()
+            && heldItem.getItem() instanceof CrucibleItem;
+        boolean extractionCandidate = furnace.hasCrucible()
+            && heldItem.isEmpty();
+        if (!insertionCandidate && !extractionCandidate) {
+            return InteractionResult.PASS;
+        }
+
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return InteractionResult.PASS;
+        }
+
+        boolean succeeded = insertionCandidate
+            ? furnace.tryInsertCrucible(serverPlayer, hand)
+            : furnace.tryExtractCrucible(serverPlayer);
+        return succeeded ? InteractionResult.CONSUME : InteractionResult.PASS;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onRemove(
+        BlockState state,
+        Level level,
+        BlockPos pos,
+        BlockState newState,
+        boolean movedByPiston
+    ) {
+        if (state.getBlock() != newState.getBlock() && level instanceof ServerLevel serverLevel) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof BlacksmithFurnaceBlockEntity furnace) {
+                furnace.dropStoredCrucible(serverLevel);
+            }
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     @SuppressWarnings("deprecation")
