@@ -195,6 +195,15 @@ public final class CastingTableBlockEntity extends BlockEntity {
         return CastingGameService.tryPour(player, this, held);
     }
 
+    public ItemStack getMoldForRendering() {
+        return mold.copy();
+    }
+
+    @Nullable
+    public CastingProcess getActiveProcessForRendering() {
+        return activeProcess;
+    }
+
     public void dropStoredContents(ServerLevel level) {
         ItemStack moldToDrop = mold;
         ItemStack outputToDrop = pendingOutput;

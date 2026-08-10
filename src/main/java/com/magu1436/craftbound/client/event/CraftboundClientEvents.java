@@ -5,10 +5,12 @@ import java.util.function.Supplier;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.client.CrucibleScreen;
+import com.magu1436.craftbound.occupations.blacksmith.client.CastingTableRenderer;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalRenderColorResolver;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
 import com.magu1436.craftbound.registry.CraftboundItems;
+import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import com.magu1436.craftbound.registry.CraftboundMenus;
 
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -21,6 +23,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
@@ -72,6 +75,16 @@ public final class CraftboundClientEvents {
                 MetalRenderColorResolver.clearCache();
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void registerBlockEntityRenderers(
+        EntityRenderersEvent.RegisterRenderers event
+    ) {
+        event.registerBlockEntityRenderer(
+            CraftboundBlockEntities.CASTING_TABLE.get(),
+            CastingTableRenderer::new
+        );
     }
 
     private static <
