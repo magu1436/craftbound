@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "crucible_capacity_units": 16,
+  "network": {
+    "forging_latency_compensation_ticks": 4,
+    "carving_packet_interval_ticks": 2,
+    "carving_max_cells_per_request": 64,
+    "workbench_interaction_distance": 8.0,
+    "session_heartbeat_ticks": 20,
+    "disconnect_grace_ticks": 100
+  }
+}

@@ -2,9 +2,12 @@ package com.magu1436.craftbound.occupations.blacksmith.forging;
 
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartStateService;
 import com.magu1436.craftbound.occupations.blacksmith.forging.state.ForgingProgressStateService;
+import com.magu1436.craftbound.occupations.blacksmith.forging.session.ForgingSessionState;
+import com.magu1436.craftbound.occupations.blacksmith.forging.session.BlacksmithOperationSessionRegistry;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -29,6 +32,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
     private final List<ItemStack> pendingOutputs = new ArrayList<>();
     private boolean completionReserved;
     private boolean invalidStoredState;
+    private ForgingSessionState activeSession;
 
     public ForgingTableBlockEntity(BlockPos pos, BlockState state) {
         super(CraftboundBlockEntities.FORGING_TABLE.get(), pos, state);
@@ -37,8 +41,18 @@ public final class ForgingTableBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        if (!workingPart.isEmpty()) {
-            tag.put(TAG_WORKING_PART, workingPart.save(new CompoundTag()));
+        ItemStack savedWorkingPart = workingPart.copy();
+        if (!savedWorkingPart.isEmpty() && activeSession != null && level != null) {
+            try {
+                ForgingGaugeCalculator.GaugeSnapshot gauge =
+                    BlacksmithOperationSessionRegistry.currentGauge(activeSession, level.getGameTime());
+                ForgingProgressStateService.saveGauge(savedWorkingPart, gauge.value(), gauge.direction());
+            } catch (RuntimeException ignored) {
+                // Preserve the last valid snapshot when reload data is unavailable.
+            }
+        }
+        if (!savedWorkingPart.isEmpty()) {
+            tag.put(TAG_WORKING_PART, savedWorkingPart.save(new CompoundTag()));
         }
 
         ListTag outputTags = new ListTag();
@@ -54,6 +68,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
         workingPart = ItemStack.EMPTY;
         pendingOutputs.clear();
         completionReserved = false;
+        activeSession = null;
         invalidStoredState = false;
 
         if (tag.contains(TAG_WORKING_PART)) {
@@ -97,6 +112,21 @@ public final class ForgingTableBlockEntity extends BlockEntity {
 
     public boolean hasPendingOutputs() {
         return !pendingOutputs.isEmpty();
+    }
+
+    public ForgingSessionState getActiveSession() {
+        return activeSession;
+    }
+
+    public boolean setActiveSession(ForgingSessionState session) {
+        if (session == null || invalidStoredState || !hasWorkingPart() || hasPendingOutputs()) return false;
+        if (activeSession != null && !activeSession.activePlayerId().equals(session.activePlayerId())) return false;
+        activeSession = session;
+        return true;
+    }
+
+    public void clearActiveSession(UUID sessionId) {
+        if (activeSession != null && activeSession.sessionId().equals(sessionId)) activeSession = null;
     }
 
     public List<ItemStack> getPendingOutputs() {

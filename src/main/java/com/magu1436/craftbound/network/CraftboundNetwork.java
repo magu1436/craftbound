@@ -7,6 +7,12 @@ import com.magu1436.craftbound.network.packet.EmergencyEvasionRequestPacket;
 import com.magu1436.craftbound.network.packet.ForgetPlayerPlacedChunkPacket;
 import com.magu1436.craftbound.network.packet.PlayerPlacedChunkDeltaPacket;
 import com.magu1436.craftbound.network.packet.PlayerPlacedChunkSnapshotPacket;
+import com.magu1436.craftbound.network.packet.ForgingStrikeRequestPacket;
+import com.magu1436.craftbound.network.packet.ForgingCompleteRequestPacket;
+import com.magu1436.craftbound.network.packet.ForgingPauseRequestPacket;
+import com.magu1436.craftbound.network.packet.ForgingHeartbeatPacket;
+import com.magu1436.craftbound.network.packet.ForgingSessionSyncPacket;
+import com.magu1436.craftbound.network.packet.ForgingFeedbackPacket;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -19,7 +25,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  * Craftboundのネットワークチャンネルとパケットを管理する。
  */
 public final class CraftboundNetwork {
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "3";
 
     private static final SimpleChannel CHANNEL =
         NetworkRegistry.newSimpleChannel(
@@ -67,13 +73,32 @@ public final class CraftboundNetwork {
             Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
         CHANNEL.registerMessage(
-            packetId,
+            packetId++,
             ForgetPlayerPlacedChunkPacket.class,
             ForgetPlayerPlacedChunkPacket::encode,
             ForgetPlayerPlacedChunkPacket::decode,
             ForgetPlayerPlacedChunkPacket::handle,
             Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
+
+        CHANNEL.registerMessage(packetId++, ForgingStrikeRequestPacket.class,
+            ForgingStrikeRequestPacket::encode, ForgingStrikeRequestPacket::decode,
+            ForgingStrikeRequestPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(packetId++, ForgingCompleteRequestPacket.class,
+            ForgingCompleteRequestPacket::encode, ForgingCompleteRequestPacket::decode,
+            ForgingCompleteRequestPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(packetId++, ForgingPauseRequestPacket.class,
+            ForgingPauseRequestPacket::encode, ForgingPauseRequestPacket::decode,
+            ForgingPauseRequestPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(packetId++, ForgingHeartbeatPacket.class,
+            ForgingHeartbeatPacket::encode, ForgingHeartbeatPacket::decode,
+            ForgingHeartbeatPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(packetId++, ForgingSessionSyncPacket.class,
+            ForgingSessionSyncPacket::encode, ForgingSessionSyncPacket::decode,
+            ForgingSessionSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(packetId, ForgingFeedbackPacket.class,
+            ForgingFeedbackPacket::encode, ForgingFeedbackPacket::decode,
+            ForgingFeedbackPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         registered = true;
     }
@@ -87,6 +112,10 @@ public final class CraftboundNetwork {
             PacketDistributor.PLAYER.with(() -> player),
             packet
         );
+    }
+
+    public static void sendToServer(Object packet) {
+        CHANNEL.sendToServer(packet);
     }
 
     public static void sendToTrackingChunk(

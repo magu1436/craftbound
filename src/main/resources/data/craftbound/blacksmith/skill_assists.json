@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "forging_gauge": {
+    "min": 0,
+    "max": 100,
+    "cycle_ticks": 60,
+    "waveform": "triangle",
+    "initial_value": 0,
+    "initial_direction": "up",
+    "base_mark_interval": 25
+  },
+  "precision_scale": {
+    "levels": [
+      { "level": 1, "mark_interval": 20 },
+      { "level": 2, "mark_interval": 10 },
+      { "level": 3, "mark_interval": 5 },
+      { "level": 4, "mark_interval": 2 }
+    ]
+  },
+  "force_reading": { "enabled_at_level": 1, "show_current_value": true },
+  "strike_reference": { "enabled_at_level": 1, "max_markers": 1, "persistence": "session" },
+  "precision_shaping": {
+    "base_grid_size": 16,
+    "base_brush_radius": 1.5,
+    "levels": [
+      { "level": 1, "grid_size": 24, "brush_radius": 1.0 },
+      { "level": 2, "grid_size": 32, "brush_radius": 0.5 }
+    ]
+  },
+  "tool_preservation": {
+    "levels": [
+      { "level": 1, "prevent_damage_chance": 0.05 },
+      { "level": 2, "prevent_damage_chance": 0.10 },
+      { "level": 3, "prevent_damage_chance": 0.15 },
+      { "level": 4, "prevent_damage_chance": 0.20 }
+    ]
+  },
+  "material_insight": {
+    "levels": [
+      { "level": 1, "display": "tools_and_methods" },
+      { "level": 2, "display": "qualitative_properties" },
+      { "level": 3, "display": "numeric_public_properties" }
+    ],
+    "rules": {
+      "processing_resistance": { "low_at_or_above_remove_per_pass": 0.5, "standard_at_or_above_remove_per_pass": 0.25 },
+      "tool_load": { "low_at_or_above_removed_units": 8, "standard_at_or_above_removed_units": 4 },
+      "public_fields": ["tool", "remove_per_pass", "removed_units_per_durability"]
+    }
+  },
+  "smithing_instinct": {
+    "levels": [
+      { "level": 1, "forging_remaining_hits": 3, "non_metal_ideal_remaining_ratio": 0.70 },
+      { "level": 2, "forging_remaining_hits": 4, "non_metal_ideal_remaining_ratio": 0.75 },
+      { "level": 3, "forging_remaining_hits": 5, "non_metal_ideal_remaining_ratio": 0.80 }
+    ],
+    "audio": {
+      "sound": "minecraft:block.anvil.hit",
+      "source": "blocks",
+      "volume": 0.5,
+      "cooldown_ticks": 20,
+      "suppress_on_normal_warning": true,
+      "suppress_on_failure": true,
+      "pitch": { "caution": 0.8, "danger": 1.0, "critical": 1.2 }
+    }
+  },
+  "quality_appraisal": { "enabled_at_level": 1, "show_internal_quality": true }
+}

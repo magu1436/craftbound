@@ -2,6 +2,9 @@ package com.magu1436.craftbound.occupations.blacksmith.forging;
 
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
+import com.magu1436.craftbound.registry.CraftboundItems;
+import com.magu1436.craftbound.occupations.blacksmith.forging.menu.ForgingMenu;
+import com.magu1436.craftbound.occupations.blacksmith.forging.session.BlacksmithOperationSessionRegistry;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,6 +28,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraftforge.network.NetworkHooks;
 
 public final class ForgingTableBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -79,6 +85,7 @@ public final class ForgingTableBlock extends BaseEntityBlock {
         ItemStack heldItem = player.getMainHandItem();
         if (level.isClientSide) {
             return heldItem.isEmpty() || heldItem.getItem() instanceof RoughMetalPartItem
+                || heldItem.is(CraftboundItems.SMITHING_HAMMER.get())
                 ? InteractionResult.SUCCESS
                 : InteractionResult.PASS;
         }
@@ -94,8 +101,22 @@ public final class ForgingTableBlock extends BaseEntityBlock {
             succeeded = heldItem.isEmpty() && forgingTable.tryCollectPendingOutputs(serverPlayer);
         } else if (!forgingTable.hasWorkingPart()) {
             succeeded = forgingTable.tryInsertWorkingPart(serverPlayer, hand);
+        } else if (heldItem.is(CraftboundItems.SMITHING_HAMMER.get())) {
+            var session = BlacksmithOperationSessionRegistry.acquire(serverPlayer, forgingTable);
+            if (session.isEmpty()) return InteractionResult.PASS;
+            NetworkHooks.openScreen(
+                serverPlayer,
+                new SimpleMenuProvider(
+                    (containerId, inventory, ignored) -> new ForgingMenu(containerId, inventory, pos),
+                    Component.translatable("container.craftbound.forging_table")
+                ),
+                buffer -> buffer.writeBlockPos(pos)
+            );
+            ForgingPacketHandler.sync(serverPlayer, session.get());
+            succeeded = true;
         } else {
-            succeeded = heldItem.isEmpty() && forgingTable.tryExtractWorkingPart(serverPlayer);
+            succeeded = heldItem.isEmpty() && forgingTable.getActiveSession() == null
+                && forgingTable.tryExtractWorkingPart(serverPlayer);
         }
         return succeeded ? InteractionResult.CONSUME : InteractionResult.PASS;
     }
@@ -112,6 +133,7 @@ public final class ForgingTableBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock() && level instanceof ServerLevel serverLevel) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof ForgingTableBlockEntity forgingTable) {
+                BlacksmithOperationSessionRegistry.release(forgingTable, true);
                 forgingTable.dropContents(serverLevel);
             }
         }
