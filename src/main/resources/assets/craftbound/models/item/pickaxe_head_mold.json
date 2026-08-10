@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "craftbound:item/pickaxe_head_mold"}
+}

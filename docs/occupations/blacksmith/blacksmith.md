@@ -878,7 +878,7 @@ MVPで使用する共通IDは以下のとおりとする。
 | ピッケルヘッド用鋳型 | `craftbound:pickaxe_head_mold` |
 | 粗加工金属パーツ | `craftbound:rough_metal_part` |
 | 非金属加工途中品 | `craftbound:unfinished_non_metal_part` |
-| 鉄製ピッケルヘッド | `craftbound:iron_pickaxe_head` |
+| ピッケルヘッド（金属はItemStack状態で保持） | `craftbound:pickaxe_head` |
 | ピッケルの柄 | `craftbound:pickaxe_handle` |
 | 金属塊・小 | `craftbound:small_metal_lump` |
 

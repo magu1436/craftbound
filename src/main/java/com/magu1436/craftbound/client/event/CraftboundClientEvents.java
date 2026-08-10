@@ -5,6 +5,10 @@ import java.util.function.Supplier;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.client.CrucibleScreen;
+import com.magu1436.craftbound.occupations.blacksmith.client.MetalRenderColorResolver;
+import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandler;
+import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
+import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundMenus;
 
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -15,6 +19,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 @Mod.EventBusSubscriber(
     modid = Craftbound.MODID,
@@ -40,6 +48,30 @@ public final class CraftboundClientEvents {
         event.enqueueWork(() ->
             SCREENS.forEach(ScreenRegistration::register)
         );
+    }
+
+    @SubscribeEvent
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        event.register(RoughMetalPartColorHandler::getColor,
+            CraftboundItems.ROUGH_SWORD_BLADE.get(), CraftboundItems.ROUGH_PICKAXE_HEAD.get(),
+            CraftboundItems.ROUGH_AXE_HEAD.get(), CraftboundItems.ROUGH_SHOVEL_HEAD.get(),
+            CraftboundItems.ROUGH_HOE_HEAD.get(), CraftboundItems.ROUGH_HELMET_BODY.get(),
+            CraftboundItems.ROUGH_CHESTPLATE_BODY.get(), CraftboundItems.ROUGH_LEGGINGS_BODY.get(),
+            CraftboundItems.ROUGH_BOOTS_BODY.get(), CraftboundItems.ROUGH_HORSE_ARMOR_BODY.get(),
+            CraftboundItems.ROUGH_IRON_RING.get(), CraftboundItems.ROUGH_CROSSBOW_TRIGGER.get(),
+            CraftboundItems.ROUGH_SHIELD_BOSS.get(), CraftboundItems.ROUGH_SHEARS_BLADES.get(),
+            CraftboundItems.ROUGH_FIRE_STRIKER.get(), CraftboundItems.ROUGH_BRUSH_HEAD.get());
+        event.register(MetalPartColorHandler::getColor, CraftboundItems.PICKAXE_HEAD.get());
+    }
+
+    @SubscribeEvent
+    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new ResourceManagerReloadListener() {
+            @Override
+            public void onResourceManagerReload(ResourceManager resourceManager) {
+                MetalRenderColorResolver.clearCache();
+            }
+        });
     }
 
     private static <

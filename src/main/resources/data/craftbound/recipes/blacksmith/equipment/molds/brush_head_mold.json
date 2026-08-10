@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {"item": "craftbound:blank_mold"},
+  "result": "craftbound:brush_head_mold",
+  "count": 1
+}

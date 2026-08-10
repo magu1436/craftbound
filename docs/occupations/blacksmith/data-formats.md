@@ -185,7 +185,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
   "metal": "craftbound:iron",
   "ingredient_count": 3,
   "mold": "craftbound:pickaxe_head_mold",
-  "output": "craftbound:iron_pickaxe_head",
+  "output": "craftbound:pickaxe_head",
   "failure_lump": {
     "item": "craftbound:small_metal_lump",
     "count": 1,
@@ -766,7 +766,7 @@ MVPではすべての熱源を同じ加熱速度として扱う。熱源ごと�
   ],
   "key": {
     "H": {
-      "item": "craftbound:iron_pickaxe_head"
+      "item": "craftbound:pickaxe_head"
     },
     "S": {
       "item": "craftbound:pickaxe_handle"

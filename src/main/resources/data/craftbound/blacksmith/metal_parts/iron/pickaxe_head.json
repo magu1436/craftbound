@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "metal": "craftbound:iron",
+  "ingredient_count": 3,
+  "mold": "craftbound:pickaxe_head_mold",
+  "rough_output": "craftbound:rough_pickaxe_head",
+  "output": "craftbound:pickaxe_head",
+  "failure_lump": {"item": "craftbound:small_metal_lump", "count": 1, "units_per_item": 1},
+  "cooling": {"surface_solid_ticks": 40, "safe_ticks": 100, "minimum_break_on_hit": 1, "evaluator": "craftbound:linear_cooling_break_limit"},
+  "forging": {"strength_min": 55, "strength_max": 65, "strength_penalty_per_point": 5, "ideal_hits": 6, "hit_count_penalty": 20, "break_on_hit": 10, "strength_weight": 0.8, "hit_count_weight": 0.2, "evaluator": "craftbound:weighted_forging"},
+  "part_quality": {"heating_weight": 0.4, "forging_weight": 0.6, "evaluator": "craftbound:weighted_metal_part"}
+}
