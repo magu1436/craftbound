@@ -26,7 +26,8 @@ class MeltingGameServiceTest {
         ),
         480L,
         560L,
-        CraftboundUtilities.createResourceLocation("linear_curve")
+        CraftboundUtilities.createResourceLocation("linear_curve"),
+        0
     );
 
     @Test
