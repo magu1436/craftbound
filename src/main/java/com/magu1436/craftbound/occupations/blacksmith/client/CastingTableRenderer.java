@@ -10,6 +10,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -43,13 +44,19 @@ public final class CastingTableRenderer
         int packedLight,
         int packedOverlay
     ) {
+        int displayLight = table.getLevel() == null
+            ? packedLight
+            : LevelRenderer.getLightColor(
+                table.getLevel(),
+                table.getBlockPos().above()
+            );
         poseStack.pushPose();
         poseStack.translate(0.5D, 0.0D, 0.5D);
         rotateToFacing(table.getBlockState(), poseStack);
 
         ItemStack mold = table.getMoldForRendering();
         if (!mold.isEmpty()) {
-            renderMold(table, mold, poseStack, buffers, packedLight, packedOverlay);
+            renderMold(table, mold, poseStack, buffers, displayLight, packedOverlay);
         }
 
         CastingProcess process = table.getActiveProcessForRendering();
@@ -58,7 +65,7 @@ public final class CastingTableRenderer
                 process,
                 poseStack,
                 buffers,
-                packedLight,
+                displayLight,
                 packedOverlay
             );
         }
