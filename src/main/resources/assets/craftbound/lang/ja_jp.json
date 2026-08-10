@@ -81,5 +81,7 @@
     "item.craftbound.fire_striker": "火打ち金",
     "item.craftbound.brush_head": "ブラシヘッド",
     "item.craftbound.metal_part.named": "%1$s製%2$s",
-    "metal.craftbound.iron": "鉄"
+    "metal.craftbound.iron": "鉄",
+    "metal.craftbound.copper": "銅",
+    "metal.craftbound.gold": "金"
 }

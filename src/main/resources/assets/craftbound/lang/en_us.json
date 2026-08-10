@@ -87,5 +87,7 @@
   "item.craftbound.fire_striker": "Fire Striker",
   "item.craftbound.brush_head": "Brush Head",
   "item.craftbound.metal_part.named": "%1$s %2$s",
-  "metal.craftbound.iron": "Iron"
+  "metal.craftbound.iron": "Iron",
+  "metal.craftbound.gold": "Gold",
+  "metal.craftbound.copper": "Copper"
 }
