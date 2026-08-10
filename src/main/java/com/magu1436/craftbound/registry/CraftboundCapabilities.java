@@ -4,6 +4,7 @@ import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.adventurer.capability.IAdventurerData;
 import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkData;
 import com.magu1436.craftbound.occupations.architect.capability.IArchitectData;
+import com.magu1436.craftbound.occupations.blacksmith.capability.IBlacksmithData;
 import com.magu1436.craftbound.occupations.explorer.data.ExplorerDiscoveryData;
 
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,6 +36,10 @@ public final class CraftboundCapabilities {
     public static final Capability<ExplorerDiscoveryData>
         EXPLORER_DISCOVERY_DATA =
             CapabilityManager.get(new CapabilityToken<>() {});
+    
+    public static final Capability<IBlacksmithData>
+        BLACKSMITH_CAPABILITY_DATA =
+            CapabilityManager.get(new CapabilityToken<>() {});
 
     private CraftboundCapabilities() {
     }
@@ -45,5 +50,6 @@ public final class CraftboundCapabilities {
         event.register(ConstructionChunkData.class);
         event.register(IArchitectData.class);
         event.register(ExplorerDiscoveryData.class);
+        event.register(IBlacksmithData.class);
     }
 }

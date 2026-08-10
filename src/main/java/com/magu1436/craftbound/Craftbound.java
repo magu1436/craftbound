@@ -8,6 +8,7 @@ import com.magu1436.craftbound.occupations.adventurer.experience.AdventurerMobKi
 import com.magu1436.craftbound.occupations.explorer.integration.PufferfishExplorerExperienceGateway;
 import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsFactory;
 import com.magu1436.craftbound.occupations.architect.rewards.ArchitectRewardFactory;
+import com.magu1436.craftbound.occupations.blacksmith.reward.BlacksmithRewardsFactory;
 import com.magu1436.craftbound.occupations.architect.experience.ArchitectConstructionExperienceSource;
 import com.magu1436.craftbound.occupations.architect.ArchitectConfig;
 import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
@@ -83,6 +84,7 @@ public class Craftbound
         AdventurerRewardsFactory.registerRewards();
         ArchitectRewardFactory.registerRewards();
         ExplorerRewardsFactory.registerRewards();
+        BlacksmithRewardsFactory.registerRewards();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
