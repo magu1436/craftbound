@@ -5,6 +5,7 @@ import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleItem;
 import com.magu1436.craftbound.occupations.blacksmith.casting.lump.MetalLumpItem;
 import com.magu1436.craftbound.occupations.blacksmith.casting.mold.CastingMoldItem;
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
+import com.magu1436.craftbound.occupations.blacksmith.casting.finished.MetalPartItem;
 
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -57,7 +58,7 @@ public final class CraftboundItems {
     public static final RegistryObject<Item> SMALL_METAL_LUMP = ITEMS.register(
         "small_metal_lump", () -> new MetalLumpItem(new Item.Properties())
     );
-    public static final RegistryObject<Item> IRON_PICKAXE_HEAD = registerItem("iron_pickaxe_head");
+    public static final RegistryObject<Item> PICKAXE_HEAD = registerMetalPart("pickaxe_head");
 
     private static RegistryObject<Item> registerItem(String id) {
         return ITEMS.register(id, () -> new Item(new Item.Properties()));
@@ -69,6 +70,10 @@ public final class CraftboundItems {
 
     private static RegistryObject<Item> registerRoughMetalPart(String id) {
         return ITEMS.register(id, () -> new RoughMetalPartItem(new Item.Properties().stacksTo(1)));
+    }
+
+    private static RegistryObject<Item> registerMetalPart(String id) {
+        return ITEMS.register(id, () -> new MetalPartItem(new Item.Properties().stacksTo(1)));
     }
     
     public static void register(IEventBus modEventBus) {

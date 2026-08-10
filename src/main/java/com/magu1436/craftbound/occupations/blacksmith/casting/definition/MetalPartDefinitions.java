@@ -15,6 +15,7 @@ import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinition.*;
 import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
+import com.magu1436.craftbound.occupations.blacksmith.casting.finished.MetalPartItem;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -100,6 +101,9 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
         require(roughOutputItem instanceof RoughMetalPartItem,
             "rough_output must reference a RoughMetalPartItem");
         ResourceLocation output = registeredItem(json, "output");
+        Item outputItem = ForgeRegistries.ITEMS.getValue(output);
+        require(outputItem instanceof MetalPartItem,
+            "output must reference a MetalPartItem");
         JsonObject failure = GsonHelper.getAsJsonObject(json, "failure_lump");
         FailureLumpDefinition failureLump = new FailureLumpDefinition(
             registeredItem(failure, "item"), positiveInt(failure, "count"),

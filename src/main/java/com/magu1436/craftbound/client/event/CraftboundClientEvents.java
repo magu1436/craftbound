@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.client.CrucibleScreen;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalRenderColorResolver;
+import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundMenus;
@@ -60,6 +61,7 @@ public final class CraftboundClientEvents {
             CraftboundItems.ROUGH_IRON_RING.get(), CraftboundItems.ROUGH_CROSSBOW_TRIGGER.get(),
             CraftboundItems.ROUGH_SHIELD_BOSS.get(), CraftboundItems.ROUGH_SHEARS_BLADES.get(),
             CraftboundItems.ROUGH_FIRE_STRIKER.get(), CraftboundItems.ROUGH_BRUSH_HEAD.get());
+        event.register(MetalPartColorHandler::getColor, CraftboundItems.PICKAXE_HEAD.get());
     }
 
     @SubscribeEvent

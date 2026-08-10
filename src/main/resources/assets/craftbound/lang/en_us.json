@@ -65,6 +65,7 @@
   "item.craftbound.rough_brush_head": "Rough Brush Head",
   "item.craftbound.small_metal_lump": "Small Metal Lump",
   "item.craftbound.small_metal_lump.named": "Small %s Lump",
-  "item.craftbound.iron_pickaxe_head": "Iron Pickaxe Head",
+  "item.craftbound.pickaxe_head": "Pickaxe Head",
+  "item.craftbound.metal_part.named": "%1$s %2$s",
   "metal.craftbound.iron": "Iron"
 }

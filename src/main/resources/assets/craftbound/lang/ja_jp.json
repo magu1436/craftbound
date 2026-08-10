@@ -59,6 +59,7 @@
     "item.craftbound.rough_brush_head": "粗加工ブラシヘッド",
     "item.craftbound.small_metal_lump": "金属塊・小",
     "item.craftbound.small_metal_lump.named": "%sの金属塊・小",
-    "item.craftbound.iron_pickaxe_head": "鉄製ピッケルヘッド",
+    "item.craftbound.pickaxe_head": "ピッケルヘッド",
+    "item.craftbound.metal_part.named": "%1$s製%2$s",
     "metal.craftbound.iron": "鉄"
 }
