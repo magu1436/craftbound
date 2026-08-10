@@ -1,0 +1,116 @@
+{
+  "precision_scale_1": {
+    "title": "精密目盛I",
+    "icon": {"type": "item", "data": {"item": "minecraft:clock"}},
+    "description": "打撃強度ゲージに20間隔の目盛りを表示する",
+    "rewards": [{"type": "craftbound:precision_scale", "data": {"stage": 1}}]
+  },
+  "precision_scale_2": {
+    "title": "精密目盛II",
+    "icon": {"type": "item", "data": {"item": "minecraft:clock"}},
+    "description": "目盛り間隔を10へ細分化する",
+    "rewards": [{"type": "craftbound:precision_scale", "data": {"stage": 2}}]
+  },
+  "precision_scale_3": {
+    "title": "精密目盛III",
+    "icon": {"type": "item", "data": {"item": "minecraft:clock"}},
+    "description": "目盛り間隔を5へ細分化する",
+    "rewards": [{"type": "craftbound:precision_scale", "data": {"stage": 3}}]
+  },
+  "precision_scale_4": {
+    "title": "精密目盛IV",
+    "icon": {"type": "item", "data": {"item": "minecraft:clock"}},
+    "description": "目盛り間隔を2へ細分化する",
+    "rewards": [{"type": "craftbound:precision_scale", "data": {"stage": 4}}]
+  },
+  "force_reading": {
+    "title": "力量把握",
+    "icon": {"type": "item", "data": {"item": "minecraft:compass"}},
+    "description": "現在の打撃強度を0～100の整数で表示する",
+    "rewards": [{"type": "craftbound:force_reading", "data": {"stage": 1}}]
+  },
+  "strike_reference": {
+    "title": "打撃基準",
+    "icon": {"type": "item", "data": {"item": "minecraft:anvil"}},
+    "description": "鍛造中の打撃強度ゲージに基準線を1本置けるようにする",
+    "rewards": [{"type": "craftbound:strike_reference", "data": {"stage": 1}}]
+  },
+  "precision_shaping_1": {
+    "title": "精密成形I",
+    "icon": {"type": "item", "data": {"item": "minecraft:shears"}},
+    "description": "非金属加工を24×24グリッド、ブラシ半径1.0セルで行えるようにする",
+    "rewards": [{"type": "craftbound:precision_shaping", "data": {"stage": 1}}]
+  },
+  "precision_shaping_2": {
+    "title": "精密成形II",
+    "icon": {"type": "item", "data": {"item": "minecraft:shears"}},
+    "description": "非金属加工を32×32グリッド、ブラシ半径0.5セルで行えるようにする",
+    "rewards": [{"type": "craftbound:precision_shaping", "data": {"stage": 2}}]
+  },
+  "tool_preservation_1": {
+    "title": "道具保全I",
+    "icon": {"type": "item", "data": {"item": "minecraft:iron_pickaxe"}},
+    "description": "鍛冶加工道具の耐久消費を5%の確率で防ぐ",
+    "rewards": [{"type": "craftbound:tool_preservation", "data": {"stage": 1}}]
+  },
+  "tool_preservation_2": {
+    "title": "道具保全II",
+    "icon": {"type": "item", "data": {"item": "minecraft:iron_pickaxe"}},
+    "description": "鍛冶加工道具の耐久消費を10%の確率で防ぐ",
+    "rewards": [{"type": "craftbound:tool_preservation", "data": {"stage": 2}}]
+  },
+  "tool_preservation_3": {
+    "title": "道具保全III",
+    "icon": {"type": "item", "data": {"item": "minecraft:iron_pickaxe"}},
+    "description": "鍛冶加工道具の耐久消費を15%の確率で防ぐ",
+    "rewards": [{"type": "craftbound:tool_preservation", "data": {"stage": 3}}]
+  },
+  "tool_preservation_4": {
+    "title": "道具保全IV",
+    "icon": {"type": "item", "data": {"item": "minecraft:iron_pickaxe"}},
+    "description": "鍛冶加工道具の耐久消費を20%の確率で防ぐ",
+    "rewards": [{"type": "craftbound:tool_preservation", "data": {"stage": 4}}]
+  },
+  "material_insight_1": {
+    "title": "素材理解I",
+    "icon": {"type": "item", "data": {"item": "minecraft:book"}},
+    "description": "素材に対応する加工道具と加工方法を表示する",
+    "rewards": [{"type": "craftbound:material_insight", "data": {"stage": 1}}]
+  },
+  "material_insight_2": {
+    "title": "素材理解II",
+    "icon": {"type": "item", "data": {"item": "minecraft:book"}},
+    "description": "非金属素材の加工抵抗と道具負荷を段階表示する",
+    "rewards": [{"type": "craftbound:material_insight", "data": {"stage": 2}}]
+  },
+  "material_insight_3": {
+    "title": "素材理解III",
+    "icon": {"type": "item", "data": {"item": "minecraft:book"}},
+    "description": "非金属素材の除去量と耐久消費までの累積除去量を数値表示する",
+    "rewards": [{"type": "craftbound:material_insight", "data": {"stage": 3}}]
+  },
+  "quality_appraisal": {
+    "title": "品質鑑定",
+    "icon": {"type": "item", "data": {"item": "minecraft:spyglass"}},
+    "description": "完成済みパーツと装備の内部品質値を表示する",
+    "rewards": [{"type": "craftbound:quality_appraisal", "data": {"stage": 1}}]
+  },
+  "smithing_instinct_1": {
+    "title": "加工感覚I",
+    "icon": {"type": "item", "data": {"item": "minecraft:note_block"}},
+    "description": "鍛造の残り許容打撃3回、非金属加工の残存率70%から早期警告する",
+    "rewards": [{"type": "craftbound:smithing_instinct", "data": {"stage": 1}}]
+  },
+  "smithing_instinct_2": {
+    "title": "加工感覚II",
+    "icon": {"type": "item", "data": {"item": "minecraft:note_block"}},
+    "description": "鍛造の残り許容打撃4回、非金属加工の残存率75%から早期警告する",
+    "rewards": [{"type": "craftbound:smithing_instinct", "data": {"stage": 2}}]
+  },
+  "smithing_instinct_3": {
+    "title": "加工感覚III",
+    "icon": {"type": "item", "data": {"item": "minecraft:note_block"}},
+    "description": "鍛造の残り許容打撃5回、非金属加工の残存率80%から早期警告する",
+    "rewards": [{"type": "craftbound:smithing_instinct", "data": {"stage": 3}}]
+  }
+}

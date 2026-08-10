@@ -1,0 +1,19 @@
+{
+  "normal": {
+    "unidirectional": [
+      ["precision_scale_1", "precision_scale_2"],
+      ["precision_scale_2", "precision_scale_3"],
+      ["precision_scale_3", "precision_scale_4"],
+      ["precision_scale_2", "force_reading"],
+      ["precision_shaping_1", "precision_shaping_2"],
+      ["tool_preservation_1", "tool_preservation_2"],
+      ["tool_preservation_2", "tool_preservation_3"],
+      ["tool_preservation_3", "tool_preservation_4"],
+      ["material_insight_1", "material_insight_2"],
+      ["material_insight_2", "material_insight_3"],
+      ["material_insight_2", "quality_appraisal"],
+      ["smithing_instinct_1", "smithing_instinct_2"],
+      ["smithing_instinct_2", "smithing_instinct_3"]
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "鍛冶師",
+  "icon": {
+    "type": "item",
+    "data": {
+      "item": "minecraft:anvil"
+    }
+  },
+  "background": "textures/gui/advancements/backgrounds/stone.png"
+}

@@ -1,0 +1,21 @@
+{
+  "precision_scale_1": {"definition": "precision_scale_1", "x": -384, "y": -192, "root": true},
+  "precision_scale_2": {"definition": "precision_scale_2", "x": -288, "y": -192, "root": false},
+  "precision_scale_3": {"definition": "precision_scale_3", "x": -192, "y": -192, "root": false},
+  "precision_scale_4": {"definition": "precision_scale_4", "x": -96, "y": -192, "root": false},
+  "force_reading": {"definition": "force_reading", "x": -192, "y": -128, "root": false},
+  "strike_reference": {"definition": "strike_reference", "x": -384, "y": -64, "root": true},
+  "precision_shaping_1": {"definition": "precision_shaping_1", "x": 0, "y": -192, "root": true},
+  "precision_shaping_2": {"definition": "precision_shaping_2", "x": 96, "y": -192, "root": false},
+  "tool_preservation_1": {"definition": "tool_preservation_1", "x": 0, "y": -64, "root": true},
+  "tool_preservation_2": {"definition": "tool_preservation_2", "x": 96, "y": -64, "root": false},
+  "tool_preservation_3": {"definition": "tool_preservation_3", "x": 192, "y": -64, "root": false},
+  "tool_preservation_4": {"definition": "tool_preservation_4", "x": 288, "y": -64, "root": false},
+  "material_insight_1": {"definition": "material_insight_1", "x": 384, "y": -192, "root": true},
+  "material_insight_2": {"definition": "material_insight_2", "x": 480, "y": -192, "root": false},
+  "material_insight_3": {"definition": "material_insight_3", "x": 576, "y": -192, "root": false},
+  "quality_appraisal": {"definition": "quality_appraisal", "x": 576, "y": -128, "root": false},
+  "smithing_instinct_1": {"definition": "smithing_instinct_1", "x": 384, "y": -64, "root": true},
+  "smithing_instinct_2": {"definition": "smithing_instinct_2", "x": 480, "y": -64, "root": false},
+  "smithing_instinct_3": {"definition": "smithing_instinct_3", "x": 576, "y": -64, "root": false}
+}
