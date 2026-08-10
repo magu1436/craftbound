@@ -4,13 +4,14 @@ import net.minecraft.resources.ResourceLocation;
 
 public record MetalPartDefinition(
     ResourceLocation id, ResourceLocation metalId, int ingredientCount,
-    ResourceLocation moldItemId, ResourceLocation outputItemId,
+    ResourceLocation moldItemId, ResourceLocation roughOutputItemId,
+    ResourceLocation outputItemId,
     FailureLumpDefinition failureLump, CoolingDefinition cooling,
     ForgingDefinition forging, PartQualityDefinition partQuality
 ) {
     public MetalPartDefinitionSnapshot snapshot() {
         return new MetalPartDefinitionSnapshot(id, metalId, ingredientCount, moldItemId,
-            outputItemId, failureLump, cooling, forging, partQuality);
+            roughOutputItemId, outputItemId, failureLump, cooling, forging, partQuality);
     }
 
     public record FailureLumpDefinition(ResourceLocation itemId, int count, int unitsPerItem) {}

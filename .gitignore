@@ -44,3 +44,6 @@ forge*changelog.txt
 # codex
 .agents/
 AGENTS.md
+
+# run
+logs/

@@ -68,6 +68,15 @@ public final class MetalMaterialDefinitions
         return Optional.ofNullable(definitions.get(metalId));
     }
 
+    public Optional<ResourceLocation> getRepresentativeItemId(ResourceLocation metalId) {
+        for (MetalIngredient ingredient : ingredients) {
+            if (ingredient.metalId().equals(metalId) && ingredient.item() != null) {
+                return Optional.ofNullable(ForgeRegistries.ITEMS.getKey(ingredient.item()));
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
     protected void apply(
         Map<ResourceLocation, JsonElement> definitions,
@@ -130,7 +139,8 @@ public final class MetalMaterialDefinitions
                 heating.curve(),
                 heating.danger(),
                 heating.destroy(),
-                heating.evaluator()
+                heating.evaluator(),
+                parseDisplayColor(json)
             )
         );
     }
@@ -203,6 +213,17 @@ public final class MetalMaterialDefinitions
             );
         }
         return lossRatio;
+    }
+
+    private static Integer parseDisplayColor(JsonObject json) {
+        if (!json.has("display_color")) {
+            return null;
+        }
+        String value = GsonHelper.getAsString(json, "display_color");
+        if (!value.matches("#[0-9A-Fa-f]{6}")) {
+            throw new JsonParseException("display_color must use #RRGGBB format");
+        }
+        return Integer.parseInt(value.substring(1), 16);
     }
 
     private static MetalDefinition.LumpLossRounding parseLossRounding(

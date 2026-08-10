@@ -5,7 +5,8 @@ import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPa
 
 public record MetalPartDefinitionSnapshot(
     ResourceLocation definitionId, ResourceLocation metalId, int ingredientCount,
-    ResourceLocation moldItemId, ResourceLocation outputItemId,
+    ResourceLocation moldItemId, ResourceLocation roughOutputItemId,
+    ResourceLocation outputItemId,
     FailureLumpDefinition failureLump, CoolingDefinition cooling,
     ForgingDefinition forging, PartQualityDefinition partQuality
 ) {}

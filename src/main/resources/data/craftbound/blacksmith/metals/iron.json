@@ -17,5 +17,6 @@
   ],
   "danger_after_ticks": 480,
   "destroy_after_ticks": 560,
-  "heating_evaluator": "craftbound:linear_curve"
+  "heating_evaluator": "craftbound:linear_curve",
+  "display_color": "#A7A7A7"
 }

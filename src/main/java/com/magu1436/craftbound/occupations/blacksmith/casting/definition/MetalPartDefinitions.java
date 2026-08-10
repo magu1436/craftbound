@@ -14,6 +14,7 @@ import com.google.gson.JsonParseException;
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinition.*;
 import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -94,6 +95,10 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
         int count = GsonHelper.getAsInt(json, "ingredient_count");
         require(count >= 1, "ingredient_count must be positive");
         ResourceLocation mold = registeredItem(json, "mold");
+        ResourceLocation roughOutput = registeredItem(json, "rough_output");
+        Item roughOutputItem = ForgeRegistries.ITEMS.getValue(roughOutput);
+        require(roughOutputItem instanceof RoughMetalPartItem,
+            "rough_output must reference a RoughMetalPartItem");
         ResourceLocation output = registeredItem(json, "output");
         JsonObject failure = GsonHelper.getAsJsonObject(json, "failure_lump");
         FailureLumpDefinition failureLump = new FailureLumpDefinition(
@@ -127,7 +132,7 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
         require(heatingWeight + forgingWeight > 0, "part quality weights must have a positive sum");
         PartQualityDefinition quality = new PartQualityDefinition(heatingWeight,
             forgingWeight, id(qualityJson, "evaluator"));
-        return new MetalPartDefinition(id, metal, count, mold, output, failureLump,
+        return new MetalPartDefinition(id, metal, count, mold, roughOutput, output, failureLump,
             cooling, forging, quality);
     }
 

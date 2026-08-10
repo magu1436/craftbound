@@ -3,6 +3,7 @@
   "metal": "craftbound:iron",
   "ingredient_count": 3,
   "mold": "craftbound:pickaxe_head_mold",
+  "rough_output": "craftbound:rough_pickaxe_head",
   "output": "craftbound:iron_pickaxe_head",
   "failure_lump": {"item": "craftbound:small_metal_lump", "count": 1, "units_per_item": 1},
   "cooling": {"surface_solid_ticks": 40, "safe_ticks": 100, "minimum_break_on_hit": 1, "evaluator": "craftbound:linear_cooling_break_limit"},

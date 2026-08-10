@@ -13,7 +13,8 @@ public record MetalDefinition(
     List<HeatingScorePoint> scoreCurve,
     long dangerAfterTicks,
     long destroyAfterTicks,
-    ResourceLocation heatingEvaluator
+    ResourceLocation heatingEvaluator,
+    Integer displayColor
 ) {
     public MetalDefinition {
         Objects.requireNonNull(id, "id");

@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "craftbound:rough_sword_blade",
+    "craftbound:rough_pickaxe_head",
+    "craftbound:rough_axe_head",
+    "craftbound:rough_shovel_head",
+    "craftbound:rough_hoe_head",
+    "craftbound:rough_helmet_body",
+    "craftbound:rough_chestplate_body",
+    "craftbound:rough_leggings_body",
+    "craftbound:rough_boots_body",
+    "craftbound:rough_horse_armor_body",
+    "craftbound:rough_iron_ring",
+    "craftbound:rough_crossbow_trigger",
+    "craftbound:rough_shield_boss",
+    "craftbound:rough_shears_blades",
+    "craftbound:rough_fire_striker",
+    "craftbound:rough_brush_head"
+  ]
+}
