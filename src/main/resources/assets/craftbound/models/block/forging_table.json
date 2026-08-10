@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "craftbound:block/forging_table_top",
+    "down": "craftbound:block/forging_table_side",
+    "north": "craftbound:block/forging_table_front",
+    "south": "craftbound:block/forging_table_side",
+    "east": "craftbound:block/forging_table_side",
+    "west": "craftbound:block/forging_table_side",
+    "particle": "craftbound:block/forging_table_side"
+  }
+}

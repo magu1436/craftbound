@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.blacksmith.forging.ForgingTableBlock;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlock;
 
 import net.minecraft.world.level.block.Block;
@@ -32,6 +33,17 @@ public class CraftboundBlocks {
                     BlockBehaviour.Properties.of()
                         .strength(3.5F, 6.0F)
                         .sound(SoundType.METAL)
+                        .requiresCorrectToolForDrops()
+                )
+            );
+
+    public static final RegistryObject<ForgingTableBlock> FORGING_TABLE =
+            BLOCKS.register(
+                "forging_table",
+                () -> new ForgingTableBlock(
+                    BlockBehaviour.Properties.of()
+                        .strength(3.5F, 6.0F)
+                        .sound(SoundType.STONE)
                         .requiresCorrectToolForDrops()
                 )
             );

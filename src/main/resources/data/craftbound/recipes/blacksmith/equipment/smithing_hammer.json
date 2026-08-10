@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    " R ",
+    " R "
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "R": { "item": "minecraft:stick" }
+  },
+  "result": {
+    "item": "craftbound:smithing_hammer",
+    "count": 1
+  }
+}

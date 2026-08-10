@@ -89,5 +89,8 @@
   "item.craftbound.metal_part.named": "%1$s %2$s",
   "metal.craftbound.iron": "Iron",
   "metal.craftbound.gold": "Gold",
-  "metal.craftbound.copper": "Copper"
+  "metal.craftbound.copper": "Copper",
+  "item.craftbound.smithing_hammer": "Smithing Hammer",
+  "block.craftbound.forging_table": "Forging Table",
+  "container.craftbound.forging_table": "Forging Table"
 }
