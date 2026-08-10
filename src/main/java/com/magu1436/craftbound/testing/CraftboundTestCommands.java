@@ -19,6 +19,7 @@ import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchManagementEvents;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchManager;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExperience;
+import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerPendingExperience;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -119,7 +120,17 @@ public final class CraftboundTestCommands {
                                 .executes(context -> addFoodProducerExperience(
                                         context.getSource(),
                                         IntegerArgumentType.getInteger(context, "amount")
-                                )))));
+                                ))))
+                .then(Commands.literal("pending")
+                        .executes(context -> showPendingFoodProducerExperience(context.getSource())))
+                .then(Commands.literal("pending_add")
+                        .then(Commands.argument("amount", IntegerArgumentType.integer(1, 100000))
+                                .executes(context -> addPendingFoodProducerExperience(
+                                        context.getSource(),
+                                        IntegerArgumentType.getInteger(context, "amount")
+                                ))))
+                .then(Commands.literal("deliver")
+                        .executes(context -> deliverPendingFoodProducerExperience(context.getSource()))));
 
         test.then(Commands.literal("processing")
                 .then(Commands.literal("status")
@@ -420,6 +431,42 @@ public final class CraftboundTestCommands {
             return 0;
         }
         return showFoodProducerExperience(source);
+    }
+
+    private static int showPendingFoodProducerExperience(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        int amount = FoodProducerPendingExperience.get(source.getPlayerOrException());
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.experience.pending",
+                amount
+        ), false);
+        return amount;
+    }
+
+    private static int addPendingFoodProducerExperience(CommandSourceStack source, int amount)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        int total = FoodProducerPendingExperience.queue(source.getServer(), player.getUUID(), amount);
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.experience.pending_add",
+                amount,
+                total
+        ), false);
+        return total;
+    }
+
+    private static int deliverPendingFoodProducerExperience(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        int delivered = FoodProducerPendingExperience.deliver(source.getPlayerOrException());
+        if (delivered < 0) {
+            source.sendFailure(Component.translatable("command.craftbound.test.experience.unavailable"));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.experience.deliver",
+                delivered
+        ), false);
+        return delivered;
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> cookingQualityLiteral(

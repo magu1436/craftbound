@@ -13,6 +13,7 @@ import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityItems;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExperience;
+import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerPendingExperience;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 
 import net.minecraft.core.BlockPos;
@@ -338,8 +339,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         mergeInto(RETURN, pendingReturn);
         if (level instanceof ServerLevel serverLevel && initiator != null) {
             ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(initiator);
-            if (player != null) {
-                FoodProducerExperience.add(player, pendingExperience);
+            boolean delivered = player != null && FoodProducerExperience.add(player, pendingExperience);
+            if (!delivered) {
+                FoodProducerPendingExperience.queue(serverLevel.getServer(), initiator, pendingExperience);
             }
         }
         clearPending();
