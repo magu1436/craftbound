@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.occupations.blacksmith.forging;
 
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartStateService;
+import com.magu1436.craftbound.occupations.blacksmith.forging.state.ForgingProgressStateService;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
 
     private ItemStack workingPart = ItemStack.EMPTY;
     private final List<ItemStack> pendingOutputs = new ArrayList<>();
+    private boolean completionReserved;
     private boolean invalidStoredState;
 
     public ForgingTableBlockEntity(BlockPos pos, BlockState state) {
@@ -51,6 +53,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
         super.load(tag);
         workingPart = ItemStack.EMPTY;
         pendingOutputs.clear();
+        completionReserved = false;
         invalidStoredState = false;
 
         if (tag.contains(TAG_WORKING_PART)) {
@@ -59,7 +62,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
             } else {
                 workingPart = ItemStack.of(tag.getCompound(TAG_WORKING_PART));
                 invalidStoredState = workingPart.isEmpty()
-                    || RoughMetalPartStateService.read(workingPart).isEmpty();
+                    || !ForgingProgressStateService.isUsable(workingPart);
             }
         }
 
@@ -110,7 +113,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
 
         ItemStack heldItem = player.getItemInHand(hand);
         if (heldItem.getCount() != 1
-            || RoughMetalPartStateService.read(heldItem).isEmpty()) {
+            || !ForgingProgressStateService.isUsable(heldItem)) {
             return false;
         }
 
@@ -165,6 +168,62 @@ public final class ForgingTableBlockEntity extends BlockEntity {
         return true;
     }
 
+    public boolean updateWorkingPart(ItemStack updatedWorkingPart) {
+        if (updatedWorkingPart.isEmpty()
+            || !hasWorkingPart()
+            || completionReserved
+            || invalidStoredState
+            || RoughMetalPartStateService.read(updatedWorkingPart).isEmpty()) {
+            return false;
+        }
+        workingPart = updatedWorkingPart.copy();
+        markChangedAndSync();
+        return true;
+    }
+
+    public boolean tryReserveCompletion() {
+        if (completionReserved
+            || invalidStoredState
+            || !hasWorkingPart()
+            || hasPendingOutputs()) {
+            return false;
+        }
+        completionReserved = true;
+        return true;
+    }
+
+    public void cancelCompletionReservation() {
+        completionReserved = false;
+    }
+
+    public boolean commitReservedResult(ServerPlayer player, ItemStack output) {
+        if (!completionReserved
+            || invalidStoredState
+            || !hasWorkingPart()
+            || hasPendingOutputs()
+            || output.isEmpty()) {
+            return false;
+        }
+
+        Inventory inventory = player.getInventory();
+        List<ItemStack> simulatedItems = inventory.items.stream()
+            .map(ItemStack::copy)
+            .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        if (storeAll(simulatedItems, List.of(output), inventory.getMaxStackSize())) {
+            for (int index = 0; index < inventory.items.size(); index++) {
+                inventory.items.set(index, simulatedItems.get(index));
+            }
+            inventory.setChanged();
+        } else {
+            pendingOutputs.add(output.copy());
+        }
+
+        workingPart = ItemStack.EMPTY;
+        completionReserved = false;
+        markChangedAndSync();
+        return true;
+    }
+
     public void dropContents(ServerLevel level) {
         if (!workingPart.isEmpty()) {
             drop(level, workingPart);
@@ -174,6 +233,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
         }
         workingPart = ItemStack.EMPTY;
         pendingOutputs.clear();
+        completionReserved = false;
         invalidStoredState = false;
         setChanged();
     }
