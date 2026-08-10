@@ -17,6 +17,9 @@ import com.magu1436.craftbound.occupations.blacksmith.forging.session.ForgingSes
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 
 public final class ForgingPacketHandler {
     private ForgingPacketHandler() {}
@@ -42,6 +45,8 @@ public final class ForgingPacketHandler {
         if (result == ForgingGameService.StrikeResult.REJECTED) return;
         value.binding().session().acceptSequence(sequence);
         if (result == ForgingGameService.StrikeResult.FAILED) {
+            player.serverLevel().playSound(null, value.binding().table().getBlockPos(),
+                SoundEvents.ANVIL_DESTROY, SoundSource.BLOCKS, 1.0F, 1.0F);
             feedback(player, ForgingFeedbackPacket.Status.FAILED);
             BlacksmithOperationSessionRegistry.release(value.binding().table(), false);
             player.closeContainer();
@@ -61,6 +66,8 @@ public final class ForgingPacketHandler {
         if (result == ForgingGameService.CompletionResult.REJECTED) return;
         value.binding().session().acceptSequence(sequence);
         if (result == ForgingGameService.CompletionResult.COMPLETED) {
+            player.serverLevel().playSound(null, value.binding().table().getBlockPos(),
+                SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
             feedback(player, ForgingFeedbackPacket.Status.COMPLETED);
             BlacksmithOperationSessionRegistry.release(value.binding().table(), false);
             player.closeContainer();
@@ -112,11 +119,18 @@ public final class ForgingPacketHandler {
         var rough = RoughMetalPartStateService.read(binding.table().getWorkingPart());
         var progress = ForgingProgressStateService.read(binding.table().getWorkingPart());
         if (rough.isEmpty() || progress.isEmpty()) {
+            playStrikeSound(player, binding, 1.0F);
             feedback(player, ForgingFeedbackPacket.Status.STRIKE_ACCEPTED);
             return;
         }
         int remaining = rough.get().effectiveBreakOnHit() - progress.get().strikeHistory().size();
         if (remaining <= 2) {
+            playStrikeSound(player, binding, 0.7F);
+            player.serverLevel().sendParticles(ParticleTypes.CRIT,
+                binding.table().getBlockPos().getX() + 0.5D,
+                binding.table().getBlockPos().getY() + 1.1D,
+                binding.table().getBlockPos().getZ() + 0.5D,
+                4, 0.2D, 0.05D, 0.2D, 0.02D);
             feedback(player, ForgingFeedbackPacket.Status.DANGER);
             return;
         }
@@ -127,10 +141,19 @@ public final class ForgingPacketHandler {
             && (binding.session().lastInstinctWarningTick() == Long.MIN_VALUE
                 || now - binding.session().lastInstinctWarningTick() >= cooldown)) {
             binding.session().markInstinctWarning(now);
-            feedback(player, ForgingFeedbackPacket.Status.INSTINCT);
+            playStrikeSound(player, binding, 1.0F);
+            var audio = BlacksmithSkillAssistDefinitions.INSTANCE.get().orElseThrow().instinctAudio();
+            CraftboundNetwork.sendToPlayer(player, new ForgingFeedbackPacket(
+                ForgingFeedbackPacket.Status.INSTINCT, audio.soundId(), audio.volume(), audio.cautionPitch()));
         } else {
+            playStrikeSound(player, binding, 1.0F);
             feedback(player, ForgingFeedbackPacket.Status.STRIKE_ACCEPTED);
         }
+    }
+
+    private static void playStrikeSound(ServerPlayer player, SessionBinding binding, float pitch) {
+        player.serverLevel().playSound(null, binding.table().getBlockPos(),
+            SoundEvents.ANVIL_HIT, SoundSource.BLOCKS, 0.8F, pitch);
     }
 
     private static Optional<Validated> validate(ServerPlayer player, UUID sessionId, long sequence) {

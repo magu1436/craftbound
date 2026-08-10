@@ -92,5 +92,7 @@
   "metal.craftbound.copper": "Copper",
   "item.craftbound.smithing_hammer": "Smithing Hammer",
   "block.craftbound.forging_table": "Forging Table",
-  "container.craftbound.forging_table": "Forging Table"
+  "container.craftbound.forging_table": "Forging Table",
+  "screen.craftbound.forging.complete": "Complete",
+  "screen.craftbound.forging.error": "Forging could not be completed."
 }

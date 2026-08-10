@@ -86,5 +86,7 @@
     "metal.craftbound.gold": "金",
     "item.craftbound.smithing_hammer": "鍛造ハンマー",
     "block.craftbound.forging_table": "鍛造台",
-    "container.craftbound.forging_table": "鍛造台"
+    "container.craftbound.forging_table": "鍛造台",
+    "screen.craftbound.forging.complete": "完成",
+    "screen.craftbound.forging.error": "鍛造処理を完了できませんでした。"
 }

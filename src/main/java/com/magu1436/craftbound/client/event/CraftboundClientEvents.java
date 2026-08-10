@@ -8,8 +8,11 @@ import com.magu1436.craftbound.occupations.blacksmith.client.CrucibleScreen;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalRenderColorResolver;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
+import com.magu1436.craftbound.occupations.blacksmith.client.ForgingScreen;
+import com.magu1436.craftbound.occupations.blacksmith.client.ForgingTableBlockEntityRenderer;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundMenus;
+import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -21,6 +24,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
@@ -35,6 +39,10 @@ public final class CraftboundClientEvents {
         screen(
             CraftboundMenus.CRUCIBLE::get,
             CrucibleScreen::new
+        ),
+        screen(
+            CraftboundMenus.FORGING_TABLE::get,
+            ForgingScreen::new
         )
     );
 
@@ -80,6 +88,14 @@ public final class CraftboundClientEvents {
                 MetalRenderColorResolver.clearCache();
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(
+            CraftboundBlockEntities.FORGING_TABLE.get(),
+            ForgingTableBlockEntityRenderer::new
+        );
     }
 
     private static <

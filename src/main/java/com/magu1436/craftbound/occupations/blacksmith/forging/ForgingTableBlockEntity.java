@@ -2,6 +2,7 @@ package com.magu1436.craftbound.occupations.blacksmith.forging;
 
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartStateService;
 import com.magu1436.craftbound.occupations.blacksmith.forging.state.ForgingProgressStateService;
+import com.magu1436.craftbound.occupations.blacksmith.forging.state.ForgingProgressStateCodec;
 import com.magu1436.craftbound.occupations.blacksmith.forging.session.ForgingSessionState;
 import com.magu1436.craftbound.occupations.blacksmith.forging.session.BlacksmithOperationSessionRegistry;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
@@ -27,12 +28,14 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class ForgingTableBlockEntity extends BlockEntity {
     private static final String TAG_WORKING_PART = "WorkingPart";
     private static final String TAG_PENDING_OUTPUTS = "PendingOutputs";
+    private static final String TAG_DISPLAY_STACK = "DisplayStack";
 
     private ItemStack workingPart = ItemStack.EMPTY;
     private final List<ItemStack> pendingOutputs = new ArrayList<>();
     private boolean completionReserved;
     private boolean invalidStoredState;
     private ForgingSessionState activeSession;
+    private ItemStack clientDisplayStack = ItemStack.EMPTY;
 
     public ForgingTableBlockEntity(BlockPos pos, BlockState state) {
         super(CraftboundBlockEntities.FORGING_TABLE.get(), pos, state);
@@ -131,6 +134,12 @@ public final class ForgingTableBlockEntity extends BlockEntity {
 
     public List<ItemStack> getPendingOutputs() {
         return pendingOutputs.stream().map(ItemStack::copy).toList();
+    }
+
+    public ItemStack getDisplayStack() {
+        if (level != null && level.isClientSide()) return clientDisplayStack.copy();
+        if (!workingPart.isEmpty()) return workingPart.copy();
+        return pendingOutputs.isEmpty() ? ItemStack.EMPTY : pendingOutputs.get(0).copy();
     }
 
     public boolean tryInsertWorkingPart(ServerPlayer player, InteractionHand hand) {
@@ -270,7 +279,14 @@ public final class ForgingTableBlockEntity extends BlockEntity {
 
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        CompoundTag tag = new CompoundTag();
+        ItemStack displayStack = getDisplayStack();
+        if (!displayStack.isEmpty()) {
+            CompoundTag stackTag = displayStack.getTag();
+            if (stackTag != null) stackTag.remove(ForgingProgressStateCodec.ROOT_KEY);
+            tag.put(TAG_DISPLAY_STACK, displayStack.save(new CompoundTag()));
+        }
+        return tag;
     }
 
     @Override
@@ -284,7 +300,14 @@ public final class ForgingTableBlockEntity extends BlockEntity {
         ClientboundBlockEntityDataPacket packet
     ) {
         CompoundTag tag = packet.getTag();
-        if (tag != null) load(tag);
+        if (tag != null) handleUpdateTag(tag);
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        clientDisplayStack = tag.contains(TAG_DISPLAY_STACK, Tag.TAG_COMPOUND)
+            ? ItemStack.of(tag.getCompound(TAG_DISPLAY_STACK))
+            : ItemStack.EMPTY;
     }
 
     private void markChangedAndSync() {
