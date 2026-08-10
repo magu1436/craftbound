@@ -23,15 +23,21 @@ public final class RoughMetalPartStateService {
     public static Optional<ItemStack> create(UUID resultId, UUID operatorId,
         MetalPartDefinitionSnapshot snapshot, long heatingTicks, int heatingScore,
         long coolingTicksAtRemoval, int effectiveBreakOnHit) {
+        Optional<MetalVisualData> visual = MetalVisualDataService.resolve(snapshot.metalId());
+        if (visual.isEmpty()) return Optional.empty();
+        return create(resultId, operatorId, snapshot, heatingTicks, heatingScore,
+            coolingTicksAtRemoval, effectiveBreakOnHit, visual.get());
+    }
+    public static Optional<ItemStack> create(UUID resultId, UUID operatorId,
+        MetalPartDefinitionSnapshot snapshot, long heatingTicks, int heatingScore,
+        long coolingTicksAtRemoval, int effectiveBreakOnHit, MetalVisualData visualData) {
         try {
             Item roughOutput = ForgeRegistries.ITEMS.getValue(snapshot.roughOutputItemId());
             if (!(roughOutput instanceof RoughMetalPartItem)) return Optional.empty();
-            Optional<MetalVisualData> visual = MetalVisualDataService.resolve(snapshot.metalId());
-            if (visual.isEmpty()) return Optional.empty();
             RoughMetalPartState state = new RoughMetalPartState(RoughMetalPartState.CURRENT_VERSION,
                 resultId, operatorId, snapshot.definitionId(), snapshot.metalId(), snapshot.outputItemId(),
                 snapshot.ingredientCount(), heatingTicks, heatingScore, coolingTicksAtRemoval,
-                effectiveBreakOnHit, snapshot, visual.get());
+                effectiveBreakOnHit, snapshot, visualData);
             ItemStack stack = new ItemStack(roughOutput);
             RoughMetalPartStateCodec.write(stack, state);
             return read(stack).isPresent() ? Optional.of(stack) : Optional.empty();
