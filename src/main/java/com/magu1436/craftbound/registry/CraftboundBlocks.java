@@ -2,6 +2,7 @@ package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlock;
+import com.magu1436.craftbound.occupations.blacksmith.casting.CastingTableBlock;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -29,6 +30,17 @@ public class CraftboundBlocks {
             BLOCKS.register(
                 "blacksmith_furnace",
                 () -> new BlacksmithFurnaceBlock(
+                    BlockBehaviour.Properties.of()
+                        .strength(3.5F, 6.0F)
+                        .sound(SoundType.METAL)
+                        .requiresCorrectToolForDrops()
+                )
+            );
+
+    public static final RegistryObject<CastingTableBlock> CASTING_TABLE =
+            BLOCKS.register(
+                "casting_table",
+                () -> new CastingTableBlock(
                     BlockBehaviour.Properties.of()
                         .strength(3.5F, 6.0F)
                         .sound(SoundType.METAL)

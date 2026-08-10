@@ -13,6 +13,7 @@
     "key.craftbound.emergency_evasion": "緊急回避",
     "item.craftbound.crucible": "るつぼ",
     "block.craftbound.blacksmith_furnace": "金属溶鉱炉",
+    "block.craftbound.casting_table": "鋳造台",
     "jade.craftbound.blacksmith_furnace.heat_source": "熱源: %s",
     "jade.craftbound.heat_source.present": "あり",
     "jade.craftbound.heat_source.absent": "なし",

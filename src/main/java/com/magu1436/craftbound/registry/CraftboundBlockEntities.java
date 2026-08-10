@@ -2,6 +2,7 @@ package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlockEntity;
+import com.magu1436.craftbound.occupations.blacksmith.casting.CastingTableBlockEntity;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -15,6 +16,15 @@ public final class CraftboundBlockEntities {
             DeferredRegister.create(
                 ForgeRegistries.BLOCK_ENTITY_TYPES, 
                 Craftbound.MODID
+            );
+
+    public static final RegistryObject<BlockEntityType<CastingTableBlockEntity>>
+            CASTING_TABLE = BLOCK_ENTITIES.register(
+                "casting_table",
+                () -> BlockEntityType.Builder.of(
+                    CastingTableBlockEntity::new,
+                    CraftboundBlocks.CASTING_TABLE.get()
+                ).build(null)
             );
 
     public static final RegistryObject<BlockEntityType<BlacksmithFurnaceBlockEntity>>

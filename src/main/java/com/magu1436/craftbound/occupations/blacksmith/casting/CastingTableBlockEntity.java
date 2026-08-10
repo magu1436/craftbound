@@ -9,6 +9,7 @@ import com.magu1436.craftbound.occupations.blacksmith.casting.lump.MetalLumpStat
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartStateService;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleItem;
+import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.core.BlockPos;
@@ -47,6 +48,13 @@ public final class CastingTableBlockEntity extends BlockEntity {
     private boolean transactionInProgress;
     @Nullable
     private CompoundTag invalidStoredData;
+
+    public CastingTableBlockEntity(
+        BlockPos pos,
+        BlockState state
+    ) {
+        this(CraftboundBlockEntities.CASTING_TABLE.get(), pos, state);
+    }
 
     public CastingTableBlockEntity(
         BlockEntityType<?> type,
