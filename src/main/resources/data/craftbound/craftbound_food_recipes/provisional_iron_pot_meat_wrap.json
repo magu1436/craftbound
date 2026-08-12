@@ -1,0 +1,15 @@
+{
+  "result": "prepared",
+  "automation_policy": "manual_only",
+  "required_recipe_rank": 2,
+  "name_key": "item.craftbound.provisional_iron_pot_meat_wrap",
+  "inputs": [
+    { "item": "craftbound:ground_meat", "count": 1 },
+    { "item": "craftbound:dough", "count": 1 },
+    { "item": "craftbound:chopped_vegetable", "source_item": "minecraft:carrot", "count": 1 }
+  ],
+  "food": { "nutrition": 7, "saturation_gain": 6.0 },
+  "effect": { "id": "minecraft:haste", "amplifier": 0, "duration_seconds": 180 },
+  "preserved": false,
+  "experience": 5
+}

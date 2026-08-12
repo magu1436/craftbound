@@ -1,0 +1,12 @@
+{
+  "result": "dish",
+  "automation_policy": "create_low_quality",
+  "required_recipe_rank": 3,
+  "name_key": "item.craftbound.provisional_dried_meat_ration",
+  "inputs": [
+    { "item": "craftbound:dried_meat", "count": 2 }
+  ],
+  "food": { "nutrition": 8, "saturation_gain": 7.0 },
+  "preserved": true,
+  "experience": 3
+}

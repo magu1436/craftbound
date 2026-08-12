@@ -2,6 +2,9 @@ package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -16,6 +19,35 @@ public final class CraftboundBlockEntities {
                 ForgeRegistries.BLOCK_ENTITY_TYPES, 
                 Craftbound.MODID
             );
+
+    public static final RegistryObject<BlockEntityType<RanchBlockEntity>> RANCH_BLOCK =
+        BLOCK_ENTITIES.register(
+            "ranch_block",
+            () -> BlockEntityType.Builder.of(
+                RanchBlockEntity::new,
+                CraftboundBlocks.RANCH_BLOCK.get()
+            ).build(null)
+        );
+    public static final RegistryObject<BlockEntityType<FoodProcessingBlockEntity>> FOOD_PROCESSING =
+        BLOCK_ENTITIES.register(
+            "food_processing",
+            () -> BlockEntityType.Builder.of(
+                FoodProcessingBlockEntity::new,
+                CraftboundBlocks.COOKING_TABLE.get(),
+                CraftboundBlocks.HAND_MILL.get(),
+                CraftboundBlocks.DRYING_RACK.get(),
+                CraftboundBlocks.COOKING_POT.get()
+            ).build(null)
+        );
+    public static final RegistryObject<BlockEntityType<PreservationStorageBlockEntity>>
+        PRESERVATION_STORAGE = BLOCK_ENTITIES.register(
+            "preservation_storage",
+            () -> BlockEntityType.Builder.of(
+                PreservationStorageBlockEntity::new,
+                CraftboundBlocks.PRESERVATION_STORAGE_1.get(),
+                CraftboundBlocks.PRESERVATION_STORAGE_2.get()
+            ).build(null)
+        );
 
     public static final RegistryObject<BlockEntityType<BlacksmithFurnaceBlockEntity>>
             BLACKSMITH_FURNACE = BLOCK_ENTITIES.register(

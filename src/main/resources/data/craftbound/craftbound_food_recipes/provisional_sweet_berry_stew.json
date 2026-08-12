@@ -1,0 +1,16 @@
+{
+  "result": "prepared",
+  "automation_policy": "manual_only",
+  "required_recipe_rank": 2,
+  "name_key": "item.craftbound.provisional_sweet_berry_stew",
+  "inputs": [
+    { "item": "craftbound:fruit_pieces", "count": 1 },
+    { "item": "minecraft:sugar", "count": 1 },
+    { "item": "minecraft:potion", "potion": "minecraft:water", "count": 1 }
+  ],
+  "returned_container": { "item": "minecraft:glass_bottle", "count": 1 },
+  "food": { "nutrition": 7, "saturation_gain": 6.0 },
+  "effect": { "id": "minecraft:luck", "amplifier": 0, "duration_seconds": 180 },
+  "preserved": false,
+  "experience": 5
+}

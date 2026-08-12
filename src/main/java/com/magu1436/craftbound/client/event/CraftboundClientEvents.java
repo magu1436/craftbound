@@ -8,6 +8,9 @@ import com.magu1436.craftbound.occupations.blacksmith.client.CrucibleScreen;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalRenderColorResolver;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingScreen;
+import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchScreen;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageScreen;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundMenus;
 
@@ -35,6 +38,18 @@ public final class CraftboundClientEvents {
         screen(
             CraftboundMenus.CRUCIBLE::get,
             CrucibleScreen::new
+        ),
+        screen(
+            CraftboundMenus.RANCH_BLOCK::get,
+            RanchScreen::new
+        ),
+        screen(
+            CraftboundMenus.FOOD_PROCESSING::get,
+            FoodProcessingScreen::new
+        ),
+        screen(
+            CraftboundMenus.PRESERVATION_STORAGE::get,
+            PreservationStorageScreen::new
         )
     );
 

@@ -1,0 +1,21 @@
+{
+  "result": "prepared",
+  "automation_policy": "manual_only",
+  "required_recipe_rank": 1,
+  "name_key": "item.craftbound.provisional_berry_bread",
+  "inputs": [
+    { "item": "craftbound:dough", "count": 1 },
+    { "item": "craftbound:fruit_pieces", "count": 1 }
+  ],
+  "food": {
+    "nutrition": 6,
+    "saturation_gain": 5.0
+  },
+  "effect": {
+    "id": "minecraft:speed",
+    "amplifier": 0,
+    "duration_seconds": 120
+  },
+  "preserved": false,
+  "experience": 5
+}

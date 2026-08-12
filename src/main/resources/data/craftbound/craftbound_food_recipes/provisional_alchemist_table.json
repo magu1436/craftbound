@@ -1,0 +1,16 @@
+{
+  "result": "prepared",
+  "automation_policy": "manual_only",
+  "required_recipe_rank": 5,
+  "name_key": "item.craftbound.provisional_alchemist_table",
+  "inputs": [
+    { "item": "minecraft:egg", "count": 1 },
+    { "item": "minecraft:glow_berries", "count": 2 },
+    { "item": "minecraft:milk_bucket", "count": 1 }
+  ],
+  "returned_container": { "item": "minecraft:bucket", "count": 1 },
+  "food": { "nutrition": 12, "saturation_gain": 12.0 },
+  "effect": { "id": "minecraft:luck", "amplifier": 1, "duration_seconds": 600 },
+  "preserved": false,
+  "experience": 5
+}

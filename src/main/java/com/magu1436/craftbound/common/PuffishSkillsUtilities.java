@@ -1,5 +1,6 @@
 package com.magu1436.craftbound.common;
 
+import java.util.List;
 import java.util.Optional;
 
 import net.minecraft.resources.ResourceLocation;
@@ -55,5 +56,23 @@ public final class PuffishSkillsUtilities {
         return getSkill(categoryId, skillId)
             .map(skill -> hasSkill(player, skill))
             .orElse(false);
+    }
+
+    /**
+     * 段階別に別ノードとして定義されたスキルの最高取得ランクを返す.
+     * リストはランクIから昇順で指定する.
+     */
+    public static int getHighestUnlockedRank(
+        ServerPlayer player,
+        ResourceLocation categoryId,
+        List<String> rankedSkillIds
+    ) {
+        for (int index = rankedSkillIds.size() - 1; index >= 0; index--) {
+            if (hasSkill(player, categoryId, rankedSkillIds.get(index))) {
+                return index + 1;
+            }
+        }
+
+        return 0;
     }
 }

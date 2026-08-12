@@ -1,0 +1,360 @@
+{
+  "food_producer_root": {
+    "title": {
+      "translate": "skill.craftbound.food_producer.root.title"
+    },
+    "description": {
+      "translate": "skill.craftbound.food_producer.root.description"
+    },
+    "icon": {
+      "type": "item",
+      "data": {
+        "item": "minecraft:wheat"
+      }
+    },
+    "cost": 0
+  },
+  "farmland_diagnosis": {
+    "title": {
+      "translate": "skill.craftbound.food_producer.farmland_diagnosis.title"
+    },
+    "description": {
+      "translate": "skill.craftbound.food_producer.farmland_diagnosis.description"
+    },
+    "icon": {
+      "type": "item",
+      "data": {
+        "item": "minecraft:wooden_hoe"
+      }
+    },
+    "cost": 1
+  },
+  "growth_management_1": {
+    "title": { "translate": "skill.craftbound.food_producer.growth_management_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.growth_management_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:wheat_seeds" } },
+    "cost": 1
+  },
+  "growth_management_2": {
+    "title": { "translate": "skill.craftbound.food_producer.growth_management_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.growth_management_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:wheat_seeds" } },
+    "cost": 1
+  },
+  "growth_management_3": {
+    "title": { "translate": "skill.craftbound.food_producer.growth_management_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.growth_management_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:wheat_seeds" } },
+    "cost": 1
+  },
+  "growth_management_4": {
+    "title": { "translate": "skill.craftbound.food_producer.growth_management_4.title" },
+    "description": { "translate": "skill.craftbound.food_producer.growth_management_4.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:wheat_seeds" } },
+    "cost": 1
+  },
+  "growth_management_5": {
+    "title": { "translate": "skill.craftbound.food_producer.growth_management_5.title" },
+    "description": { "translate": "skill.craftbound.food_producer.growth_management_5.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:wheat_seeds" } },
+    "cost": 1
+  },
+  "yield_management_1": {
+    "title": { "translate": "skill.craftbound.food_producer.yield_management_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.yield_management_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "yield_management_2": {
+    "title": { "translate": "skill.craftbound.food_producer.yield_management_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.yield_management_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "yield_management_3": {
+    "title": { "translate": "skill.craftbound.food_producer.yield_management_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.yield_management_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "yield_management_4": {
+    "title": { "translate": "skill.craftbound.food_producer.yield_management_4.title" },
+    "description": { "translate": "skill.craftbound.food_producer.yield_management_4.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "yield_management_5": {
+    "title": { "translate": "skill.craftbound.food_producer.yield_management_5.title" },
+    "description": { "translate": "skill.craftbound.food_producer.yield_management_5.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "quality_cultivation_1": {
+    "title": { "translate": "skill.craftbound.food_producer.quality_cultivation_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.quality_cultivation_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:golden_carrot" } },
+    "cost": 1
+  },
+  "quality_cultivation_2": {
+    "title": { "translate": "skill.craftbound.food_producer.quality_cultivation_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.quality_cultivation_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:golden_carrot" } },
+    "cost": 1
+  },
+  "quality_cultivation_3": {
+    "title": { "translate": "skill.craftbound.food_producer.quality_cultivation_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.quality_cultivation_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:golden_carrot" } },
+    "cost": 1
+  },
+  "quality_cultivation_4": {
+    "title": { "translate": "skill.craftbound.food_producer.quality_cultivation_4.title" },
+    "description": { "translate": "skill.craftbound.food_producer.quality_cultivation_4.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:golden_carrot" } },
+    "cost": 1
+  },
+  "quality_cultivation_5": {
+    "title": { "translate": "skill.craftbound.food_producer.quality_cultivation_5.title" },
+    "description": { "translate": "skill.craftbound.food_producer.quality_cultivation_5.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:golden_carrot" } },
+    "cost": 1
+  },
+  "fertility_management_1": {
+    "title": { "translate": "skill.craftbound.food_producer.fertility_management_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.fertility_management_1.description" },
+    "icon": { "type": "item", "data": { "item": "craftbound:agricultural_fertilizer" } },
+    "cost": 1
+  },
+  "fertility_management_2": {
+    "title": { "translate": "skill.craftbound.food_producer.fertility_management_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.fertility_management_2.description" },
+    "icon": { "type": "item", "data": { "item": "craftbound:agricultural_fertilizer" } },
+    "cost": 1
+  },
+  "fertility_management_3": {
+    "title": { "translate": "skill.craftbound.food_producer.fertility_management_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.fertility_management_3.description" },
+    "icon": { "type": "item", "data": { "item": "craftbound:compost" } },
+    "cost": 1
+  },
+  "ranch_management": {
+    "title": {
+      "translate": "skill.craftbound.food_producer.ranch_management.title"
+    },
+    "description": {
+      "translate": "skill.craftbound.food_producer.ranch_management.description"
+    },
+    "icon": {
+      "type": "item",
+      "data": {
+        "item": "minecraft:lead"
+      }
+    },
+    "cost": 1,
+    "rewards": [
+      {
+        "type": "puffish_skills:command",
+        "data": {
+          "unlock_command": "recipe give @s craftbound:ranch_block",
+          "lock_command": "recipe take @s craftbound:ranch_block"
+        }
+      }
+    ]
+  },
+  "feed_management_1": {
+    "title": { "translate": "skill.craftbound.food_producer.feed_management_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.feed_management_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "feed_management_2": {
+    "title": { "translate": "skill.craftbound.food_producer.feed_management_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.feed_management_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "feed_management_3": {
+    "title": { "translate": "skill.craftbound.food_producer.feed_management_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.feed_management_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:hay_block" } },
+    "cost": 1
+  },
+  "ranch_capacity_1": {
+    "title": { "translate": "skill.craftbound.food_producer.ranch_capacity_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.ranch_capacity_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:oak_fence" } },
+    "cost": 1
+  },
+  "ranch_capacity_2": {
+    "title": { "translate": "skill.craftbound.food_producer.ranch_capacity_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.ranch_capacity_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:oak_fence" } },
+    "cost": 1
+  },
+  "ranch_capacity_3": {
+    "title": { "translate": "skill.craftbound.food_producer.ranch_capacity_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.ranch_capacity_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:oak_fence" } },
+    "cost": 1
+  },
+  "breeding_management_1": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_2": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_3": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_4": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_4.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_4.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "breeding_management_5": {
+    "title": { "translate": "skill.craftbound.food_producer.breeding_management_5.title" },
+    "description": { "translate": "skill.craftbound.food_producer.breeding_management_5.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:egg" } },
+    "cost": 1
+  },
+  "meat_processing_1": {
+    "title": { "translate": "skill.craftbound.food_producer.meat_processing_1.title" },
+    "description": { "translate": "skill.craftbound.food_producer.meat_processing_1.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:iron_axe" } },
+    "cost": 1
+  },
+  "meat_processing_2": {
+    "title": { "translate": "skill.craftbound.food_producer.meat_processing_2.title" },
+    "description": { "translate": "skill.craftbound.food_producer.meat_processing_2.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:iron_axe" } },
+    "cost": 1
+  },
+  "meat_processing_3": {
+    "title": { "translate": "skill.craftbound.food_producer.meat_processing_3.title" },
+    "description": { "translate": "skill.craftbound.food_producer.meat_processing_3.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:iron_axe" } },
+    "cost": 1
+  },
+  "meat_processing_4": {
+    "title": { "translate": "skill.craftbound.food_producer.meat_processing_4.title" },
+    "description": { "translate": "skill.craftbound.food_producer.meat_processing_4.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:iron_axe" } },
+    "cost": 1
+  },
+  "meat_processing_5": {
+    "title": { "translate": "skill.craftbound.food_producer.meat_processing_5.title" },
+    "description": { "translate": "skill.craftbound.food_producer.meat_processing_5.description" },
+    "icon": { "type": "item", "data": { "item": "minecraft:iron_axe" } },
+    "cost": 1
+  },
+  "basic_processing": {
+    "title": {
+      "translate": "skill.craftbound.food_producer.basic_processing.title"
+    },
+    "description": {
+      "translate": "skill.craftbound.food_producer.basic_processing.description"
+    },
+    "icon": {
+      "type": "item",
+      "data": {
+        "item": "minecraft:crafting_table"
+      }
+    },
+    "cost": 1,
+    "rewards": [
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_table","lock_command":"recipe take @s craftbound:cooking_table"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_knife","lock_command":"recipe take @s craftbound:cooking_knife"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:hand_mill","lock_command":"recipe take @s craftbound:hand_mill"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:drying_rack","lock_command":"recipe take @s craftbound:drying_rack"}},
+      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_pot","lock_command":"recipe take @s craftbound:cooking_pot"}}
+    ]
+  },
+  "processing_technique_1": {
+    "title":{"translate":"skill.craftbound.food_producer.processing_technique_1.title"},
+    "description":{"translate":"skill.craftbound.food_producer.processing_technique_1.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:cooking_knife"}},
+    "cost":1
+  },
+  "processing_technique_2": {
+    "title":{"translate":"skill.craftbound.food_producer.processing_technique_2.title"},
+    "description":{"translate":"skill.craftbound.food_producer.processing_technique_2.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:hand_mill"}},
+    "cost":1
+  },
+  "processing_technique_3": {
+    "title":{"translate":"skill.craftbound.food_producer.processing_technique_3.title"},
+    "description":{"translate":"skill.craftbound.food_producer.processing_technique_3.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:drying_rack"}},
+    "cost":1
+  },
+  "quality_cooking_1": {
+    "title":{"translate":"skill.craftbound.food_producer.quality_cooking_1.title"},
+    "description":{"translate":"skill.craftbound.food_producer.quality_cooking_1.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:cooking_pot"}},
+    "cost":1
+  },
+  "quality_cooking_2": {
+    "title":{"translate":"skill.craftbound.food_producer.quality_cooking_2.title"},
+    "description":{"translate":"skill.craftbound.food_producer.quality_cooking_2.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:cooking_pot"}},
+    "cost":1
+  },
+  "quality_cooking_3": {
+    "title":{"translate":"skill.craftbound.food_producer.quality_cooking_3.title"},
+    "description":{"translate":"skill.craftbound.food_producer.quality_cooking_3.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:cooking_pot"}},
+    "cost":1
+  },
+  "quality_cooking_4": {
+    "title":{"translate":"skill.craftbound.food_producer.quality_cooking_4.title"},
+    "description":{"translate":"skill.craftbound.food_producer.quality_cooking_4.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:cooking_pot"}},
+    "cost":1
+  },
+  "quality_cooking_5": {
+    "title":{"translate":"skill.craftbound.food_producer.quality_cooking_5.title"},
+    "description":{"translate":"skill.craftbound.food_producer.quality_cooking_5.description"},
+    "icon":{"type":"item","data":{"item":"craftbound:cooking_pot"}},
+    "cost":1
+  },
+  "recipe_research_1": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_1.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_1.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  },
+  "recipe_research_2": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_2.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_2.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  },
+  "recipe_research_3": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_3.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_3.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  },
+  "recipe_research_4": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_4.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_4.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  },
+  "recipe_research_5": {
+    "title":{"translate":"skill.craftbound.food_producer.recipe_research_5.title"},
+    "description":{"translate":"skill.craftbound.food_producer.recipe_research_5.description"},
+    "icon":{"type":"item","data":{"item":"minecraft:book"}},
+    "cost":1
+  }
+}

@@ -6,7 +6,13 @@ import com.magu1436.craftbound.occupations.blacksmith.casting.lump.MetalLumpItem
 import com.magu1436.craftbound.occupations.blacksmith.casting.mold.CastingMoldItem;
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
 import com.magu1436.craftbound.occupations.blacksmith.casting.finished.MetalPartItem;
+import com.magu1436.craftbound.occupations.foodproducer.farming.AgriculturalFertilizerItem;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodDishItem;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodIntermediateItem;
+import com.magu1436.craftbound.occupations.foodproducer.processing.PreparedIngredientSetItem;
+import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockItem;
 
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -92,6 +98,62 @@ public final class CraftboundItems {
     public static final RegistryObject<Item> FIRE_STRIKER = registerMetalPart("fire_striker");
     public static final RegistryObject<Item> BRUSH_HEAD = registerMetalPart("brush_head");
 
+    public static final RegistryObject<Item> AGRICULTURAL_FERTILIZER = ITEMS.register(
+        "agricultural_fertilizer",
+        () -> new AgriculturalFertilizerItem(new Item.Properties())
+    );
+    public static final RegistryObject<Item> COMPOST = registerItem("compost");
+    public static final RegistryObject<Item> COOKING_KNIFE = ITEMS.register(
+        "cooking_knife",
+        () -> new Item(new Item.Properties().durability(256))
+    );
+    public static final RegistryObject<Item> WHEAT_FLOUR = registerFoodIntermediate("wheat_flour");
+    public static final RegistryObject<Item> DOUGH = registerFoodIntermediate("dough");
+    public static final RegistryObject<Item> SLICED_MEAT = registerFoodIntermediate("sliced_meat");
+    public static final RegistryObject<Item> GROUND_MEAT = registerFoodIntermediate("ground_meat");
+    public static final RegistryObject<Item> CHOPPED_VEGETABLE = registerFoodIntermediate("chopped_vegetable");
+    public static final RegistryObject<Item> FRUIT_PIECES = registerFoodIntermediate("fruit_pieces");
+    public static final RegistryObject<Item> DRIED_MEAT = registerFoodIntermediate("dried_meat");
+    public static final RegistryObject<Item> DRIED_VEGETABLE = registerFoodIntermediate("dried_vegetable");
+    public static final RegistryObject<Item> DRIED_FRUIT = registerFoodIntermediate("dried_fruit");
+    public static final RegistryObject<Item> PREPARED_INGREDIENT_SET = ITEMS.register(
+        "prepared_ingredient_set",
+        () -> new PreparedIngredientSetItem(new Item.Properties())
+    );
+    public static final RegistryObject<Item> FOOD_DISH = ITEMS.register(
+        "food_dish",
+        () -> new FoodDishItem(new Item.Properties().stacksTo(16).food(
+            new FoodProperties.Builder().nutrition(1).saturationMod(0.0F).build()
+        ))
+    );
+    public static final RegistryObject<Item> COOKING_TABLE = registerBlockItem(
+        "cooking_table", CraftboundBlocks.COOKING_TABLE
+    );
+    public static final RegistryObject<Item> HAND_MILL = registerBlockItem(
+        "hand_mill", CraftboundBlocks.HAND_MILL
+    );
+    public static final RegistryObject<Item> DRYING_RACK = registerBlockItem(
+        "drying_rack", CraftboundBlocks.DRYING_RACK
+    );
+    public static final RegistryObject<Item> COOKING_POT = registerBlockItem(
+        "cooking_pot", CraftboundBlocks.COOKING_POT
+    );
+    public static final RegistryObject<Item> RANCH_BLOCK = registerBlockItem(
+        "ranch_block", CraftboundBlocks.RANCH_BLOCK
+    );
+    public static final RegistryObject<Item> PRESERVATION_STORAGE_1 = ITEMS.register(
+        "preservation_storage_1",
+        () -> new PreservationStorageBlockItem(
+            CraftboundBlocks.PRESERVATION_STORAGE_1.get(), new Item.Properties()
+        )
+    );
+    public static final RegistryObject<Item> PRESERVATION_STORAGE_2 = ITEMS.register(
+        "preservation_storage_2",
+        () -> new PreservationStorageBlockItem(
+            CraftboundBlocks.PRESERVATION_STORAGE_2.get(), new Item.Properties()
+        )
+    );
+
     private static RegistryObject<Item> registerItem(String id) {
         return ITEMS.register(id, () -> new Item(new Item.Properties()));
     }
@@ -106,6 +168,17 @@ public final class CraftboundItems {
 
     private static RegistryObject<Item> registerMetalPart(String id) {
         return ITEMS.register(id, () -> new MetalPartItem(new Item.Properties().stacksTo(1)));
+    }
+
+    private static RegistryObject<Item> registerFoodIntermediate(String id) {
+        return ITEMS.register(id, () -> new FoodIntermediateItem(new Item.Properties()));
+    }
+
+    private static RegistryObject<Item> registerBlockItem(
+        String id,
+        RegistryObject<? extends net.minecraft.world.level.block.Block> block
+    ) {
+        return ITEMS.register(id, () -> new BlockItem(block.get(), new Item.Properties()));
     }
     
     public static void register(IEventBus modEventBus) {

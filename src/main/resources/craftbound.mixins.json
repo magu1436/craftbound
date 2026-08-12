@@ -13,7 +13,15 @@
     "LivingEntityFreezeMixin",
     "PlayerMovementExhaustionMixin",
     "PowderSnowBlockMixin",
-    "SweetBerryBushBlockMixin"
+    "SweetBerryBushBlockMixin",
+    "AbstractFurnaceBlockEntityMixin",
+    "CampfireBlockEntityMixin",
+    "ComposterBlockMixin",
+    "CraftingMenuMixin",
+    "DropperBlockMixin",
+    "HopperBlockEntityMixin",
+    "accessor.CraftingMenuAccessor",
+    "accessor.TransientCraftingContainerAccessor"
   ],
   "client": [],
   "injectors": {

@@ -1,0 +1,13 @@
+{
+  "result": "dish",
+  "automation_policy": "create_low_quality",
+  "required_recipe_rank": 2,
+  "name_key": "item.craftbound.provisional_dried_mixed_pack",
+  "inputs": [
+    { "item": "craftbound:dried_vegetable", "count": 1 },
+    { "item": "craftbound:dried_fruit", "count": 1 }
+  ],
+  "food": { "nutrition": 6, "saturation_gain": 5.0 },
+  "preserved": true,
+  "experience": 3
+}
