@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "mold": "craftbound:boots_body_mold",
+  "width": 16,
+  "height": 16,
+  "pixels": [
+    "................",
+    "................",
+    "................",
+    "...RRRRRRRRRR...",
+    "...RCCCRRCCCR...",
+    "...RCCCRRCCCR...",
+    "...RCCCRRCCCR...",
+    "..RRCCCRRCCCRR..",
+    "..RCCCCRRCCCCR..",
+    "..RCCCCRRCCCCR..",
+    "..RRRRRRRRRRRR..",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ]
+}

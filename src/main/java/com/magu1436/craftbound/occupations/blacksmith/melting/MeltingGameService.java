@@ -2,6 +2,7 @@ package com.magu1436.craftbound.occupations.blacksmith.melting;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import com.magu1436.craftbound.common.CraftboundUtilities;
 import com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleProcessState;
@@ -79,6 +80,66 @@ public final class MeltingGameService {
         );
     }
 
+    public static OptionalInt evaluateHeatingScore(ItemStack crucible) {
+        Optional<CrucibleState> stateResult = CrucibleStateService.read(crucible);
+        if (stateResult.isEmpty()) {
+            return OptionalInt.empty();
+        }
+
+        CrucibleState state = stateResult.get();
+        if (state.processState() == CrucibleProcessState.EMPTY) {
+            return OptionalInt.empty();
+        }
+
+        Optional<MetalDefinition> definitionResult =
+            MetalMaterialDefinitions.INSTANCE.get(state.metalId());
+        if (definitionResult.isEmpty()) {
+            return OptionalInt.empty();
+        }
+
+        MetalDefinition definition = definitionResult.get();
+        if (!LINEAR_CURVE.equals(definition.heatingEvaluator())) {
+            return OptionalInt.empty();
+        }
+        return evaluateLinearHeatingScore(
+            definition.scoreCurve(),
+            state.heatingTicks()
+        );
+    }
+
+    static OptionalInt evaluateLinearHeatingScore(
+        List<HeatingScorePoint> scoreCurve,
+        long heatingTicks
+    ) {
+        if (scoreCurve.isEmpty() || heatingTicks < 0L) {
+            return OptionalInt.empty();
+        }
+
+        HeatingScorePoint first = scoreCurve.get(0);
+        if (heatingTicks <= first.ticks()) {
+            return OptionalInt.of(clampScore(first.score()));
+        }
+
+        for (int index = 1; index < scoreCurve.size(); index++) {
+            HeatingScorePoint left = scoreCurve.get(index - 1);
+            HeatingScorePoint right = scoreCurve.get(index);
+            if (right.ticks() <= left.ticks()) {
+                return OptionalInt.empty();
+            }
+            if (heatingTicks <= right.ticks()) {
+                double progress = (double) (heatingTicks - left.ticks())
+                    / (double) (right.ticks() - left.ticks());
+                double interpolated = left.score()
+                    + (right.score() - left.score()) * progress;
+                return OptionalInt.of(clampScore((int) Math.round(interpolated)));
+            }
+        }
+
+        return OptionalInt.of(clampScore(
+            scoreCurve.get(scoreCurve.size() - 1).score()
+        ));
+    }
+
     static HeatingPhase determinePhase(
         MetalDefinition definition,
         long effectiveHeatingTicks
@@ -123,5 +184,9 @@ public final class MeltingGameService {
             previous = point;
         }
         return false;
+    }
+
+    private static int clampScore(int score) {
+        return Math.max(0, Math.min(100, score));
     }
 }

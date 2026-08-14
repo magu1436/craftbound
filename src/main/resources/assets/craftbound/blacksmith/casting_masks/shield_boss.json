@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "mold": "craftbound:shield_boss_mold",
+  "width": 16,
+  "height": 16,
+  "pixels": [
+    "................",
+    "................",
+    "......RRRR......",
+    "....RRRCCRRR....",
+    "...RRCCCCCCRR...",
+    "...RCCCCCCCCR...",
+    "...RCCCCCCCCR...",
+    "...RCCCCCCCCR...",
+    "...RCCCCCCCCR...",
+    "...RRCCCCCCRR...",
+    "....RRRCCRRR....",
+    "......RRRR......",
+    "................",
+    "................",
+    "................",
+    "................"
+  ]
+}

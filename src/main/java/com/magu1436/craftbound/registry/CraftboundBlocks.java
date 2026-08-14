@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.blacksmith.casting.CastingTableBlock;
 import com.magu1436.craftbound.occupations.blacksmith.forging.ForgingTableBlock;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlock;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlock;
@@ -48,6 +49,17 @@ public class CraftboundBlocks {
                     BlockBehaviour.Properties.of()
                         .strength(3.5F, 6.0F)
                         .sound(SoundType.STONE)
+                        .requiresCorrectToolForDrops()
+                )
+            );
+
+    public static final RegistryObject<CastingTableBlock> CASTING_TABLE =
+            BLOCKS.register(
+                "casting_table",
+                () -> new CastingTableBlock(
+                    BlockBehaviour.Properties.of()
+                        .strength(3.5F, 6.0F)
+                        .sound(SoundType.METAL)
                         .requiresCorrectToolForDrops()
                 )
             );

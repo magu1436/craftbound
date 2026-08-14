@@ -56,6 +56,13 @@ public final class CraftboundItems {
                 new Item.Properties()
             )
     );
+    public static final RegistryObject<Item> CASTING_TABLE = ITEMS.register(
+            "casting_table",
+            () -> new BlockItem(
+                CraftboundBlocks.CASTING_TABLE.get(),
+                new Item.Properties()
+            )
+    );
     public static final RegistryObject<Item> BLANK_MOLD = registerItem("blank_mold");
     public static final RegistryObject<Item> SWORD_BLADE_MOLD = registerCastingMold("sword_blade_mold");
     public static final RegistryObject<Item> PICKAXE_HEAD_MOLD = registerCastingMold("pickaxe_head_mold");

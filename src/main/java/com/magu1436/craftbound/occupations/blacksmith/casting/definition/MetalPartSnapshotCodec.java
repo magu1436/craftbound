@@ -13,7 +13,7 @@ public final class MetalPartSnapshotCodec {
 
     public static CompoundTag write(MetalPartDefinitionSnapshot s) {
         CompoundTag t = new CompoundTag();
-        putId(t, "Definition", s.definitionId()); putId(t, "Metal", s.metalId());
+        putId(t, "Definition", s.definitionId());
         t.putInt("IngredientCount", s.ingredientCount()); putId(t, "Mold", s.moldItemId());
         putId(t, "RoughOutput", s.roughOutputItemId());
         putId(t, "Output", s.outputItemId());
@@ -35,7 +35,7 @@ public final class MetalPartSnapshotCodec {
 
     public static Optional<MetalPartDefinitionSnapshot> read(CompoundTag t) {
         try {
-            ResourceLocation definition = readId(t, "Definition"), metal = readId(t, "Metal");
+            ResourceLocation definition = readId(t, "Definition");
             ResourceLocation mold = readId(t, "Mold"), roughOutput = readId(t, "RoughOutput");
             ResourceLocation output = readId(t, "Output");
             CompoundTag f = t.getCompound("FailureLump"), c = t.getCompound("Cooling");
@@ -44,7 +44,7 @@ public final class MetalPartSnapshotCodec {
             CoolingDefinition cooling = new CoolingDefinition(c.getLong("SurfaceSolidTicks"), c.getLong("SafeTicks"), c.getInt("MinimumBreakOnHit"), readId(c, "Evaluator"));
             ForgingDefinition forging = new ForgingDefinition(g.getDouble("StrengthMin"), g.getDouble("StrengthMax"), g.getDouble("StrengthPenaltyPerPoint"), g.getInt("IdealHits"), g.getDouble("HitCountPenalty"), g.getInt("BreakOnHit"), g.getDouble("StrengthWeight"), g.getDouble("HitCountWeight"), readId(g, "Evaluator"));
             PartQualityDefinition quality = new PartQualityDefinition(q.getDouble("HeatingWeight"), q.getDouble("ForgingWeight"), readId(q, "Evaluator"));
-            MetalPartDefinitionSnapshot snapshot = new MetalPartDefinitionSnapshot(definition, metal, t.getInt("IngredientCount"), mold, roughOutput, output, failure, cooling, forging, quality);
+            MetalPartDefinitionSnapshot snapshot = new MetalPartDefinitionSnapshot(definition, t.getInt("IngredientCount"), mold, roughOutput, output, failure, cooling, forging, quality);
             if (!valid(snapshot)) return Optional.empty();
             return Optional.of(snapshot);
         } catch (RuntimeException exception) { return Optional.empty(); }
@@ -53,7 +53,7 @@ public final class MetalPartSnapshotCodec {
     private static boolean valid(MetalPartDefinitionSnapshot s) {
         if (s.roughOutputItemId() == null) return false;
         Item roughOutput = ForgeRegistries.ITEMS.getValue(s.roughOutputItemId());
-        return s.definitionId() != null && s.metalId() != null && s.moldItemId() != null
+        return s.definitionId() != null && s.moldItemId() != null
             && roughOutput instanceof RoughMetalPartItem
             && s.outputItemId() != null && s.ingredientCount() >= 1 && s.failureLump().itemId() != null
             && s.failureLump().count() >= 1 && s.failureLump().unitsPerItem() >= 1

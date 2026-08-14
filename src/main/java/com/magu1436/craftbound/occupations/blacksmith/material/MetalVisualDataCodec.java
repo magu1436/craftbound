@@ -29,6 +29,7 @@ public final class MetalVisualDataCodec {
             itemId = ResourceLocation.tryParse(value);
             if (itemId == null || !value.contains(":") || !ForgeRegistries.ITEMS.containsKey(itemId)) return Optional.empty();
         }
+        if (color == null && itemId == null) return Optional.empty();
         return Optional.of(new MetalVisualData(color, itemId));
     }
 }

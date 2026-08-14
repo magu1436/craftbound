@@ -19,6 +19,7 @@
   "message.craftbound.explorer.discovery.structure.without_experience": "[Exploration] Discovered a new structure: %1$s",
   "item.craftbound.crucible": "Crucible",
   "block.craftbound.blacksmith_furnace": "Blacksmith Furnace",
+  "block.craftbound.casting_table": "Casting Table",
   "jade.craftbound.blacksmith_furnace.heat_source": "Heat Source: %s",
   "jade.craftbound.forging_table.part": "Part: %s",
   "jade.craftbound.heat_source.present": "Present",

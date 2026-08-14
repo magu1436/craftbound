@@ -3,6 +3,7 @@ package com.magu1436.craftbound.occupations.blacksmith.command;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.magu1436.craftbound.common.CraftboundUtilities;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinition;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitionSnapshot;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitions;
@@ -23,6 +24,8 @@ import net.minecraft.world.item.ItemStack;
 /** 鍛造工程の動作確認に使用する状態付き粗加工パーツを生成する。 */
 public final class BlacksmithTestCommand {
     private static final int TEST_HEATING_SCORE = 100;
+    private static final ResourceLocation TEST_METAL_ID =
+        CraftboundUtilities.createResourceLocation("iron");
 
     private BlacksmithTestCommand() {}
 
@@ -59,6 +62,7 @@ public final class BlacksmithTestCommand {
         Optional<ItemStack> stackResult = RoughMetalPartStateService.create(
             UUID.randomUUID(),
             player.getUUID(),
+            TEST_METAL_ID,
             snapshot,
             0L,
             TEST_HEATING_SCORE,

@@ -20,7 +20,7 @@ public record RoughMetalPartState(int version, UUID castingResultId, UUID castin
         boolean valid = version == CURRENT_VERSION && ingredientCount >= 1 && heatingTicks >= 0
             && heatingScore >= 0 && heatingScore <= 100 && coolingTicksAtRemoval >= 0
             && effectiveBreakOnHit >= 1 && effectiveBreakOnHit <= definitionSnapshot.forging().breakOnHit()
-            && definitionId.equals(definitionSnapshot.definitionId()) && metalId.equals(definitionSnapshot.metalId())
+            && definitionId.equals(definitionSnapshot.definitionId())
             && outputItemId.equals(definitionSnapshot.outputItemId()) && ingredientCount == definitionSnapshot.ingredientCount()
             && definitionSnapshot.moldItemId() != null;
         if (!valid) throw new IllegalArgumentException("rough metal part invariants are not satisfied");

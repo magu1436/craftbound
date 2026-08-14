@@ -1,0 +1,11 @@
+{
+  "schema_version": 2,
+  "ingredient_count": 1,
+  "mold": "craftbound:shovel_head_mold",
+  "rough_output": "craftbound:rough_shovel_head",
+  "output": "craftbound:shovel_head",
+  "failure_lump": {"item": "craftbound:small_metal_lump", "count": 1, "units_per_item": 1},
+  "cooling": {"surface_solid_ticks": 24, "safe_ticks": 60, "minimum_break_on_hit": 1, "evaluator": "craftbound:linear_cooling_break_limit"},
+  "forging": {"strength_min": 45, "strength_max": 55, "strength_penalty_per_point": 5, "ideal_hits": 3, "hit_count_penalty": 20, "break_on_hit": 7, "strength_weight": 0.8, "hit_count_weight": 0.2, "evaluator": "craftbound:weighted_forging"},
+  "part_quality": {"heating_weight": 0.4, "forging_weight": 0.6, "evaluator": "craftbound:weighted_metal_part"}
+}

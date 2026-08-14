@@ -5,11 +5,13 @@ import java.util.function.Supplier;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.client.CrucibleScreen;
+import com.magu1436.craftbound.occupations.blacksmith.client.CastingTableRenderer;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalRenderColorResolver;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.ForgingScreen;
 import com.magu1436.craftbound.occupations.blacksmith.client.ForgingTableBlockEntityRenderer;
+import com.magu1436.craftbound.occupations.blacksmith.client.casting.CastingMaskReloadListener;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingScreen;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchScreen;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageScreen;
@@ -97,6 +99,7 @@ public final class CraftboundClientEvents {
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new CastingMaskReloadListener());
         event.registerReloadListener(new ResourceManagerReloadListener() {
             @Override
             public void onResourceManagerReload(ResourceManager resourceManager) {
@@ -110,6 +113,10 @@ public final class CraftboundClientEvents {
         event.registerBlockEntityRenderer(
             CraftboundBlockEntities.FORGING_TABLE.get(),
             ForgingTableBlockEntityRenderer::new
+        );
+        event.registerBlockEntityRenderer(
+            CraftboundBlockEntities.CASTING_TABLE.get(),
+            CastingTableRenderer::new
         );
     }
 

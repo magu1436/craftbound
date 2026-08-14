@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.occupations.blacksmith.casting.CastingTableBlockEntity;
 import com.magu1436.craftbound.occupations.blacksmith.forging.ForgingTableBlockEntity;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
@@ -65,6 +66,15 @@ public final class CraftboundBlockEntities {
                 () -> BlockEntityType.Builder.of(
                     ForgingTableBlockEntity::new,
                     CraftboundBlocks.FORGING_TABLE.get()
+                ).build(null)
+            );
+
+    public static final RegistryObject<BlockEntityType<CastingTableBlockEntity>>
+            CASTING_TABLE = BLOCK_ENTITIES.register(
+                "casting_table",
+                () -> BlockEntityType.Builder.of(
+                    CastingTableBlockEntity::new,
+                    CraftboundBlocks.CASTING_TABLE.get()
                 ).build(null)
             );
     
