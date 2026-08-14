@@ -21,11 +21,17 @@ public final class ForgingScreen extends AbstractContainerScreen<ForgingMenu> {
     private static final int BORDER_COLOR = 0xFFB0B0B0;
     private static final int GAUGE_COLOR = 0xFFE0A040;
     private static final int REFERENCE_COLOR = 0xFF40D0FF;
+    private static final int HIT_SHAKE_DURATION_TICKS = 4;
+    private static final int DANGER_SPARK_DURATION_TICKS = 8;
+    private static final int[] DANGER_SPARK_X_DIRECTIONS = {-2, 2, -1, 1};
+    private static final int[] DANGER_SPARK_Y_DIRECTIONS = {-1, -1, 2, 2};
 
     private int tickCounter;
+    private int hitShakeTicks;
+    private int dangerSparkTicks;
     private boolean completionPending;
     private Double strikeReference;
-    private ForgingFeedbackPacket.Status observedFeedback;
+    private long observedFeedbackSequence;
 
     public ForgingScreen(ForgingMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -43,8 +49,7 @@ public final class ForgingScreen extends AbstractContainerScreen<ForgingMenu> {
 
         int strikeX = left + 88;
         int strikeY = top + 34;
-        outline(graphics, strikeX, strikeY, 64, 58, BORDER_COLOR);
-        renderWorkingPart(graphics, strikeX + 16, strikeY + 13);
+        renderForgingArea(graphics, strikeX, strikeY);
 
         int gaugeX = left + 24;
         int gaugeY = top + 122;
@@ -93,10 +98,14 @@ public final class ForgingScreen extends AbstractContainerScreen<ForgingMenu> {
     protected void containerTick() {
         super.containerTick();
         tickCounter++;
+        if (hitShakeTicks > 0) hitShakeTicks--;
+        if (dangerSparkTicks > 0) dangerSparkTicks--;
         ForgingFeedbackPacket.Status feedback = ForgingClientSessionState.lastFeedback();
-        if (feedback != observedFeedback) {
-            observedFeedback = feedback;
+        long feedbackSequence = ForgingClientSessionState.feedbackSequence();
+        if (feedbackSequence != observedFeedbackSequence) {
+            observedFeedbackSequence = feedbackSequence;
             if (feedback == ForgingFeedbackPacket.Status.ERROR) completionPending = false;
+            if (feedback == ForgingFeedbackPacket.Status.DANGER) startDangerSparkFeedback();
         }
         ForgingSessionSyncPacket session = ForgingClientSessionState.session();
         if (session != null && tickCounter % 20 == 0) {
@@ -119,6 +128,7 @@ public final class ForgingScreen extends AbstractContainerScreen<ForgingMenu> {
             return true;
         }
         if (inside(mouseX, mouseY, leftPos + 88, topPos + 34, 64, 58) && button == 0) {
+            startHitFeedback();
             CraftboundNetwork.sendToServer(new ForgingStrikeRequestPacket(
                 session.sessionId(), ForgingClientSessionState.nextSequence(),
                 ForgingClientSessionState.estimatedServerTick()));
@@ -151,6 +161,15 @@ public final class ForgingScreen extends AbstractContainerScreen<ForgingMenu> {
         super.onClose();
     }
 
+    private void renderForgingArea(GuiGraphics graphics, int x, int y) {
+        graphics.pose().pushPose();
+        graphics.pose().translate(hitShakeX(), hitShakeY(), 0.0F);
+        outline(graphics, x, y, 64, 58, BORDER_COLOR);
+        renderWorkingPart(graphics, x + 16, y + 13 + hitSinkOffset());
+        renderDangerSparks(graphics, x + 32, y + 29);
+        graphics.pose().popPose();
+    }
+
     private void renderWorkingPart(GuiGraphics graphics, int x, int y) {
         ItemStack stack = menu.getForgingTable().map(table -> table.getDisplayStack()).orElse(ItemStack.EMPTY);
         if (stack.isEmpty()) return;
@@ -159,6 +178,58 @@ public final class ForgingScreen extends AbstractContainerScreen<ForgingMenu> {
         graphics.pose().scale(2.0F, 2.0F, 2.0F);
         graphics.renderItem(stack, 0, 0);
         graphics.pose().popPose();
+    }
+
+    private void startHitFeedback() {
+        hitShakeTicks = HIT_SHAKE_DURATION_TICKS;
+    }
+
+    private void startDangerSparkFeedback() {
+        dangerSparkTicks = DANGER_SPARK_DURATION_TICKS;
+    }
+
+    private void renderDangerSparks(GuiGraphics graphics, int centerX, int centerY) {
+        if (dangerSparkTicks <= 0) return;
+        int age = DANGER_SPARK_DURATION_TICKS - dangerSparkTicks;
+        int travel = 4 + age * 2;
+        int size = dangerSparkTicks > DANGER_SPARK_DURATION_TICKS / 2 ? 2 : 1;
+        int alpha = 64 + 191 * dangerSparkTicks / DANGER_SPARK_DURATION_TICKS;
+        int color = alpha << 24 | 0xFFD060;
+
+        graphics.pose().pushPose();
+        graphics.pose().translate(0.0F, 0.0F, 200.0F);
+        for (int index = 0; index < DANGER_SPARK_X_DIRECTIONS.length; index++) {
+            int sparkX = centerX + DANGER_SPARK_X_DIRECTIONS[index] * travel / 2;
+            int sparkY = centerY + DANGER_SPARK_Y_DIRECTIONS[index] * travel / 2;
+            graphics.fill(sparkX, sparkY, sparkX + size, sparkY + size, color);
+        }
+        graphics.pose().popPose();
+    }
+
+    private int hitShakeX() {
+        return switch (hitShakeTicks) {
+            case 4 -> -2;
+            case 3 -> 2;
+            case 2 -> -1;
+            case 1 -> 1;
+            default -> 0;
+        };
+    }
+
+    private int hitShakeY() {
+        return switch (hitShakeTicks) {
+            case 4, 2 -> 1;
+            case 3 -> -1;
+            default -> 0;
+        };
+    }
+
+    private int hitSinkOffset() {
+        return switch (hitShakeTicks) {
+            case 4 -> 2;
+            case 3 -> 1;
+            default -> 0;
+        };
     }
 
     private void renderMarks(GuiGraphics graphics, int x, int y, int width) {

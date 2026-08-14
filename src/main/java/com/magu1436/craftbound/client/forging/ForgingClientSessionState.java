@@ -9,6 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 public final class ForgingClientSessionState {
     private static ForgingSessionSyncPacket session;
     private static ForgingFeedbackPacket.Status feedback;
+    private static long feedbackSequence;
     private static long receivedClientTick;
     private static long nextSequence;
 
@@ -22,6 +23,7 @@ public final class ForgingClientSessionState {
     }
     public static void feedback(ForgingFeedbackPacket packet) {
         feedback = packet.status();
+        feedbackSequence++;
         if (packet.status() == ForgingFeedbackPacket.Status.INSTINCT && packet.localSoundId() != null) {
             Minecraft minecraft = Minecraft.getInstance();
             SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(packet.localSoundId());
@@ -32,6 +34,7 @@ public final class ForgingClientSessionState {
     }
     public static ForgingSessionSyncPacket session() { return session; }
     public static ForgingFeedbackPacket.Status lastFeedback() { return feedback; }
+    public static long feedbackSequence() { return feedbackSequence; }
     public static long nextSequence() { return nextSequence++; }
     public static long estimatedServerTick() {
         if (session == null) return 0L;
@@ -39,5 +42,11 @@ public final class ForgingClientSessionState {
         long clientTick = minecraft.level == null ? receivedClientTick : minecraft.level.getGameTime();
         return session.serverGameTime() + clientTick - receivedClientTick;
     }
-    public static void clear() { session = null; feedback = null; receivedClientTick = 0L; nextSequence = 0L; }
+    public static void clear() {
+        session = null;
+        feedback = null;
+        feedbackSequence = 0L;
+        receivedClientTick = 0L;
+        nextSequence = 0L;
+    }
 }
