@@ -7,6 +7,7 @@ import com.magu1436.craftbound.common.capability.PlayerCapabilityProvider;
 import com.magu1436.craftbound.occupations.adventurer.capability.AdventurerData;
 import com.magu1436.craftbound.occupations.explorer.data.ExplorerDiscoveryProvider;
 import com.magu1436.craftbound.occupations.architect.capability.ArchitectData;
+import com.magu1436.craftbound.occupations.blacksmith.capability.BlacksmithData;
 import com.magu1436.craftbound.registry.CraftboundCapabilities;
 
 import net.minecraft.world.entity.Entity;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class CraftboundPlayerCapabilityEventHandler {
     private static final String ADVENTURER_DATA_ID = "adventurer_data";
     private static final String ARCHITECT_DATA_ID = "architect_data";
+    private static final String BLACKSMITH_DATA_ID = "blacksmith_data";
     private static final String EXPLORER_DISCOVERY_DATA_ID =
         "explorer_discovery_data";
 
@@ -59,6 +61,14 @@ public final class CraftboundPlayerCapabilityEventHandler {
             architectProvider
         );
         event.addListener(architectProvider::invalidate);
+
+        PlayerCapabilityProvider<?> blacksmithProvider =
+            createBlacksmithDataProvider();
+        event.addCapability(
+            CraftboundUtilities.createResourceLocation(BLACKSMITH_DATA_ID),
+            blacksmithProvider
+        );
+        event.addListener(blacksmithProvider::invalidate);
 
         ExplorerDiscoveryProvider explorerProvider =
             new ExplorerDiscoveryProvider();
@@ -96,6 +106,11 @@ public final class CraftboundPlayerCapabilityEventHandler {
             copyOnDeath(
                 original,
                 event.getEntity(),
+                CraftboundCapabilities.BLACKSMITH_CAPABILITY_DATA
+            );
+            copyOnDeath(
+                original,
+                event.getEntity(),
                 CraftboundCapabilities.EXPLORER_DISCOVERY_DATA
             );
         } finally {
@@ -114,6 +129,13 @@ public final class CraftboundPlayerCapabilityEventHandler {
         return new PlayerCapabilityProvider<>(
             CraftboundCapabilities.ARCHITECT_DATA,
             ArchitectData::new
+        );
+    }
+
+    private static PlayerCapabilityProvider<?> createBlacksmithDataProvider() {
+        return new PlayerCapabilityProvider<>(
+            CraftboundCapabilities.BLACKSMITH_CAPABILITY_DATA,
+            BlacksmithData::new
         );
     }
 

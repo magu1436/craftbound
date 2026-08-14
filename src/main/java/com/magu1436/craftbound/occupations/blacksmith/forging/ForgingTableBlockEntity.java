@@ -29,6 +29,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
     private static final String TAG_WORKING_PART = "WorkingPart";
     private static final String TAG_PENDING_OUTPUTS = "PendingOutputs";
     private static final String TAG_DISPLAY_STACK = "DisplayStack";
+    private static final String TAG_HAS_DISPLAY_STACK = "HasDisplayStack";
 
     private ItemStack workingPart = ItemStack.EMPTY;
     private final List<ItemStack> pendingOutputs = new ArrayList<>();
@@ -281,6 +282,7 @@ public final class ForgingTableBlockEntity extends BlockEntity {
     public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
         ItemStack displayStack = getDisplayStack();
+        tag.putBoolean(TAG_HAS_DISPLAY_STACK, !displayStack.isEmpty());
         if (!displayStack.isEmpty()) {
             CompoundTag stackTag = displayStack.getTag();
             if (stackTag != null) stackTag.remove(ForgingProgressStateCodec.ROOT_KEY);
@@ -300,12 +302,19 @@ public final class ForgingTableBlockEntity extends BlockEntity {
         ClientboundBlockEntityDataPacket packet
     ) {
         CompoundTag tag = packet.getTag();
-        if (tag != null) handleUpdateTag(tag);
+        if (tag == null) {
+            clientDisplayStack = ItemStack.EMPTY;
+            return;
+        }
+        handleUpdateTag(tag);
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        clientDisplayStack = tag.contains(TAG_DISPLAY_STACK, Tag.TAG_COMPOUND)
+        boolean hasDisplayStack = tag.contains(TAG_HAS_DISPLAY_STACK, Tag.TAG_BYTE)
+            ? tag.getBoolean(TAG_HAS_DISPLAY_STACK)
+            : tag.contains(TAG_DISPLAY_STACK, Tag.TAG_COMPOUND);
+        clientDisplayStack = hasDisplayStack && tag.contains(TAG_DISPLAY_STACK, Tag.TAG_COMPOUND)
             ? ItemStack.of(tag.getCompound(TAG_DISPLAY_STACK))
             : ItemStack.EMPTY;
     }
