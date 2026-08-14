@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "mold": "craftbound:leggings_body_mold",
+  "width": 16,
+  "height": 16,
+  "pixels": [
+    "................",
+    "................",
+    "...RRRRRRRRRR...",
+    "...RCCCCCCCCR...",
+    "...RCCCCCCCCR...",
+    "...RCCCCCCCCR...",
+    "...RCCCCCCCCR...",
+    "...RCCCRRCCCR...",
+    "...RCCCRRCCCR...",
+    "...RCCCRRCCCR...",
+    "...RCCCRRCCCR...",
+    "...RRRRRRRRRR...",
+    "................",
+    "................",
+    "................",
+    "................"
+  ]
+}

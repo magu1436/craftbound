@@ -1,0 +1,11 @@
+{
+  "schema_version": 2,
+  "ingredient_count": 2,
+  "mold": "craftbound:shears_blades_mold",
+  "rough_output": "craftbound:rough_shears_blades",
+  "output": "craftbound:shears_blades",
+  "failure_lump": {"item": "craftbound:small_metal_lump", "count": 1, "units_per_item": 1},
+  "cooling": {"surface_solid_ticks": 32, "safe_ticks": 80, "minimum_break_on_hit": 1, "evaluator": "craftbound:linear_cooling_break_limit"},
+  "forging": {"strength_min": 60, "strength_max": 70, "strength_penalty_per_point": 5, "ideal_hits": 5, "hit_count_penalty": 20, "break_on_hit": 9, "strength_weight": 0.8, "hit_count_weight": 0.2, "evaluator": "craftbound:weighted_forging"},
+  "part_quality": {"heating_weight": 0.4, "forging_weight": 0.6, "evaluator": "craftbound:weighted_metal_part"}
+}

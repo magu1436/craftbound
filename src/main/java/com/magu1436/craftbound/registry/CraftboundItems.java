@@ -83,6 +83,21 @@ public final class CraftboundItems {
         "small_metal_lump", () -> new MetalLumpItem(new Item.Properties())
     );
     public static final RegistryObject<Item> PICKAXE_HEAD = registerMetalPart("pickaxe_head");
+    public static final RegistryObject<Item> SWORD_BLADE = registerMetalPart("sword_blade");
+    public static final RegistryObject<Item> AXE_HEAD = registerMetalPart("axe_head");
+    public static final RegistryObject<Item> SHOVEL_HEAD = registerMetalPart("shovel_head");
+    public static final RegistryObject<Item> HOE_HEAD = registerMetalPart("hoe_head");
+    public static final RegistryObject<Item> HELMET_BODY = registerMetalPart("helmet_body");
+    public static final RegistryObject<Item> CHESTPLATE_BODY = registerMetalPart("chestplate_body");
+    public static final RegistryObject<Item> LEGGINGS_BODY = registerMetalPart("leggings_body");
+    public static final RegistryObject<Item> BOOTS_BODY = registerMetalPart("boots_body");
+    public static final RegistryObject<Item> HORSE_ARMOR_BODY = registerMetalPart("horse_armor_body");
+    public static final RegistryObject<Item> IRON_RING = registerMetalPart("iron_ring");
+    public static final RegistryObject<Item> CROSSBOW_TRIGGER = registerMetalPart("crossbow_trigger");
+    public static final RegistryObject<Item> SHIELD_BOSS = registerMetalPart("shield_boss");
+    public static final RegistryObject<Item> SHEARS_BLADES = registerMetalPart("shears_blades");
+    public static final RegistryObject<Item> FIRE_STRIKER = registerMetalPart("fire_striker");
+    public static final RegistryObject<Item> BRUSH_HEAD = registerMetalPart("brush_head");
 
     private static RegistryObject<Item> registerItem(String id) {
         return ITEMS.register(id, () -> new Item(new Item.Properties()));

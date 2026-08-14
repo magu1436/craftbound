@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "mold": "craftbound:horse_armor_body_mold",
+  "width": 16,
+  "height": 16,
+  "pixels": [
+    "................",
+    "................",
+    ".......RRRRR....",
+    ".....RRRCCCRR...",
+    "...RRRCCCCCCRR..",
+    "..RRCCCCCCCCCR..",
+    "..RCCCCCCCCCCR..",
+    "..RCCCCCCCCCRR..",
+    "..RRCCCCCCCCR...",
+    "...RRCCCCCCRR...",
+    "....RCCRRCCR....",
+    "....RRRRRRRR....",
+    "................",
+    "................",
+    "................",
+    "................"
+  ]
+}
