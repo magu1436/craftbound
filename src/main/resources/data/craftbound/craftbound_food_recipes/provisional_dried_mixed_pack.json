@@ -1,6 +1,6 @@
 {
   "result": "dish",
-  "automation_policy": "create_low_quality",
+  "automation_policy": "manual_only",
   "required_recipe_rank": 2,
   "name_key": "item.craftbound.provisional_dried_mixed_pack",
   "inputs": [

@@ -8,6 +8,8 @@ import net.minecraft.world.item.Item;
 
 public final class CraftboundItemTags {
 
+    public static final TagKey<Item> COOKING_KNIVES = create("cooking_knives");
+
     public static final TagKey<Item> SHIELD_FOOTWORK_ITEMS =
         create("adventurer/shield_footwork_items");
 

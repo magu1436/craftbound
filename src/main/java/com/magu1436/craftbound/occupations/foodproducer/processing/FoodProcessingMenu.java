@@ -3,10 +3,11 @@ package com.magu1436.craftbound.occupations.foodproducer.processing;
 import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
+import com.magu1436.craftbound.registry.CraftboundItemTags;
 import com.magu1436.craftbound.registry.CraftboundMenus;
-import com.magu1436.craftbound.registry.CraftboundItems;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -67,7 +68,7 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
         addSlot(new ProcessingSlot(container, FoodProcessingBlockEntity.TOOL, 44, 61, processor) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.is(CraftboundItems.COOKING_KNIFE.get()) && super.mayPlace(stack);
+                return stack.is(CraftboundItemTags.COOKING_KNIVES) && super.mayPlace(stack);
             }
         });
         addSlot(new OutputSlot(container, FoodProcessingBlockEntity.OUTPUT, 116, 36));
@@ -123,17 +124,47 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
         return data.get(FoodProcessingBlockEntity.DATA_BURN_TOTAL);
     }
 
+    public int startStatus() {
+        return data.get(FoodProcessingBlockEntity.DATA_START_STATUS);
+    }
+
+    public Component startStatusMessage() {
+        int status = startStatus();
+        if (status > FoodProcessingBlockEntity.START_STATUS_RECIPE_RANK_BASE) {
+            return Component.translatable(
+                    "processing.craftbound.start.recipe_rank",
+                    status - FoodProcessingBlockEntity.START_STATUS_RECIPE_RANK_BASE
+            );
+        }
+        return switch (status) {
+            case FoodProcessingBlockEntity.START_STATUS_RUNNING ->
+                    Component.translatable("processing.craftbound.start.running");
+            case FoodProcessingBlockEntity.START_STATUS_NO_RECIPE ->
+                    Component.translatable("processing.craftbound.start.no_recipe");
+            case FoodProcessingBlockEntity.START_STATUS_SPOILED ->
+                    Component.translatable("processing.craftbound.start.spoiled");
+            case FoodProcessingBlockEntity.START_STATUS_KNIFE ->
+                    Component.translatable("processing.craftbound.start.knife");
+            case FoodProcessingBlockEntity.START_STATUS_FUEL ->
+                    Component.translatable("processing.craftbound.start.fuel");
+            default -> Component.empty();
+        };
+    }
+
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
         if (!(player instanceof ServerPlayer serverPlayer) || processor == null) return false;
-        boolean changed = switch (buttonId) {
+        boolean handled = switch (buttonId) {
             case SELECT_CUT_BUTTON -> processor.selectOperation(FoodProcessingOperation.CUT);
             case SELECT_MIX_BUTTON -> processor.selectOperation(FoodProcessingOperation.MIX);
-            case START_BUTTON -> processor.start(serverPlayer);
+            case START_BUTTON -> {
+                processor.start(serverPlayer);
+                yield true;
+            }
             default -> false;
         };
-        if (changed) broadcastChanges();
-        return changed;
+        if (handled) broadcastChanges();
+        return handled;
     }
 
     @Override
@@ -151,7 +182,7 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
 
         if (index < machineSlots) {
             if (!moveItemStackTo(stack, machineSlots, slots.size(), true)) return ItemStack.EMPTY;
-        } else if (stack.is(CraftboundItems.COOKING_KNIFE.get())) {
+        } else if (stack.is(CraftboundItemTags.COOKING_KNIVES)) {
             if (!moveItemStackTo(stack, FoodProcessingBlockEntity.TOOL,
                     FoodProcessingBlockEntity.TOOL + 1, false)) return ItemStack.EMPTY;
         } else if (station() == FoodProcessingStation.COOKING_POT

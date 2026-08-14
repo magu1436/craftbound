@@ -105,7 +105,7 @@ public final class CraftboundItems {
     public static final RegistryObject<Item> COMPOST = registerItem("compost");
     public static final RegistryObject<Item> COOKING_KNIFE = ITEMS.register(
         "cooking_knife",
-        () -> new Item(new Item.Properties().durability(256))
+        () -> new Item(new Item.Properties().durability(64))
     );
     public static final RegistryObject<Item> WHEAT_FLOUR = registerFoodIntermediate("wheat_flour");
     public static final RegistryObject<Item> DOUGH = registerFoodIntermediate("dough");

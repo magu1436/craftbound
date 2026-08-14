@@ -1,1 +1,13 @@
-{"type":"craftbound:basic_processing_equipment"}
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "tag": "minecraft:planks" },
+    { "tag": "minecraft:planks" },
+    { "tag": "minecraft:planks" },
+    { "tag": "minecraft:planks" },
+    { "item": "minecraft:string" },
+    { "item": "minecraft:string" }
+  ],
+  "result": { "item": "craftbound:drying_rack" }
+}

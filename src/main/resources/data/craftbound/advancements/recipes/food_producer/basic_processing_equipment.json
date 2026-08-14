@@ -1,0 +1,17 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "public_equipment_recipes": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "craftbound:cooking_knife",
+      "craftbound:cooking_table",
+      "craftbound:hand_mill",
+      "craftbound:drying_rack",
+      "craftbound:cooking_pot"
+    ]
+  }
+}

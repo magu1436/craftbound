@@ -1,19 +1,4 @@
 {
-  "food_producer_root": {
-    "title": {
-      "translate": "skill.craftbound.food_producer.root.title"
-    },
-    "description": {
-      "translate": "skill.craftbound.food_producer.root.description"
-    },
-    "icon": {
-      "type": "item",
-      "data": {
-        "item": "minecraft:wheat"
-      }
-    },
-    "cost": 0
-  },
   "farmland_diagnosis": {
     "title": {
       "translate": "skill.craftbound.food_producer.farmland_diagnosis.title"
@@ -270,14 +255,7 @@
         "item": "minecraft:crafting_table"
       }
     },
-    "cost": 1,
-    "rewards": [
-      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_table","lock_command":"recipe take @s craftbound:cooking_table"}},
-      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_knife","lock_command":"recipe take @s craftbound:cooking_knife"}},
-      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:hand_mill","lock_command":"recipe take @s craftbound:hand_mill"}},
-      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:drying_rack","lock_command":"recipe take @s craftbound:drying_rack"}},
-      {"type":"puffish_skills:command","data":{"unlock_command":"recipe give @s craftbound:cooking_pot","lock_command":"recipe take @s craftbound:cooking_pot"}}
-    ]
+    "cost": 1
   },
   "processing_technique_1": {
     "title":{"translate":"skill.craftbound.food_producer.processing_technique_1.title"},
