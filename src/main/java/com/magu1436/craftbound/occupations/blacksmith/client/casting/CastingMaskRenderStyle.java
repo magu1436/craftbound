@@ -11,6 +11,7 @@ public final class CastingMaskRenderStyle {
     public static final int CAVITY_ALPHA = 72;
     public static final float RIM_OFFSET = 0.039F;
     public static final float CAVITY_OFFSET = 0.040F;
+    public static final float METAL_OFFSET = 0.042F;
 
     private CastingMaskRenderStyle() {
     }

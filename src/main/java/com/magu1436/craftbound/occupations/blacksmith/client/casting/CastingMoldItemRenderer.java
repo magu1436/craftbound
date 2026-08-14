@@ -1,6 +1,5 @@
 package com.magu1436.craftbound.occupations.blacksmith.client.casting;
 
-import com.magu1436.craftbound.registry.CraftboundItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
@@ -40,15 +39,11 @@ public final class CastingMoldItemRenderer
         int packedLight,
         int packedOverlay
     ) {
-        Minecraft.getInstance().getItemRenderer().renderStatic(
-            new ItemStack(CraftboundItems.BLANK_MOLD.get()),
-            ItemDisplayContext.NONE,
-            packedLight,
-            packedOverlay,
+        CastingMaskRenderer.renderBaseMold(
             poseStack,
             buffers,
-            Minecraft.getInstance().level,
-            0
+            packedLight,
+            packedOverlay
         );
 
         ResourceLocation moldItemId = ForgeRegistries.ITEMS.getKey(stack.getItem());

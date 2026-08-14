@@ -1,5 +1,6 @@
 package com.magu1436.craftbound.occupations.blacksmith.client.casting;
 
+import com.magu1436.craftbound.registry.CraftboundItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -9,6 +10,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -17,8 +20,28 @@ public final class CastingMaskRenderer {
     private static final int MASK_SIZE = 16;
     private static final ResourceLocation OVERLAY_TEXTURE =
         new ResourceLocation("minecraft", "block/white_concrete");
+    private static final ResourceLocation METAL_TEXTURE =
+        new ResourceLocation("craftbound", "block/casting_metal_surface");
 
     private CastingMaskRenderer() {
+    }
+
+    public static void renderBaseMold(
+        PoseStack poseStack,
+        MultiBufferSource buffers,
+        int packedLight,
+        int packedOverlay
+    ) {
+        Minecraft.getInstance().getItemRenderer().renderStatic(
+            new ItemStack(CraftboundItems.BLANK_MOLD.get()),
+            ItemDisplayContext.NONE,
+            packedLight,
+            packedOverlay,
+            poseStack,
+            buffers,
+            Minecraft.getInstance().level,
+            0
+        );
     }
 
     public static void renderEmptyMask(
@@ -54,6 +77,35 @@ public final class CastingMaskRenderer {
             CastingMaskRenderStyle.CAVITY_GREEN,
             CastingMaskRenderStyle.CAVITY_BLUE,
             CastingMaskRenderStyle.CAVITY_ALPHA,
+            poseStack,
+            consumer,
+            sprite,
+            packedLight,
+            packedOverlay
+        );
+    }
+
+    public static void renderMetalFill(
+        CastingMaskDefinition definition,
+        int color,
+        PoseStack poseStack,
+        MultiBufferSource buffers,
+        int packedLight,
+        int packedOverlay
+    ) {
+        TextureAtlasSprite sprite = Minecraft.getInstance()
+            .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+            .apply(METAL_TEXTURE);
+        VertexConsumer consumer = buffers.getBuffer(
+            RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS)
+        );
+        renderSpans(
+            definition.geometry().cavitySpans(),
+            CastingMaskRenderStyle.METAL_OFFSET,
+            color >> 16 & 0xFF,
+            color >> 8 & 0xFF,
+            color & 0xFF,
+            255,
             poseStack,
             consumer,
             sprite,
