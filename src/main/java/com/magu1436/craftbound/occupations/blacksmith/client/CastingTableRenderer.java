@@ -27,7 +27,7 @@ public final class CastingTableRenderer
     implements BlockEntityRenderer<CastingTableBlockEntity> {
 
     private static final ResourceLocation SURFACE_TEXTURE =
-        new ResourceLocation("minecraft", "block/white_concrete");
+        new ResourceLocation("craftbound", "block/casting_metal_surface");
     private static final float SURFACE_MIN = -0.29F;
     private static final float SURFACE_MAX = 0.29F;
     private static final float SURFACE_HEIGHT = 0.815F;

@@ -21,21 +21,23 @@ public final class RoughMetalPartStateService {
             ? result : Optional.empty();
     }
     public static Optional<ItemStack> create(UUID resultId, UUID operatorId,
-        MetalPartDefinitionSnapshot snapshot, long heatingTicks, int heatingScore,
-        long coolingTicksAtRemoval, int effectiveBreakOnHit) {
-        Optional<MetalVisualData> visual = MetalVisualDataService.resolve(snapshot.metalId());
+        ResourceLocation metalId, MetalPartDefinitionSnapshot snapshot,
+        long heatingTicks, int heatingScore, long coolingTicksAtRemoval,
+        int effectiveBreakOnHit) {
+        Optional<MetalVisualData> visual = MetalVisualDataService.resolve(metalId);
         if (visual.isEmpty()) return Optional.empty();
-        return create(resultId, operatorId, snapshot, heatingTicks, heatingScore,
+        return create(resultId, operatorId, metalId, snapshot, heatingTicks, heatingScore,
             coolingTicksAtRemoval, effectiveBreakOnHit, visual.get());
     }
     public static Optional<ItemStack> create(UUID resultId, UUID operatorId,
-        MetalPartDefinitionSnapshot snapshot, long heatingTicks, int heatingScore,
-        long coolingTicksAtRemoval, int effectiveBreakOnHit, MetalVisualData visualData) {
+        ResourceLocation metalId, MetalPartDefinitionSnapshot snapshot,
+        long heatingTicks, int heatingScore, long coolingTicksAtRemoval,
+        int effectiveBreakOnHit, MetalVisualData visualData) {
         try {
             Item roughOutput = ForgeRegistries.ITEMS.getValue(snapshot.roughOutputItemId());
             if (!(roughOutput instanceof RoughMetalPartItem)) return Optional.empty();
             RoughMetalPartState state = new RoughMetalPartState(RoughMetalPartState.CURRENT_VERSION,
-                resultId, operatorId, snapshot.definitionId(), snapshot.metalId(), snapshot.outputItemId(),
+                resultId, operatorId, snapshot.definitionId(), metalId, snapshot.outputItemId(),
                 snapshot.ingredientCount(), heatingTicks, heatingScore, coolingTicksAtRemoval,
                 effectiveBreakOnHit, snapshot, visualData);
             ItemStack stack = new ItemStack(roughOutput);

@@ -34,7 +34,7 @@ public final class MetalMaterialDefinitions
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().create();
     private static final String DIRECTORY = "blacksmith/metals";
-    private static final int SUPPORTED_SCHEMA_VERSION = 1;
+    private static final int SUPPORTED_SCHEMA_VERSION = 2;
 
     public static final MetalMaterialDefinitions INSTANCE =
         new MetalMaterialDefinitions();
@@ -69,12 +69,7 @@ public final class MetalMaterialDefinitions
     }
 
     public Optional<ResourceLocation> getRepresentativeItemId(ResourceLocation metalId) {
-        for (MetalIngredient ingredient : ingredients) {
-            if (ingredient.metalId().equals(metalId) && ingredient.item() != null) {
-                return Optional.ofNullable(ForgeRegistries.ITEMS.getKey(ingredient.item()));
-            }
-        }
-        return Optional.empty();
+        return get(metalId).map(MetalDefinition::representativeItemId);
     }
 
     @Override
@@ -103,7 +98,10 @@ public final class MetalMaterialDefinitions
 
         ingredients = List.copyOf(loadedIngredients);
         this.definitions = Map.copyOf(loadedDefinitions);
-        LOGGER.info("Loaded {} blacksmith metal definitions", ingredients.size());
+        LOGGER.info(
+            "Loaded {} blacksmith metal definitions",
+            loadedDefinitions.size()
+        );
     }
 
     static ParsedMetal parse(
@@ -129,6 +127,10 @@ public final class MetalMaterialDefinitions
         double lossRatio = parseLossRatio(json);
         MetalDefinition.LumpLossRounding rounding = parseLossRounding(json);
         HeatingSettings heating = parseHeatingSettings(json);
+        ResourceLocation representativeItemId = parseRepresentativeItem(
+            json,
+            ingredients
+        );
         return new ParsedMetal(
             ingredients,
             new MetalDefinition(
@@ -140,7 +142,8 @@ public final class MetalMaterialDefinitions
                 heating.danger(),
                 heating.destroy(),
                 heating.evaluator(),
-                parseDisplayColor(json)
+                parseDisplayColor(json),
+                representativeItemId
             )
         );
     }
@@ -224,6 +227,30 @@ public final class MetalMaterialDefinitions
             throw new JsonParseException("display_color must use #RRGGBB format");
         }
         return Integer.parseInt(value.substring(1), 16);
+    }
+
+    private static ResourceLocation parseRepresentativeItem(
+        JsonObject json,
+        List<MetalIngredient> ingredients
+    ) {
+        if (json.has("representative_item")) {
+            ResourceLocation itemId = parseId(
+                GsonHelper.getAsString(json, "representative_item"),
+                "representative_item"
+            );
+            if (!ForgeRegistries.ITEMS.containsKey(itemId)) {
+                throw new JsonParseException(
+                    "unknown representative_item `" + itemId + "`"
+                );
+            }
+            return itemId;
+        }
+        for (MetalIngredient ingredient : ingredients) {
+            if (ingredient.item() != null) {
+                return ForgeRegistries.ITEMS.getKey(ingredient.item());
+            }
+        }
+        return null;
     }
 
     private static MetalDefinition.LumpLossRounding parseLossRounding(

@@ -22,7 +22,7 @@ public record CastingProcess(
     MetalPartDefinitionSnapshot definitionSnapshot,
     MetalVisualData visualData
 ) {
-    public static final int CURRENT_VERSION = 1;
+    public static final int CURRENT_VERSION = 2;
 
     public CastingProcess {
         Objects.requireNonNull(processId, "processId");
@@ -39,7 +39,6 @@ public record CastingProcess(
             && heatingScore <= 100
             && coolingTicks >= 0L
             && partDefinitionId.equals(definitionSnapshot.definitionId())
-            && metalId.equals(definitionSnapshot.metalId())
             && metalAmount == definitionSnapshot.ingredientCount();
         if (!valid) {
             throw new IllegalArgumentException(

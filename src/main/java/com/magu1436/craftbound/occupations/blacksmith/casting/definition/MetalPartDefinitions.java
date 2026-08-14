@@ -13,7 +13,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinition.*;
-import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
 import com.magu1436.craftbound.occupations.blacksmith.casting.finished.MetalPartItem;
 import com.mojang.logging.LogUtils;
@@ -37,7 +36,7 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
     public static final MetalPartDefinitions INSTANCE = new MetalPartDefinitions();
 
     private volatile Map<ResourceLocation, MetalPartDefinition> definitionsById = Map.of();
-    private volatile Map<MoldMetalKey, MetalPartDefinition> definitionsByMoldAndMetal = Map.of();
+    private volatile Map<ResourceLocation, MetalPartDefinition> definitionsByMold = Map.of();
 
     private MetalPartDefinitions() { super(GSON, "blacksmith/metal_parts"); }
 
@@ -45,10 +44,10 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
         return Optional.ofNullable(definitionsById.get(id));
     }
 
-    public Optional<MetalPartDefinition> resolve(ItemStack mold, ResourceLocation metalId) {
-        if (!isRegisteredMold(mold) || metalId == null) return Optional.empty();
+    public Optional<MetalPartDefinition> resolve(ItemStack mold) {
+        if (!isRegisteredMold(mold)) return Optional.empty();
         ResourceLocation moldId = ForgeRegistries.ITEMS.getKey(mold.getItem());
-        return Optional.ofNullable(definitionsByMoldAndMetal.get(new MoldMetalKey(moldId, metalId)));
+        return Optional.ofNullable(definitionsByMold.get(moldId));
     }
 
     public boolean isRegisteredMold(ItemStack stack) {
@@ -59,19 +58,19 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
     protected void apply(Map<ResourceLocation, JsonElement> input,
         ResourceManager manager, ProfilerFiller profiler) {
         Map<ResourceLocation, MetalPartDefinition> byId = new HashMap<>();
-        Map<MoldMetalKey, MetalPartDefinition> byKey = new HashMap<>();
-        Set<MoldMetalKey> ambiguous = new HashSet<>();
+        Map<ResourceLocation, MetalPartDefinition> byMold = new HashMap<>();
+        Set<ResourceLocation> ambiguousMolds = new HashSet<>();
         input.forEach((fileId, element) -> {
             ResourceLocation definitionId = definitionId(fileId);
             try {
                 MetalPartDefinition definition = parse(definitionId, element);
                 byId.put(definitionId, definition);
-                MoldMetalKey key = new MoldMetalKey(definition.moldItemId(), definition.metalId());
-                if (ambiguous.contains(key) || byKey.putIfAbsent(key, definition) != null) {
-                    ambiguous.add(key);
-                    byKey.remove(key);
-                    LOGGER.warn("Duplicate blacksmith metal part mold/metal combination: {} + {}",
-                        key.moldItemId(), key.metalId());
+                ResourceLocation moldId = definition.moldItemId();
+                if (ambiguousMolds.contains(moldId)
+                    || byMold.putIfAbsent(moldId, definition) != null) {
+                    ambiguousMolds.add(moldId);
+                    byMold.remove(moldId);
+                    LOGGER.warn("Duplicate blacksmith metal part mold: {}", moldId);
                 }
             } catch (RuntimeException exception) {
                 LOGGER.warn("Skipping invalid blacksmith metal part definition {}: {}",
@@ -79,7 +78,7 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
             }
         });
         definitionsById = Map.copyOf(byId);
-        definitionsByMoldAndMetal = Map.copyOf(byKey);
+        definitionsByMold = Map.copyOf(byMold);
         LOGGER.info("Loaded {} blacksmith metal part definitions", byId.size());
     }
 
@@ -90,9 +89,7 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
     static MetalPartDefinition parse(ResourceLocation id, JsonElement element) {
         if (!element.isJsonObject()) throw new JsonParseException("definition must be an object");
         JsonObject json = element.getAsJsonObject();
-        require(GsonHelper.getAsInt(json, "schema_version") == 1, "schema_version must be 1");
-        ResourceLocation metal = id(json, "metal");
-        require(MetalMaterialDefinitions.INSTANCE.get(metal).isPresent(), "unknown metal `" + metal + "`");
+        require(GsonHelper.getAsInt(json, "schema_version") == 2, "schema_version must be 2");
         int count = GsonHelper.getAsInt(json, "ingredient_count");
         require(count >= 1, "ingredient_count must be positive");
         ResourceLocation mold = registeredItem(json, "mold");
@@ -136,7 +133,7 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
         require(heatingWeight + forgingWeight > 0, "part quality weights must have a positive sum");
         PartQualityDefinition quality = new PartQualityDefinition(heatingWeight,
             forgingWeight, id(qualityJson, "evaluator"));
-        return new MetalPartDefinition(id, metal, count, mold, roughOutput, output, failureLump,
+        return new MetalPartDefinition(id, count, mold, roughOutput, output, failureLump,
             cooling, forging, quality);
     }
 

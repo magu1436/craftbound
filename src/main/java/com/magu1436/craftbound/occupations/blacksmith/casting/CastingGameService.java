@@ -52,7 +52,7 @@ public final class CastingGameService {
         CrucibleState state = stateResult.get();
 
         Optional<MetalPartDefinition> definitionResult =
-            MetalPartDefinitions.INSTANCE.resolve(table.mold(), state.metalId());
+            MetalPartDefinitions.INSTANCE.resolve(table.mold());
         Optional<MetalDefinition> metalResult =
             MetalMaterialDefinitions.INSTANCE.get(state.metalId());
         OptionalInt heatingScore = MeltingGameService.evaluateHeatingScore(crucible);
@@ -96,7 +96,7 @@ public final class CastingGameService {
                 UUID.randomUUID(),
                 player.getUUID(),
                 snapshot.definitionId(),
-                snapshot.metalId(),
+                state.metalId(),
                 snapshot.ingredientCount(),
                 state.heatingTicks(),
                 heatingScore.getAsInt(),

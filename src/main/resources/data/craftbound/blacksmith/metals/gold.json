@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "ingredients": [
     { "item": "minecraft:gold_ingot", "size": 1 },
     { "item": "minecraft:gold_block", "size": 9 },

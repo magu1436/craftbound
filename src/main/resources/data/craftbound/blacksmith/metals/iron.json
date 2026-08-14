@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "ingredients": [
     { "item": "minecraft:iron_ingot", "size": 1 },
     { "item": "minecraft:iron_block", "size": 9 },

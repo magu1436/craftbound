@@ -1,6 +1,5 @@
 {
-  "schema_version": 1,
-  "metal": "craftbound:iron",
+  "schema_version": 2,
   "ingredient_count": 3,
   "mold": "craftbound:pickaxe_head_mold",
   "rough_output": "craftbound:rough_pickaxe_head",

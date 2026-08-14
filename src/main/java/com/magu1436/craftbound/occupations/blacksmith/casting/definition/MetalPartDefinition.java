@@ -3,14 +3,14 @@ package com.magu1436.craftbound.occupations.blacksmith.casting.definition;
 import net.minecraft.resources.ResourceLocation;
 
 public record MetalPartDefinition(
-    ResourceLocation id, ResourceLocation metalId, int ingredientCount,
+    ResourceLocation id, int ingredientCount,
     ResourceLocation moldItemId, ResourceLocation roughOutputItemId,
     ResourceLocation outputItemId,
     FailureLumpDefinition failureLump, CoolingDefinition cooling,
     ForgingDefinition forging, PartQualityDefinition partQuality
 ) {
     public MetalPartDefinitionSnapshot snapshot() {
-        return new MetalPartDefinitionSnapshot(id, metalId, ingredientCount, moldItemId,
+        return new MetalPartDefinitionSnapshot(id, ingredientCount, moldItemId,
             roughOutputItemId, outputItemId, failureLump, cooling, forging, partQuality);
     }
 

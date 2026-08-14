@@ -14,7 +14,8 @@ public record MetalDefinition(
     long dangerAfterTicks,
     long destroyAfterTicks,
     ResourceLocation heatingEvaluator,
-    Integer displayColor
+    Integer displayColor,
+    ResourceLocation representativeItemId
 ) {
     public MetalDefinition {
         Objects.requireNonNull(id, "id");

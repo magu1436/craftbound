@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 
 public final class CastingTableBlockEntity extends BlockEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final int CURRENT_VERSION = 1;
+    private static final int CURRENT_VERSION = 2;
     private static final String TAG_VERSION = "Version";
     private static final String TAG_MOLD = "Mold";
     private static final String TAG_ACTIVE_PROCESS = "ActiveProcess";
@@ -305,6 +305,7 @@ public final class CastingTableBlockEntity extends BlockEntity {
         Optional<ItemStack> output = RoughMetalPartStateService.create(
             process.processId(),
             process.operatorId(),
+            process.metalId(),
             process.definitionSnapshot(),
             process.heatingTicks(),
             process.heatingScore(),
