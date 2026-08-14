@@ -1,3 +1,3 @@
-[098ŒŽ2026 21:02:50.737] [Test worker/WARN] [com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleStateCodec/]: Invalid crucible state data: state fields do not satisfy the crucible invariants
-[098ŒŽ2026 21:02:50.767] [Test worker/WARN] [com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleStateCodec/]: Invalid crucible state data: unsupported version 99
-[098ŒŽ2026 21:02:50.769] [Test worker/WARN] [com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleStateCodec/]: Invalid crucible state data: unknown process state
+[148ŒŽ2026 23:14:57.010] [Test worker/WARN] [com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleStateCodec/]: Invalid crucible state data: state fields do not satisfy the crucible invariants
+[148ŒŽ2026 23:14:57.041] [Test worker/WARN] [com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleStateCodec/]: Invalid crucible state data: unsupported version 99
+[148ŒŽ2026 23:14:57.044] [Test worker/WARN] [com.magu1436.craftbound.occupations.blacksmith.crucible.CrucibleStateCodec/]: Invalid crucible state data: unknown process state

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "craftbound:block/forging_table" },
+    "facing=east": { "model": "craftbound:block/forging_table", "y": 90, "uvlock": true },
+    "facing=south": { "model": "craftbound:block/forging_table", "y": 180, "uvlock": true },
+    "facing=west": { "model": "craftbound:block/forging_table", "y": 270, "uvlock": true }
+  }
+}

@@ -2,6 +2,7 @@ package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.crucible.menu.CrucibleMenu;
+import com.magu1436.craftbound.occupations.blacksmith.forging.menu.ForgingMenu;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingMenu;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchMenu;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageMenu;
@@ -39,6 +40,12 @@ public final class CraftboundMenus {
         "preservation_storage",
         () -> IForgeMenuType.create(PreservationStorageMenu::new)
     );
+
+    public static final RegistryObject<MenuType<ForgingMenu>> FORGING_TABLE =
+        MENUS.register(
+            "forging_table",
+            () -> IForgeMenuType.create(ForgingMenu::new)
+        );
     
     public static void  register(IEventBus modEventBus) {
         MENUS.register(modEventBus);

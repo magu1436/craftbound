@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "craftbound:blacksmith_furnace"
+    "craftbound:blacksmith_furnace",
+    "craftbound:forging_table"
   ]
 }
