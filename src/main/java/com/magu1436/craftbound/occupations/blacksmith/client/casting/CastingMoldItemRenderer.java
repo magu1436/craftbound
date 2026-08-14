@@ -39,6 +39,8 @@ public final class CastingMoldItemRenderer
         int packedLight,
         int packedOverlay
     ) {
+        poseStack.pushPose();
+        poseStack.translate(0.5D, 0.5D, 0.5D);
         CastingMaskRenderer.renderBaseMold(
             poseStack,
             buffers,
@@ -56,5 +58,6 @@ public final class CastingMoldItemRenderer
                 OverlayTexture.NO_OVERLAY
             )
         );
+        poseStack.popPose();
     }
 }
