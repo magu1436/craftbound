@@ -1,10 +1,10 @@
 package com.magu1436.craftbound.occupations.blacksmith.forging;
 
-import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.occupations.blacksmith.forging.menu.ForgingMenu;
 import com.magu1436.craftbound.occupations.blacksmith.forging.session.BlacksmithOperationSessionRegistry;
+import com.magu1436.craftbound.occupations.blacksmith.forging.state.ForgingProgressStateService;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -84,7 +84,7 @@ public final class ForgingTableBlock extends BaseEntityBlock {
 
         ItemStack heldItem = player.getMainHandItem();
         if (level.isClientSide) {
-            return heldItem.isEmpty() || heldItem.getItem() instanceof RoughMetalPartItem
+            return heldItem.isEmpty() || ForgingProgressStateService.isUsable(heldItem)
                 || heldItem.is(CraftboundItems.SMITHING_HAMMER.get())
                 ? InteractionResult.SUCCESS
                 : InteractionResult.PASS;

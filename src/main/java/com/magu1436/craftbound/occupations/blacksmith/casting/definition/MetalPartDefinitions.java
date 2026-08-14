@@ -45,6 +45,10 @@ public final class MetalPartDefinitions extends SimpleJsonResourceReloadListener
         return Optional.ofNullable(definitionsById.get(id));
     }
 
+    public Set<ResourceLocation> ids() {
+        return definitionsById.keySet();
+    }
+
     public Optional<MetalPartDefinition> resolve(ItemStack mold, ResourceLocation metalId) {
         if (!isRegisteredMold(mold) || metalId == null) return Optional.empty();
         ResourceLocation moldId = ForgeRegistries.ITEMS.getKey(mold.getItem());
