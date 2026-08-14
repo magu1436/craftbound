@@ -9,6 +9,7 @@ import com.magu1436.craftbound.occupations.blacksmith.client.CastingTableRendere
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalRenderColorResolver;
 import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
+import com.magu1436.craftbound.occupations.blacksmith.client.casting.CastingMaskReloadListener;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import com.magu1436.craftbound.registry.CraftboundMenus;
@@ -69,6 +70,7 @@ public final class CraftboundClientEvents {
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new CastingMaskReloadListener());
         event.registerReloadListener(new ResourceManagerReloadListener() {
             @Override
             public void onResourceManagerReload(ResourceManager resourceManager) {
