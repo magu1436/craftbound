@@ -93,11 +93,20 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
         graphics.drawString(font,
                 Component.translatable("screen.craftbound.processing.operation." + menu.operation().serializedName()),
                 8, 19, 0x404040, false);
-        Component state = menu.running()
-                ? Component.translatable("screen.craftbound.processing.progress",
-                        Math.max(0, (menu.totalTicks() - menu.progress() + 19) / 20))
-                : Component.translatable("screen.craftbound.processing.ready");
-        graphics.drawString(font, state, 101 - font.width(state) / 2, 66, 0x404040, false);
+        Component state;
+        int stateColor;
+        if (menu.running()) {
+            state = Component.translatable("screen.craftbound.processing.progress",
+                    Math.max(0, (menu.totalTicks() - menu.progress() + 19) / 20));
+            stateColor = 0x404040;
+        } else if (menu.startStatus() != FoodProcessingBlockEntity.START_STATUS_NONE) {
+            state = menu.startStatusMessage();
+            stateColor = 0xAA0000;
+        } else {
+            state = Component.translatable("screen.craftbound.processing.ready");
+            stateColor = 0x404040;
+        }
+        graphics.drawString(font, state, 101 - font.width(state) / 2, 66, stateColor, false);
         if (menu.station() == FoodProcessingStation.COOKING_POT) {
             graphics.drawString(font, Component.translatable("screen.craftbound.processing.fuel"),
                     77, 82, 0x404040, false);

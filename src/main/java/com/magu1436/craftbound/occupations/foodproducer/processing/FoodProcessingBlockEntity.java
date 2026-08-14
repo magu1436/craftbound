@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
-import com.magu1436.craftbound.registry.CraftboundItems;
+import com.magu1436.craftbound.registry.CraftboundItemTags;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityItems;
@@ -62,7 +62,16 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     public static final int DATA_RUNNING = 4;
     public static final int DATA_BURN_TIME = 5;
     public static final int DATA_BURN_TOTAL = 6;
-    public static final int DATA_COUNT = 7;
+    public static final int DATA_START_STATUS = 7;
+    public static final int DATA_COUNT = 8;
+
+    public static final int START_STATUS_NONE = 0;
+    public static final int START_STATUS_RUNNING = 1;
+    public static final int START_STATUS_NO_RECIPE = 2;
+    public static final int START_STATUS_SPOILED = 3;
+    public static final int START_STATUS_KNIFE = 4;
+    public static final int START_STATUS_FUEL = 5;
+    public static final int START_STATUS_RECIPE_RANK_BASE = 10;
 
     private static final String OPERATION_TAG = "operation";
     private static final String PROGRESS_TAG = "progress";
@@ -88,6 +97,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private int pendingExperience;
     private int burnTime;
     private int burnTotal;
+    private int startStatus;
     private boolean automated;
     @Nullable
     private UUID initiator;
@@ -104,6 +114,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 case DATA_RUNNING -> isRunning() ? 1 : 0;
                 case DATA_BURN_TIME -> burnTime;
                 case DATA_BURN_TOTAL -> burnTotal;
+                case DATA_START_STATUS -> startStatus;
                 default -> 0;
             };
         }
@@ -116,6 +127,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 case DATA_TOTAL -> totalTicks = Math.max(0, value);
                 case DATA_BURN_TIME -> burnTime = Math.max(0, value);
                 case DATA_BURN_TOTAL -> burnTotal = Math.max(0, value);
+                case DATA_START_STATUS -> startStatus = Math.max(0, value);
                 default -> {
                 }
             }
@@ -150,15 +162,16 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
             return false;
         }
         operation = requested;
+        startStatus = START_STATUS_NONE;
         setChanged();
         return true;
     }
 
     public boolean start(ServerPlayer player) {
-        if (level == null || isRunning()
-                || !FoodProducerSkills.has(player, FoodProducerSkills.BASIC_PROCESSING)) {
+        if (level == null) {
             return false;
         }
+        if (isRunning()) return startFailure(START_STATUS_RUNNING);
 
         boolean qualityChanged = false;
         for (int slot = INPUT_0; slot <= INPUT_2; slot++) {
@@ -173,23 +186,28 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         }
         List<ItemStack> inputs = inputCopies();
         FoodProcessingRecipes.Match match = FoodProcessingRecipes.find(currentOperation(), inputs).orElse(null);
-        if (match == null || match.qualityInputs().stream().anyMatch(FoodQualityData::isSpoiled)) {
-            return false;
+        if (match == null) return startFailure(START_STATUS_NO_RECIPE);
+        if (match.qualityInputs().stream().anyMatch(FoodQualityData::isSpoiled)) {
+            return startFailure(START_STATUS_SPOILED);
         }
-        if (match.requiredRecipeRank() > FoodProducerSkills.recipeResearchRank(player)) {
-            return false;
+        int recipeRank = FoodProducerSkills.recipeResearchRank(player);
+        if (match.requiredRecipeRank() > recipeRank) {
+            return startFailure(START_STATUS_RECIPE_RANK_BASE + match.requiredRecipeRank());
         }
         if (match.toolRequired() && !isUsableKnife(items.get(TOOL))) {
-            return false;
+            return startFailure(START_STATUS_KNIFE);
         }
         if (currentOperation() == FoodProcessingOperation.HEAT
                 && burnTime <= 0
                 && fuelBurnTime(items.get(FUEL)) <= 0) {
-            return false;
+            return startFailure(START_STATUS_FUEL);
         }
 
-        int rank = Math.max(0, Math.min(3,
-                FoodProducerSkills.rank(player, FoodProducerSkills.PROCESSING_TECHNIQUE)));
+        boolean hasBasicProcessing = FoodProducerSkills.has(player, FoodProducerSkills.BASIC_PROCESSING);
+        int rank = hasBasicProcessing
+                ? Math.max(0, Math.min(3,
+                        FoodProducerSkills.rank(player, FoodProducerSkills.PROCESSING_TECHNIQUE)))
+                : 0;
         ItemStack output = match.output().copy();
         if (output.getItem() instanceof FoodIntermediateItem) {
             FoodIntermediateData.setSuccess(output);
@@ -198,13 +216,15 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
             output.grow(rank - 1);
         }
         if (currentOperation() == FoodProcessingOperation.HEAT) {
-            applyFinalCookingQuality(player, match, output);
-            pendingExperience = FoodCookingData.experience(output);
+            applyFinalCookingQuality(player, match, output, hasBasicProcessing);
+            pendingExperience = hasBasicProcessing ? FoodCookingData.experience(output) : 0;
         } else {
             FoodQualityData.inheritMinimum(match.qualityInputs(), output, level.getGameTime());
-            pendingExperience = output.getItem() instanceof FoodDishItem
-                    ? FoodCookingData.experience(output)
-                    : 1;
+            pendingExperience = hasBasicProcessing
+                    ? output.getItem() instanceof FoodDishItem
+                            ? FoodCookingData.experience(output)
+                            : 1
+                    : 0;
         }
 
         pendingOutput = output;
@@ -215,7 +235,8 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 ? currentOperation().baseTicks()
                 : Math.max(1, Math.round(currentOperation().baseTicks() * (1.0F - rank * 0.1F)));
         progress = 0;
-        initiator = player.getUUID();
+        initiator = hasBasicProcessing ? player.getUUID() : null;
+        startStatus = START_STATUS_NONE;
         automated = false;
         setChanged();
         return true;
@@ -415,6 +436,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
 
     @Override
     protected AbstractContainerMenu createMenu(int containerId, Inventory inventory) {
+        startStatus = START_STATUS_NONE;
         return new FoodProcessingMenu(containerId, inventory, this, dataAccess);
     }
 
@@ -459,7 +481,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     public boolean canPlaceItem(int slot, ItemStack stack) {
         if (slotLocked(slot) || slot == OUTPUT || slot == RETURN) return false;
         if (slot == FUEL) return station() == FoodProcessingStation.COOKING_POT && fuelBurnTime(stack) > 0;
-        return slot != TOOL || stack.is(CraftboundItems.COOKING_KNIFE.get());
+        return slot != TOOL || stack.is(CraftboundItemTags.COOKING_KNIVES);
     }
 
     @Override
@@ -603,7 +625,8 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     private void applyFinalCookingQuality(
             ServerPlayer player,
             FoodProcessingRecipes.Match match,
-            ItemStack output
+            ItemStack output,
+            boolean hasBasicProcessing
     ) {
         FoodQuality baseQuality = match.qualityInputs().stream()
                 .filter(FoodQualityItems::isQualityTarget)
@@ -615,8 +638,10 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                 .map(FoodCookingData::qualityCap)
                 .findFirst()
                 .orElse(baseQuality);
-        int qualityRank = Math.max(0, Math.min(5,
-                FoodProducerSkills.rank(player, FoodProducerSkills.QUALITY_COOKING)));
+        int qualityRank = hasBasicProcessing
+                ? Math.max(0, Math.min(5,
+                        FoodProducerSkills.rank(player, FoodProducerSkills.QUALITY_COOKING)))
+                : 0;
         boolean eligible = qualityRank > 0 && baseQuality.value() < cap.value();
         boolean forced = eligible && FoodCookingTestHooks.consumeForcedUpgrade(player);
         int ratingModifier = switch (FoodCookingData.rating(output)) {
@@ -685,9 +710,9 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (isRunning()) return false;
-            if (slot == TOOL) return stack.is(CraftboundItems.COOKING_KNIFE.get());
+            if (slot == TOOL) return stack.is(CraftboundItemTags.COOKING_KNIVES);
             return slot >= INPUT_0 && slot <= INPUT_2
-                    && !stack.is(CraftboundItems.COOKING_KNIFE.get());
+                    && !stack.is(CraftboundItemTags.COOKING_KNIVES);
         }
 
         @Override
@@ -733,8 +758,14 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
     }
 
     private static boolean isUsableKnife(ItemStack stack) {
-        return stack.is(CraftboundItems.COOKING_KNIFE.get())
+        return stack.is(CraftboundItemTags.COOKING_KNIVES)
                 && stack.getDamageValue() < stack.getMaxDamage();
+    }
+
+    private boolean startFailure(int status) {
+        startStatus = status;
+        setChanged();
+        return false;
     }
 
     private static boolean appliesExtraOutput(FoodProcessingOperation operation) {

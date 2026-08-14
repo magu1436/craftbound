@@ -1,1 +1,9 @@
-{"type":"craftbound:basic_processing_equipment"}
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    { "item": "minecraft:iron_ingot" },
+    { "item": "minecraft:stick" }
+  ],
+  "result": { "item": "craftbound:cooking_knife" }
+}

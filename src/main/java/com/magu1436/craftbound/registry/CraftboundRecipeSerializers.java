@@ -1,7 +1,6 @@
 package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
-import com.magu1436.craftbound.occupations.foodproducer.processing.BasicProcessingEquipmentRecipe;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockRecipe;
 
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -17,12 +16,6 @@ public final class CraftboundRecipeSerializers {
 
     public static final RegistryObject<RecipeSerializer<RanchBlockRecipe>> RANCH_BLOCK =
         RECIPE_SERIALIZERS.register("ranch_block", RanchBlockRecipe.Serializer::new);
-    public static final RegistryObject<RecipeSerializer<BasicProcessingEquipmentRecipe>>
-        BASIC_PROCESSING_EQUIPMENT = RECIPE_SERIALIZERS.register(
-            "basic_processing_equipment",
-            BasicProcessingEquipmentRecipe.Serializer::new
-        );
-
     private CraftboundRecipeSerializers() {
     }
 
