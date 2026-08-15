@@ -83,10 +83,15 @@ public final class CastingGameService {
 
         MetalDefinition metal = metalResult.get();
         if (state.heatingTicks() < metal.castableAfterTicks()) {
-            return handleEarlyPour(table, crucible, state, definition, metal);
+            return handleEarlyPour(player, table, crucible, state, definition, metal);
         }
         if (state.heatingTicks() >= metal.destroyAfterTicks()) {
-            return consumeWithoutOutput(table, crucible, definition.ingredientCount());
+            return consumeWithoutOutput(
+                player,
+                table,
+                crucible,
+                definition.ingredientCount()
+            );
         }
 
         CastingProcess process;
@@ -118,6 +123,16 @@ public final class CastingGameService {
                 return CastingActionResult.PASS;
             }
             table.setActiveProcess(process);
+            CastingExperienceHook.onResult(
+                player,
+                new CastingExperienceResult(
+                    process.processId(),
+                    player.getUUID(),
+                    definition.ingredientCount(),
+                    true,
+                    false
+                )
+            );
             return CastingActionResult.SUCCESS;
         } finally {
             table.endTransaction();
@@ -125,6 +140,7 @@ public final class CastingGameService {
     }
 
     private static CastingActionResult handleEarlyPour(
+        ServerPlayer player,
         CastingTableBlockEntity table,
         ItemStack crucible,
         CrucibleState state,
@@ -160,6 +176,16 @@ public final class CastingGameService {
                 return CastingActionResult.PASS;
             }
             table.setPendingOutput(recovered);
+            CastingExperienceHook.onResult(
+                player,
+                new CastingExperienceResult(
+                    UUID.randomUUID(),
+                    player.getUUID(),
+                    usedAmount,
+                    false,
+                    lossAmount > 0
+                )
+            );
             return CastingActionResult.SUCCESS;
         } finally {
             table.endTransaction();
@@ -167,6 +193,7 @@ public final class CastingGameService {
     }
 
     private static CastingActionResult consumeWithoutOutput(
+        ServerPlayer player,
         CastingTableBlockEntity table,
         ItemStack crucible,
         int amount
@@ -177,6 +204,16 @@ public final class CastingGameService {
                 return CastingActionResult.PASS;
             }
             table.markStateChangedAndSync();
+            CastingExperienceHook.onResult(
+                player,
+                new CastingExperienceResult(
+                    UUID.randomUUID(),
+                    player.getUUID(),
+                    amount,
+                    false,
+                    true
+                )
+            );
             return CastingActionResult.SUCCESS;
         } finally {
             table.endTransaction();

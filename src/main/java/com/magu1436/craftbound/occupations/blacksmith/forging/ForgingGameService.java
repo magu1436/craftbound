@@ -15,6 +15,7 @@ import com.magu1436.craftbound.registry.CraftboundItems;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.UUID;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -124,7 +125,7 @@ public final class ForgingGameService {
             return cancel(table, CompletionResult.ERROR);
         }
 
-        ForgingExperienceHook.onResult(player, experienceResult(roughState, true, false));
+        ForgingExperienceHook.onResult(player, experienceResult(player, roughState, true, false));
         return CompletionResult.COMPLETED;
     }
 
@@ -160,18 +161,19 @@ public final class ForgingGameService {
             return false;
         }
 
-        ForgingExperienceHook.onResult(player, experienceResult(roughState, false, true));
+        ForgingExperienceHook.onResult(player, experienceResult(player, roughState, false, true));
         return true;
     }
 
     private static ForgingExperienceResult experienceResult(
+        ServerPlayer player,
         RoughMetalPartState state,
         boolean success,
         boolean permanentMaterialLoss
     ) {
         return new ForgingExperienceResult(
-            state.castingResultId(),
-            state.castingOperatorId(),
+            UUID.randomUUID(),
+            player.getUUID(),
             state.ingredientCount(),
             success,
             permanentMaterialLoss
