@@ -125,6 +125,10 @@ public final class CraftboundItems {
         "cooking_knife",
         () -> new Item(new Item.Properties().durability(64))
     );
+    public static final RegistryObject<Item> BLACKSMITH_COOKING_KNIFE = ITEMS.register(
+        "blacksmith_cooking_knife",
+        () -> new Item(new Item.Properties().durability(512))
+    );
     public static final RegistryObject<Item> WHEAT_FLOUR = registerFoodIntermediate("wheat_flour");
     public static final RegistryObject<Item> DOUGH = registerFoodIntermediate("dough");
     public static final RegistryObject<Item> SLICED_MEAT = registerFoodIntermediate("sliced_meat");

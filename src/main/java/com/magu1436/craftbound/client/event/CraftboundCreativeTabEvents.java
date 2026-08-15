@@ -30,6 +30,7 @@ public final class CraftboundCreativeTabEvents {
             event.accept(CraftboundItems.COMPOST);
             event.accept(CraftboundItems.AGRICULTURAL_FERTILIZER);
             event.accept(CraftboundItems.COOKING_KNIFE);
+            event.accept(CraftboundItems.BLACKSMITH_COOKING_KNIFE);
             event.accept(CraftboundItems.WHEAT_FLOUR);
             event.accept(CraftboundItems.DOUGH);
             event.accept(CraftboundItems.SLICED_MEAT);

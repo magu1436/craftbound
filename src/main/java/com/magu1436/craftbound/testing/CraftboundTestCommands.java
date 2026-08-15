@@ -23,6 +23,7 @@ import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExper
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerPendingExperience;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
+import com.magu1436.craftbound.registry.CraftboundItemTags;
 import com.magu1436.craftbound.registry.CraftboundMobEffects;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -140,6 +141,10 @@ public final class CraftboundTestCommands {
         test.then(Commands.literal("processing")
                 .then(Commands.literal("status")
                         .executes(context -> showNearestProcessingStatus(context.getSource())))
+                .then(Commands.literal("knife_status")
+                        .executes(context -> showHeldKnifeStatus(context.getSource())))
+                .then(Commands.literal("knife_near_break")
+                        .executes(context -> prepareHeldKnifeNearBreak(context.getSource())))
                 .then(Commands.literal("create_start")
                         .executes(context -> startNearestCreateAutomation(context.getSource())))
                 .then(Commands.literal("finish")
@@ -519,6 +524,49 @@ public final class CraftboundTestCommands {
                 processor.burnTime()
         ), false);
         return processor.isRunning() ? 1 : 0;
+    }
+
+    private static int showHeldKnifeStatus(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ItemStack knife = player.getMainHandItem();
+        if (!knife.is(CraftboundItemTags.COOKING_KNIVES) || !knife.isDamageableItem()) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.processing.knife.invalid"
+            ));
+            return 0;
+        }
+        int remaining = Math.max(0, knife.getMaxDamage() - knife.getDamageValue());
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.processing.knife.status",
+                knife.getHoverName(),
+                knife.getDamageValue(),
+                knife.getMaxDamage(),
+                remaining
+        ), false);
+        return remaining;
+    }
+
+    private static int prepareHeldKnifeNearBreak(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        ItemStack knife = player.getMainHandItem();
+        if (!knife.is(CraftboundItemTags.COOKING_KNIVES)
+                || !knife.isDamageableItem()
+                || knife.getMaxDamage() < 2) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.processing.knife.invalid"
+            ));
+            return 0;
+        }
+        knife.setDamageValue(knife.getMaxDamage() - 2);
+        player.getInventory().setChanged();
+        player.containerMenu.broadcastChanges();
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.processing.knife.near_break",
+                knife.getHoverName()
+        ), false);
+        return 1;
     }
 
     private static int giveTestPreparedSet(CommandSourceStack source, FoodQuality quality)
