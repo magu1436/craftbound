@@ -9,7 +9,14 @@
     { "item": "craftbound:dough", "count": 1 }
   ],
   "food": { "nutrition": 12, "saturation_gain": 12.0 },
-  "effect": { "id": "minecraft:strength", "amplifier": 1, "duration_seconds": 600 },
+  "effects": [
+    { "type": "mob_effect", "id": "minecraft:strength", "amplifier": 0, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_armor", "amount": 1.0, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_projectile_reduction", "amount": 0.05, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_explosion_reduction", "amount": 0.05, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_action_resistance", "amount": 0.10, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_burning_resistance", "amount": 0.10, "duration_seconds": 1200 }
+  ],
   "preserved": false,
   "experience": 5
 }

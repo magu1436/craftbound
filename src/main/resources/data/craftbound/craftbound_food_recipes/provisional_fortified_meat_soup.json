@@ -10,7 +10,11 @@
   ],
   "returned_container": { "item": "minecraft:glass_bottle", "count": 1 },
   "food": { "nutrition": 7, "saturation_gain": 6.0 },
-  "effect": { "id": "minecraft:strength", "amplifier": 0, "duration_seconds": 180 },
+  "effects": [
+    { "type": "mob_effect", "id": "minecraft:strength", "amplifier": 0, "duration_seconds": 480 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_armor", "amount": 1.0, "duration_seconds": 480 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_projectile_reduction", "amount": 0.05, "duration_seconds": 480 }
+  ],
   "preserved": false,
   "experience": 5
 }

@@ -9,7 +9,6 @@
     { "item": "minecraft:egg", "count": 1 }
   ],
   "food": { "nutrition": 10, "saturation_gain": 10.0 },
-  "effect": { "id": "minecraft:haste", "amplifier": 1, "duration_seconds": 300 },
   "preserved": false,
   "experience": 5
 }

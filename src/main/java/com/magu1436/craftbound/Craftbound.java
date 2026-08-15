@@ -19,6 +19,7 @@ import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import com.magu1436.craftbound.registry.CraftboundBlocks;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundMenus;
+import com.magu1436.craftbound.registry.CraftboundMobEffects;
 import com.magu1436.craftbound.registry.CraftboundRecipeSerializers;
 import com.mojang.logging.LogUtils;
 
@@ -68,6 +69,7 @@ public class Craftbound {
         CraftboundMenus.register(modEventBus);
         CraftboundRecipeSerializers.register(modEventBus);
         CraftboundAttributes.register(modEventBus);
+        CraftboundMobEffects.register(modEventBus);
         FoodProducerLootModifiers.register(modEventBus);
 
         AdventurerMobKillExperienceSource.register();
@@ -82,6 +84,7 @@ public class Craftbound {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(CraftboundNetwork::register);
+        event.enqueueWork(CraftboundMobEffects::configureAttributeModifiers);
 
         LOGGER.info("HELLO FROM COMMON SETUP");
 

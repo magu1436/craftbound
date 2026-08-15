@@ -9,7 +9,14 @@
     { "item": "craftbound:dough", "count": 1 }
   ],
   "food": { "nutrition": 12, "saturation_gain": 12.0 },
-  "effect": { "id": "minecraft:speed", "amplifier": 1, "duration_seconds": 600 },
+  "effects": [
+    { "type": "mob_effect", "id": "minecraft:night_vision", "amplifier": 0, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:explorer_meal_endurance", "amount": 0.05, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:explorer_meal_tool_care", "amount": 0.05, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:explorer_meal_sure_footed", "amount": 0.125, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:explorer_meal_climbing", "amount": 0.10, "duration_seconds": 1200 },
+    { "type": "attribute_modifier", "id": "craftbound:explorer_meal_diving", "amount": 0.08, "duration_seconds": 1200 }
+  ],
   "preserved": false,
   "experience": 5
 }
