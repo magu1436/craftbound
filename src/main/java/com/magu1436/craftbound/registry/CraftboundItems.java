@@ -64,6 +64,18 @@ public final class CraftboundItems {
                 new Item.Properties()
             )
     );
+    public static final RegistryObject<Item> CARVING_TABLE = ITEMS.register(
+        "carving_table", () -> new BlockItem(CraftboundBlocks.CARVING_TABLE.get(), new Item.Properties())
+    );
+    public static final RegistryObject<Item> CARVING_KNIFE = ITEMS.register(
+        "carving_knife", () -> new Item(new Item.Properties().durability(128))
+    );
+    public static final RegistryObject<Item> CARVING_CHISEL = ITEMS.register(
+        "carving_chisel", () -> new Item(new Item.Properties().durability(192))
+    );
+    public static final RegistryObject<Item> PICKAXE_HANDLE = ITEMS.register(
+        "pickaxe_handle", () -> new Item(new Item.Properties().stacksTo(1))
+    );
     public static final RegistryObject<Item> BLANK_MOLD = registerItem("blank_mold");
     public static final RegistryObject<Item> SWORD_BLADE_MOLD = registerCastingMold("sword_blade_mold");
     public static final RegistryObject<Item> PICKAXE_HEAD_MOLD = registerCastingMold("pickaxe_head_mold");

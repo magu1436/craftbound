@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shaped", "pattern": ["I", "N", "R"],
+  "key": { "I": { "item": "minecraft:iron_ingot" }, "N": { "item": "minecraft:iron_nugget" },
+    "R": { "item": "minecraft:stick" } }, "result": { "item": "craftbound:carving_chisel" }
+}

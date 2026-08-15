@@ -414,5 +414,9 @@
     "command.craftbound.test.foraging.status": "Position=(%s,%s,%s) Forage=%s Harvested=%s",
     "command.craftbound.test.foraging.regrow": "Regrew the forage source at (%s,%s,%s).",
     "command.craftbound.test.foraging.countdown": "Marked the forage at (%s,%s,%s) harvested; it will regrow in %s seconds.",
-    "command.craftbound.test.foraging.none": "No regional forage source was found within 16 blocks."
+    "command.craftbound.test.foraging.none": "No regional forage source was found within 16 blocks.",
+    "block.craftbound.carving_table": "Carving Table",
+    "item.craftbound.carving_knife": "Carving Knife",
+    "item.craftbound.carving_chisel": "Carving Chisel",
+    "item.craftbound.pickaxe_handle": "Pickaxe Handle"
 }

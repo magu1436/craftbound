@@ -4,6 +4,7 @@ import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.casting.CastingTableBlockEntity;
 import com.magu1436.craftbound.occupations.blacksmith.forging.ForgingTableBlockEntity;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlockEntity;
+import com.magu1436.craftbound.occupations.blacksmith.carving.CarvingTableBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
@@ -77,6 +78,9 @@ public final class CraftboundBlockEntities {
                     CraftboundBlocks.CASTING_TABLE.get()
                 ).build(null)
             );
+    public static final RegistryObject<BlockEntityType<CarvingTableBlockEntity>> CARVING_TABLE =
+        BLOCK_ENTITIES.register("carving_table", () -> BlockEntityType.Builder.of(
+            CarvingTableBlockEntity::new, CraftboundBlocks.CARVING_TABLE.get()).build(null));
     
     public static void register(IEventBus modEventBus) {
         BLOCK_ENTITIES.register(modEventBus);

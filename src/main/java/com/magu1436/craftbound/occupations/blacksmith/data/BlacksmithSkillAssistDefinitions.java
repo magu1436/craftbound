@@ -109,11 +109,11 @@ public final class BlacksmithSkillAssistDefinitions extends SimpleJsonResourceRe
             GsonHelper.getAsFloat(pitch, "critical"));
         validateAudio(instinctAudio);
 
-        validateFutureSections(json);
+        FutureSections future = parseFutureSections(json);
         return new BlacksmithSkillAssistDefinition(schema, gauge, precision,
             forceEnabledLevel, GsonHelper.getAsBoolean(force, "show_current_value"),
             referenceEnabledLevel, referenceEnabled,
-            instinctLevels, instinctAudio);
+            instinctLevels, instinctAudio, future.precisionShaping(), future.toolPreservation());
     }
 
     private static void validateGauge(Gauge gauge) {
@@ -172,7 +172,7 @@ public final class BlacksmithSkillAssistDefinitions extends SimpleJsonResourceRe
         }
     }
 
-    private static void validateFutureSections(JsonObject json) {
+    private static FutureSections parseFutureSections(JsonObject json) {
         if (!json.has("precision_shaping") || !json.has("tool_preservation")
             || !json.has("material_insight") || !json.has("quality_appraisal")) {
             throw new JsonParseException("missing future-compatible skill assist section");
@@ -180,22 +180,30 @@ public final class BlacksmithSkillAssistDefinitions extends SimpleJsonResourceRe
         JsonObject shaping = GsonHelper.getAsJsonObject(json, "precision_shaping");
         int previousGrid = GsonHelper.getAsInt(shaping, "base_grid_size");
         double previousRadius = GsonHelper.getAsDouble(shaping, "base_brush_radius");
+        int baseGrid = previousGrid;
+        double baseRadius = previousRadius;
         if (previousGrid < 1 || !positiveFinite(previousRadius)) {
             throw new JsonParseException("invalid precision_shaping base values");
         }
+        List<PrecisionShapingLevel> shapingLevels = new ArrayList<>();
+        int previousShapingLevel = 0;
         for (JsonElement element : GsonHelper.getAsJsonArray(shaping, "levels")) {
             JsonObject entry = element.getAsJsonObject();
+            int level = GsonHelper.getAsInt(entry, "level");
             int grid = GsonHelper.getAsInt(entry, "grid_size");
             double radius = GsonHelper.getAsDouble(entry, "brush_radius");
-            if (grid <= previousGrid || !positiveFinite(radius) || radius >= previousRadius) {
+            if (level <= previousShapingLevel || grid <= previousGrid || !positiveFinite(radius) || radius >= previousRadius) {
                 throw new JsonParseException("invalid precision_shaping level");
             }
+            shapingLevels.add(new PrecisionShapingLevel(level, grid, radius));
+            previousShapingLevel = level;
             previousGrid = grid;
             previousRadius = radius;
         }
 
         double previousChance = -1.0D;
         int previousLevel = 0;
+        List<ToolPreservationLevel> preservationLevels = new ArrayList<>();
         for (JsonElement element : GsonHelper.getAsJsonArray(
             GsonHelper.getAsJsonObject(json, "tool_preservation"), "levels")) {
             JsonObject entry = element.getAsJsonObject();
@@ -207,8 +215,13 @@ public final class BlacksmithSkillAssistDefinitions extends SimpleJsonResourceRe
             }
             previousLevel = level;
             previousChance = chance;
+            preservationLevels.add(new ToolPreservationLevel(level, chance));
         }
+        return new FutureSections(new PrecisionShaping(baseGrid, baseRadius, shapingLevels), preservationLevels);
     }
+
+    private record FutureSections(PrecisionShaping precisionShaping,
+        List<ToolPreservationLevel> toolPreservation) {}
 
     private static boolean positiveFinite(float value) {
         return Float.isFinite(value) && value > 0.0F;
