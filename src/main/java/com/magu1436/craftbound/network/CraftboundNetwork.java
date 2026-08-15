@@ -13,6 +13,11 @@ import com.magu1436.craftbound.network.packet.ForgingPauseRequestPacket;
 import com.magu1436.craftbound.network.packet.ForgingHeartbeatPacket;
 import com.magu1436.craftbound.network.packet.ForgingSessionSyncPacket;
 import com.magu1436.craftbound.network.packet.ForgingFeedbackPacket;
+import com.magu1436.craftbound.network.packet.CarvingStrokeRequestPacket;
+import com.magu1436.craftbound.network.packet.CarvingHeartbeatPacket;
+import com.magu1436.craftbound.network.packet.CarvingSessionSyncPacket;
+import com.magu1436.craftbound.network.packet.CarvingDeltaSyncPacket;
+import com.magu1436.craftbound.network.packet.CarvingFeedbackPacket;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -25,7 +30,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  * Craftboundのネットワークチャンネルとパケットを管理する。
  */
 public final class CraftboundNetwork {
-    private static final String PROTOCOL_VERSION = "3";
+    private static final String PROTOCOL_VERSION = "4";
 
     private static final SimpleChannel CHANNEL =
         NetworkRegistry.newSimpleChannel(
@@ -96,9 +101,24 @@ public final class CraftboundNetwork {
         CHANNEL.registerMessage(packetId++, ForgingSessionSyncPacket.class,
             ForgingSessionSyncPacket::encode, ForgingSessionSyncPacket::decode,
             ForgingSessionSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(packetId, ForgingFeedbackPacket.class,
+        CHANNEL.registerMessage(packetId++, ForgingFeedbackPacket.class,
             ForgingFeedbackPacket::encode, ForgingFeedbackPacket::decode,
             ForgingFeedbackPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(packetId++, CarvingStrokeRequestPacket.class,
+            CarvingStrokeRequestPacket::encode, CarvingStrokeRequestPacket::decode,
+            CarvingStrokeRequestPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(packetId++, CarvingHeartbeatPacket.class,
+            CarvingHeartbeatPacket::encode, CarvingHeartbeatPacket::decode,
+            CarvingHeartbeatPacket::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(packetId++, CarvingSessionSyncPacket.class,
+            CarvingSessionSyncPacket::encode, CarvingSessionSyncPacket::decode,
+            CarvingSessionSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(packetId++, CarvingDeltaSyncPacket.class,
+            CarvingDeltaSyncPacket::encode, CarvingDeltaSyncPacket::decode,
+            CarvingDeltaSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(packetId, CarvingFeedbackPacket.class,
+            CarvingFeedbackPacket::encode, CarvingFeedbackPacket::decode,
+            CarvingFeedbackPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         registered = true;
     }

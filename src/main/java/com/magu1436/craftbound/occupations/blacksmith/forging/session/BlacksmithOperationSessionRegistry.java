@@ -11,6 +11,9 @@ import com.magu1436.craftbound.occupations.blacksmith.forging.ForgingGaugeCalcul
 import com.magu1436.craftbound.occupations.blacksmith.forging.ForgingTableBlockEntity;
 import com.magu1436.craftbound.occupations.blacksmith.forging.menu.ForgingMenu;
 import com.magu1436.craftbound.occupations.blacksmith.forging.state.ForgingProgressState;
+import com.magu1436.craftbound.occupations.blacksmith.carving.CarvingTableBlockEntity;
+import com.magu1436.craftbound.occupations.blacksmith.carving.menu.CarvingMenu;
+import com.magu1436.craftbound.occupations.blacksmith.carving.session.CarvingSessionState;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +28,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Craftbound.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class BlacksmithOperationSessionRegistry {
     private static final Map<UUID, ForgingTableBlockEntity> BY_PLAYER = new HashMap<>();
+    private static final Map<UUID, CarvingTableBlockEntity> CARVING_BY_PLAYER = new HashMap<>();
 
     private BlacksmithOperationSessionRegistry() {}
 
@@ -73,6 +77,40 @@ public final class BlacksmithOperationSessionRegistry {
         return Optional.of(new SessionBinding(table, session));
     }
 
+    public static synchronized Optional<CarvingSessionState> acquire(ServerPlayer player,
+        CarvingTableBlockEntity table) {
+        var progress = table.progress();
+        if (progress.isEmpty()) return Optional.empty();
+        CarvingSessionState current = table.activeSession();
+        if (current != null) {
+            if (!current.activePlayerId().equals(player.getUUID())) return Optional.empty();
+            current.heartbeat(player.serverLevel().getGameTime());
+            CARVING_BY_PLAYER.put(player.getUUID(), table);
+            return Optional.of(current);
+        }
+        CarvingTableBlockEntity previous = CARVING_BY_PLAYER.get(player.getUUID());
+        if (previous != null && previous != table) release(previous);
+        CarvingSessionState session = new CarvingSessionState(UUID.randomUUID(), player.getUUID(),
+            progress.get().processId(), player.serverLevel().getGameTime());
+        if (!table.setActiveSession(session)) return Optional.empty();
+        CARVING_BY_PLAYER.put(player.getUUID(), table);
+        return Optional.of(session);
+    }
+
+    public static synchronized Optional<CarvingBinding> resolveCarving(ServerPlayer player, UUID sessionId) {
+        CarvingTableBlockEntity table = CARVING_BY_PLAYER.get(player.getUUID());
+        if (table == null || table.activeSession() == null) return Optional.empty();
+        CarvingSessionState session = table.activeSession();
+        return session.sessionId().equals(sessionId) && session.activePlayerId().equals(player.getUUID())
+            ? Optional.of(new CarvingBinding(table, session)) : Optional.empty();
+    }
+
+    public static synchronized void release(CarvingTableBlockEntity table) {
+        CarvingSessionState session = table.activeSession();
+        if (session != null) table.clearActiveSession(session.sessionId());
+        CARVING_BY_PLAYER.entrySet().removeIf(entry -> entry.getValue() == table);
+    }
+
     public static synchronized void release(ForgingTableBlockEntity table, boolean pause) {
         releaseInternal(table, pause);
     }
@@ -107,6 +145,22 @@ public final class BlacksmithOperationSessionRegistry {
                 }
                 if (!isValidOnlineLease(player, table, settings)) releaseInternal(table, true);
             }
+            for (CarvingTableBlockEntity table : new ArrayList<>(CARVING_BY_PLAYER.values())) {
+                CarvingSessionState session = table.activeSession();
+                if (session == null) continue;
+                ServerPlayer player = event.getServer().getPlayerList().getPlayer(session.activePlayerId());
+                if (player == null) {
+                    session.markDisconnected(now);
+                    if (now - session.disconnectedAtTick() >= settings.network().disconnectGraceTicks()) release(table);
+                } else if (!player.isAlive() || player.level() != table.getLevel()
+                    || !(player.containerMenu instanceof CarvingMenu menu)
+                    || menu.getCarvingTable().orElse(null) != table
+                    || now - session.lastHeartbeatTick() > settings.network().sessionHeartbeatTicks() * 2L
+                    || player.distanceToSqr(table.getBlockPos().getCenter())
+                        > Math.pow(settings.network().workbenchInteractionDistance(), 2.0D)) {
+                    release(table);
+                }
+            }
         }
     }
 
@@ -135,4 +189,5 @@ public final class BlacksmithOperationSessionRegistry {
     }
 
     public record SessionBinding(ForgingTableBlockEntity table, ForgingSessionState session) {}
+    public record CarvingBinding(CarvingTableBlockEntity table, CarvingSessionState session) {}
 }

@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.occupations.blacksmith.carving;
 
 import com.magu1436.craftbound.occupations.blacksmith.carving.state.*;
+import com.magu1436.craftbound.occupations.blacksmith.carving.session.CarvingSessionState;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
 import java.util.*;
 import net.minecraft.core.BlockPos;
@@ -19,6 +20,7 @@ public final class CarvingTableBlockEntity extends BlockEntity {
     private CarvingProgressState progress;
     private final List<ItemStack> pendingOutputs = new ArrayList<>();
     private boolean completionReserved;
+    private CarvingSessionState activeSession;
 
     public CarvingTableBlockEntity(BlockPos pos, BlockState state) {
         super(CraftboundBlockEntities.CARVING_TABLE.get(), pos, state);
@@ -31,7 +33,7 @@ public final class CarvingTableBlockEntity extends BlockEntity {
         tag.put("PendingOutputs", outputs);
     }
     @Override public void load(CompoundTag tag) {
-        super.load(tag); completionReserved = false; pendingOutputs.clear(); progress = null;
+        super.load(tag); completionReserved = false; activeSession = null; pendingOutputs.clear(); progress = null;
         material = tag.contains("Material", Tag.TAG_COMPOUND) ? ItemStack.of(tag.getCompound("Material")) : ItemStack.EMPTY;
         if (tag.contains("Progress", Tag.TAG_COMPOUND)) progress = CarvingProgressStateCodec.read(tag.getCompound("Progress")).orElse(null);
         if (tag.contains("PendingOutputs", Tag.TAG_LIST)) {
@@ -42,6 +44,15 @@ public final class CarvingTableBlockEntity extends BlockEntity {
     }
     public ItemStack material() { return material.copy(); }
     public Optional<CarvingProgressState> progress() { return Optional.ofNullable(progress); }
+    public CarvingSessionState activeSession() { return activeSession; }
+    public synchronized boolean setActiveSession(CarvingSessionState session) {
+        if (progress == null || hasPendingOutputs()) return false;
+        if (activeSession != null && !activeSession.activePlayerId().equals(session.activePlayerId())) return false;
+        activeSession = session; return true;
+    }
+    public synchronized void clearActiveSession(UUID sessionId) {
+        if (activeSession != null && activeSession.sessionId().equals(sessionId)) activeSession = null;
+    }
     public boolean hasPendingOutputs() { return !pendingOutputs.isEmpty(); }
     public synchronized boolean insertMaterial(ItemStack stack) {
         if (!material.isEmpty() || stack.isEmpty() || hasPendingOutputs()) return false;
@@ -66,11 +77,12 @@ public final class CarvingTableBlockEntity extends BlockEntity {
     public synchronized void cancelCompletion() { completionReserved = false; }
     public synchronized boolean commitOutput(ItemStack output) {
         if (!completionReserved || output.isEmpty()) return false;
-        pendingOutputs.add(output.copy()); material = ItemStack.EMPTY; progress = null; completionReserved = false; changed(); return true;
+        pendingOutputs.add(output.copy()); material = ItemStack.EMPTY; progress = null; activeSession = null;
+        completionReserved = false; changed(); return true;
     }
     public synchronized boolean clearBroken() {
         if (material.isEmpty() || progress == null) return false;
-        material = ItemStack.EMPTY; progress = null; completionReserved = false; changed(); return true;
+        material = ItemStack.EMPTY; progress = null; activeSession = null; completionReserved = false; changed(); return true;
     }
     public synchronized boolean collect(ServerPlayer player) {
         if (pendingOutputs.isEmpty()) return false;

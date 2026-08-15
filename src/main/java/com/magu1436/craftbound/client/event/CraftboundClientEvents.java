@@ -11,6 +11,8 @@ import com.magu1436.craftbound.occupations.blacksmith.client.MetalPartColorHandl
 import com.magu1436.craftbound.occupations.blacksmith.client.RoughMetalPartColorHandler;
 import com.magu1436.craftbound.occupations.blacksmith.client.ForgingScreen;
 import com.magu1436.craftbound.occupations.blacksmith.client.ForgingTableBlockEntityRenderer;
+import com.magu1436.craftbound.client.carving.CarvingScreen;
+import com.magu1436.craftbound.client.carving.CarvingPartSelectionScreen;
 import com.magu1436.craftbound.occupations.blacksmith.client.casting.CastingMaskReloadListener;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingScreen;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchScreen;
@@ -49,6 +51,8 @@ public final class CraftboundClientEvents {
             CraftboundMenus.FORGING_TABLE::get,
             ForgingScreen::new
         ),
+        screen(CraftboundMenus.CARVING_PART_SELECTION::get, CarvingPartSelectionScreen::new),
+        screen(CraftboundMenus.CARVING::get, CarvingScreen::new),
         screen(
             CraftboundMenus.RANCH_BLOCK::get,
             RanchScreen::new

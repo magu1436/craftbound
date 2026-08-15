@@ -412,5 +412,9 @@
     "block.craftbound.carving_table": "細工台",
     "item.craftbound.carving_knife": "細工ナイフ",
     "item.craftbound.carving_chisel": "細工ノミ",
-    "item.craftbound.pickaxe_handle": "ピッケルの柄"
+    "item.craftbound.pickaxe_handle": "ピッケルの柄",
+    "container.craftbound.carving_part_selection": "加工先を選択",
+    "container.craftbound.carving_table": "細工台",
+    "button.craftbound.carving.complete": "加工完了",
+    "message.craftbound.carving.wrong_tool": "この道具では加工できなさそうだ"
 }

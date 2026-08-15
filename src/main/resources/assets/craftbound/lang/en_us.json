@@ -418,5 +418,9 @@
     "block.craftbound.carving_table": "Carving Table",
     "item.craftbound.carving_knife": "Carving Knife",
     "item.craftbound.carving_chisel": "Carving Chisel",
-    "item.craftbound.pickaxe_handle": "Pickaxe Handle"
+    "item.craftbound.pickaxe_handle": "Pickaxe Handle",
+    "container.craftbound.carving_part_selection": "Select Part",
+    "container.craftbound.carving_table": "Carving Table",
+    "button.craftbound.carving.complete": "Complete",
+    "message.craftbound.carving.wrong_tool": "This tool does not seem suitable"
 }

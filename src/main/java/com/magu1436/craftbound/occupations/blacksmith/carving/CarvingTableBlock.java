@@ -12,6 +12,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import com.magu1436.craftbound.occupations.blacksmith.carving.definition.*;
+import com.magu1436.craftbound.occupations.blacksmith.carving.menu.*;
+import com.magu1436.craftbound.occupations.blacksmith.forging.session.BlacksmithOperationSessionRegistry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
+import java.util.List;
 
 public final class CarvingTableBlock extends BaseEntityBlock {
     public CarvingTableBlock(Properties properties) { super(properties); }
@@ -42,7 +49,21 @@ public final class CarvingTableBlock extends BaseEntityBlock {
             if (returned.isEmpty()) return InteractionResult.PASS;
             player.setItemInHand(hand, returned); return InteractionResult.CONSUME;
         }
-        // Part selection and carving menus are connected in Step 3.
+        if (table.progress().isPresent()) {
+            var session = BlacksmithOperationSessionRegistry.acquire(serverPlayer, table);
+            if (session.isEmpty()) return InteractionResult.PASS;
+            CarvingMenu.open(serverPlayer, table, session.get());
+            return InteractionResult.CONSUME;
+        }
+        ResourceLocation heldId = ForgeRegistries.ITEMS.getKey(held.getItem());
+        List<NonMetalPartDefinition> candidates = NonMetalPartDefinitions.INSTANCE.matching(table.material())
+            .stream().filter(part -> NonMetalMaterialDefinitions.INSTANCE.get(part.materialProfileId())
+                .map(material -> material.toolItemId().equals(heldId)).orElse(false)).toList();
+        if (candidates.isEmpty()) {
+            player.displayClientMessage(Component.translatable("message.craftbound.carving.wrong_tool"), true);
+            return InteractionResult.CONSUME;
+        }
+        CarvingPartSelectionMenu.open(serverPlayer, pos, candidates);
         return InteractionResult.CONSUME;
     }
     @Override public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
@@ -56,6 +77,7 @@ public final class CarvingTableBlock extends BaseEntityBlock {
         BlockState next, boolean moved) {
         if (state.getBlock() != next.getBlock() && level instanceof ServerLevel server
             && level.getBlockEntity(pos) instanceof CarvingTableBlockEntity table) {
+            BlacksmithOperationSessionRegistry.release(table);
             if (table.progress().isPresent()) CarvingGameService.finalizeCarving(table, null);
             table.dropContents(server);
         }
