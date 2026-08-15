@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingData;
+import com.magu1436.craftbound.occupations.foodproducer.processing.FoodRoleMobEffect;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingRecipeManager;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingTestHooks;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
@@ -22,6 +23,7 @@ import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerExper
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerPendingExperience;
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
+import com.magu1436.craftbound.registry.CraftboundMobEffects;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -33,6 +35,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.ItemStack;
@@ -148,14 +153,21 @@ public final class CraftboundTestCommands {
         cookingPrepare.then(cookingQualityLiteral("high", FoodQuality.HIGH));
         cookingPrepare.then(cookingQualityLiteral("standard", FoodQuality.STANDARD));
         cookingPrepare.then(cookingQualityLiteral("low", FoodQuality.LOW));
+        var cookingDishRecipe = Commands.argument("recipe", ResourceLocationArgument.id());
+        cookingDishRecipe.then(testDishQualityLiteral("high", FoodQuality.HIGH));
+        cookingDishRecipe.then(testDishQualityLiteral("standard", FoodQuality.STANDARD));
+        cookingDishRecipe.then(testDishQualityLiteral("low", FoodQuality.LOW));
         test.then(Commands.literal("cooking")
                 .then(cookingPrepare)
+                .then(Commands.literal("dish").then(cookingDishRecipe))
                 .then(Commands.literal("ingredients")
                         .then(Commands.argument("recipe", ResourceLocationArgument.id())
                                 .executes(context -> giveTestCookingIngredients(
                                         context.getSource(),
                                         ResourceLocationArgument.getId(context, "recipe")
                                 ))))
+                .then(Commands.literal("buffs")
+                        .executes(context -> showCookingBuffs(context.getSource())))
                 .then(Commands.literal("force_upgrade")
                         .executes(context -> forceNextCookingUpgrade(context.getSource()))));
 
@@ -477,6 +489,17 @@ public final class CraftboundTestCommands {
                 .executes(context -> giveTestPreparedSet(context.getSource(), quality));
     }
 
+    private static LiteralArgumentBuilder<CommandSourceStack> testDishQualityLiteral(
+            String name,
+            FoodQuality quality
+    ) {
+        return Commands.literal(name).executes(context -> giveTestDish(
+                context.getSource(),
+                ResourceLocationArgument.getId(context, "recipe"),
+                quality
+        ));
+    }
+
     private static int showNearestProcessingStatus(CommandSourceStack source)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         FoodProcessingBlockEntity processor = nearestProcessing(source);
@@ -539,6 +562,100 @@ public final class CraftboundTestCommands {
                 "command.craftbound.test.cooking.ingredients", recipeId.toString()
         ), false);
         return inputs.size();
+    }
+
+    private static int giveTestDish(
+            CommandSourceStack source,
+            ResourceLocation recipeId,
+            FoodQuality quality
+    ) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        var recipe = FoodCookingRecipeManager.get(recipeId).orElse(null);
+        if (recipe == null) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.cooking.ingredients.unknown", recipeId.toString()
+            ));
+            return 0;
+        }
+        ItemStack dish = recipe.createTestDish(quality, player.serverLevel().getGameTime());
+        if (dish.isEmpty()) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.cooking.dish.unavailable", recipeId.toString()
+            ));
+            return 0;
+        }
+        if (!player.addItem(dish)) {
+            player.drop(dish, false);
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.dish",
+                recipeId.toString(),
+                qualityName(quality)
+        ), false);
+        return 1;
+    }
+
+    private static int showCookingBuffs(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.buffs.adventurer",
+                effectStatus(player, MobEffects.DAMAGE_BOOST),
+                roleEffectStatus(player, CraftboundMobEffects.ADVENTURER_MEAL_ARMOR.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ADVENTURER_MEAL_PROJECTILE_REDUCTION.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ADVENTURER_MEAL_EXPLOSION_REDUCTION.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ADVENTURER_MEAL_ACTION_RESISTANCE.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ADVENTURER_MEAL_BURNING_RESISTANCE.get())
+        ), false);
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.buffs.explorer",
+                effectStatus(player, MobEffects.NIGHT_VISION),
+                roleEffectStatus(player, CraftboundMobEffects.EXPLORER_MEAL_ENDURANCE.get()),
+                roleEffectStatus(player, CraftboundMobEffects.EXPLORER_MEAL_TOOL_CARE.get()),
+                roleEffectStatus(player, CraftboundMobEffects.EXPLORER_MEAL_SURE_FOOTED.get()),
+                roleEffectStatus(player, CraftboundMobEffects.EXPLORER_MEAL_CLIMBING.get()),
+                roleEffectStatus(player, CraftboundMobEffects.EXPLORER_MEAL_DIVING.get())
+        ), false);
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.buffs.architect",
+                effectStatus(player, MobEffects.DIG_SPEED),
+                roleEffectStatus(player, CraftboundMobEffects.ARCHITECT_MEAL_DEMOLITION.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ARCHITECT_MEAL_FALL_REDUCTION.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ARCHITECT_MEAL_PLACEMENT_REACH.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ARCHITECT_MEAL_SCAFFOLDING.get()),
+                roleEffectStatus(player, CraftboundMobEffects.ARCHITECT_MEAL_FIREWORK_CONSERVATION.get())
+        ), false);
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.cooking.buffs.pending",
+                effectStatus(player, MobEffects.LUCK)
+        ), false);
+        return 1;
+    }
+
+    private static String effectStatus(ServerPlayer player, MobEffect effect) {
+        MobEffectInstance instance = player.getEffect(effect);
+        return instance == null
+                ? "-"
+                : (instance.getAmplifier() + 1) + "/" + Math.max(0, instance.getDuration() / 20) + "s";
+    }
+
+    private static String roleEffectStatus(ServerPlayer player, FoodRoleMobEffect effect) {
+        MobEffectInstance instance = player.getEffect(effect);
+        if (instance == null) {
+            return "-";
+        }
+        double amount = effect.decodeEffectiveAmount(instance.getAmplifier());
+        String formatted = formatDecimal(
+                effect.amountDisplay() == FoodRoleMobEffect.AmountDisplay.PERCENT
+                        ? amount * 100.0D
+                        : amount
+        );
+        String unit = switch (effect.amountDisplay()) {
+            case PERCENT -> "%";
+            case FLAT -> "";
+            case BLOCKS -> " blocks";
+        };
+        return formatted + unit + "/" + Math.max(0, instance.getDuration() / 20) + "s";
     }
 
     private static int setHeldQualityCountdown(CommandSourceStack source, int seconds)
@@ -718,5 +835,10 @@ public final class CraftboundTestCommands {
 
     private static String formatFloat(float value) {
         return String.format(java.util.Locale.ROOT, "%.2f", value);
+    }
+
+    private static String formatDecimal(double value) {
+        return String.format(java.util.Locale.ROOT, "%.3f", value)
+                .replaceAll("\\.?0+$", "");
     }
 }

@@ -25,11 +25,6 @@
     "nutrition": 6,
     "saturation_gain": 5.0
   },
-  "effect": {
-    "id": "minecraft:luck",
-    "amplifier": 0,
-    "duration_seconds": 120
-  },
   "preserved": false,
   "experience": 5
 }

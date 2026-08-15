@@ -9,7 +9,6 @@
     { "item": "craftbound:chopped_vegetable", "source_item": "minecraft:carrot", "count": 1 }
   ],
   "food": { "nutrition": 7, "saturation_gain": 6.0 },
-  "effect": { "id": "minecraft:haste", "amplifier": 0, "duration_seconds": 180 },
   "preserved": false,
   "experience": 5
 }

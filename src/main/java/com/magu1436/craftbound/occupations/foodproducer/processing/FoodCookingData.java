@@ -1,8 +1,8 @@
 package com.magu1436.craftbound.occupations.foodproducer.processing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-
-import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.registry.CraftboundItems;
@@ -10,6 +10,8 @@ import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -27,6 +29,9 @@ public final class FoodCookingData {
     private static final String EFFECT_ID = "effect_id";
     private static final String EFFECT_AMPLIFIER = "effect_amplifier";
     private static final String EFFECT_DURATION = "effect_duration";
+    private static final String EFFECTS = "effects";
+    private static final String EFFECT_SHOW_PARTICLES = "show_particles";
+    private static final String EFFECT_SHOW_ICON = "show_icon";
     private static final String QUALITY_CAP = "quality_cap";
     private static final String RATING = "rating";
     private static final String PRESERVED = "preserved";
@@ -47,9 +52,13 @@ public final class FoodCookingData {
                 "item.craftbound.cooking_test_dish",
                 6,
                 5.0F,
-                ResourceLocation.withDefaultNamespace("speed"),
-                0,
-                2 * 60 * 20,
+                List.of(new FoodCookingEffect(
+                        ResourceLocation.withDefaultNamespace("speed"),
+                        0,
+                        2 * 60 * 20,
+                        true,
+                        true
+                )),
                 FoodQuality.HIGH,
                 FoodIntermediateData.SUCCESS_RATING,
                 false,
@@ -79,9 +88,7 @@ public final class FoodCookingData {
             String nameKey,
             int nutrition,
             float saturationGain,
-            @Nullable ResourceLocation effectId,
-            int effectAmplifier,
-            int effectDuration,
+            List<FoodCookingEffect> effects,
             FoodQuality qualityCap,
             int rating,
             boolean preserved,
@@ -93,10 +100,7 @@ public final class FoodCookingData {
         data.putString(NAME_KEY, nameKey);
         data.putInt(NUTRITION, Math.max(1, nutrition));
         data.putFloat(SATURATION_GAIN, Math.max(0.0F, saturationGain));
-        if (effectId == null) data.remove(EFFECT_ID);
-        else data.putString(EFFECT_ID, effectId.toString());
-        data.putInt(EFFECT_AMPLIFIER, Math.max(0, effectAmplifier));
-        data.putInt(EFFECT_DURATION, Math.max(0, effectDuration));
+        writeEffects(data, effects);
         data.putInt(QUALITY_CAP, qualityCap.value());
         data.putInt(RATING, Math.max(0, Math.min(3, rating)));
         data.putBoolean(PRESERVED, preserved);
@@ -133,19 +137,56 @@ public final class FoodCookingData {
     }
 
     public static Optional<ResourceLocation> effectId(ItemStack stack) {
-        CompoundTag data = stack.getTagElement(ROOT);
-        return data == null ? Optional.empty()
-                : Optional.ofNullable(ResourceLocation.tryParse(data.getString(EFFECT_ID)));
+        return effects(stack).stream().findFirst().map(FoodCookingEffect::id);
     }
 
     public static int effectAmplifier(ItemStack stack) {
-        CompoundTag data = stack.getTagElement(ROOT);
-        return data == null ? 0 : Math.max(0, data.getInt(EFFECT_AMPLIFIER));
+        return effects(stack).stream().findFirst()
+                .map(FoodCookingEffect::amplifier).orElse(0);
     }
 
     public static int effectDuration(ItemStack stack) {
+        return effects(stack).stream().findFirst()
+                .map(FoodCookingEffect::durationTicks).orElse(0);
+    }
+
+    /** 新形式を優先し、v2.0以前の単一効果NBTも読み込む。 */
+    public static List<FoodCookingEffect> effects(ItemStack stack) {
         CompoundTag data = stack.getTagElement(ROOT);
-        return data == null ? 0 : Math.max(0, data.getInt(EFFECT_DURATION));
+        if (data == null) {
+            return List.of();
+        }
+        if (data.contains(EFFECTS, Tag.TAG_LIST)) {
+            ListTag stored = data.getList(EFFECTS, Tag.TAG_COMPOUND);
+            List<FoodCookingEffect> result = new ArrayList<>(stored.size());
+            for (int index = 0; index < stored.size(); index++) {
+                CompoundTag effect = stored.getCompound(index);
+                ResourceLocation id = ResourceLocation.tryParse(effect.getString(EFFECT_ID));
+                if (id == null) {
+                    continue;
+                }
+                result.add(new FoodCookingEffect(
+                        id,
+                        effect.getInt(EFFECT_AMPLIFIER),
+                        effect.getInt(EFFECT_DURATION),
+                        effect.getBoolean(EFFECT_SHOW_PARTICLES),
+                        effect.getBoolean(EFFECT_SHOW_ICON)
+                ));
+            }
+            return List.copyOf(result);
+        }
+
+        ResourceLocation legacyId = ResourceLocation.tryParse(data.getString(EFFECT_ID));
+        if (legacyId == null || data.getInt(EFFECT_DURATION) <= 0) {
+            return List.of();
+        }
+        return List.of(new FoodCookingEffect(
+                legacyId,
+                data.getInt(EFFECT_AMPLIFIER),
+                data.getInt(EFFECT_DURATION),
+                true,
+                true
+        ));
     }
 
     public static FoodQuality qualityCap(ItemStack stack) {
@@ -219,5 +260,25 @@ public final class FoodCookingData {
         CompoundTag data = stack.getOrCreateTagElement(ROOT);
         int lowered = qualityCap(stack).value() - degradedStages;
         data.putInt(QUALITY_CAP, Math.max(currentQuality.value(), lowered));
+    }
+
+    private static void writeEffects(CompoundTag data, List<FoodCookingEffect> effects) {
+        ListTag stored = new ListTag();
+        for (FoodCookingEffect effect : effects == null ? List.<FoodCookingEffect>of() : effects) {
+            if (effect.durationTicks() <= 0) {
+                continue;
+            }
+            CompoundTag entry = new CompoundTag();
+            entry.putString(EFFECT_ID, effect.id().toString());
+            entry.putInt(EFFECT_AMPLIFIER, effect.amplifier());
+            entry.putInt(EFFECT_DURATION, effect.durationTicks());
+            entry.putBoolean(EFFECT_SHOW_PARTICLES, effect.showParticles());
+            entry.putBoolean(EFFECT_SHOW_ICON, effect.showIcon());
+            stored.add(entry);
+        }
+        data.put(EFFECTS, stored);
+        data.remove(EFFECT_ID);
+        data.remove(EFFECT_AMPLIFIER);
+        data.remove(EFFECT_DURATION);
     }
 }

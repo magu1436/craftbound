@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
@@ -22,6 +21,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /** データパックから読み込む、混合工程用の料理定義。 */
 public record FoodCookingRecipeDefinition(
@@ -32,9 +32,7 @@ public record FoodCookingRecipeDefinition(
         String nameKey,
         int nutrition,
         float saturationGain,
-        @Nullable ResourceLocation effectId,
-        int effectAmplifier,
-        int effectDuration,
+        List<FoodCookingEffect> effects,
         boolean preserved,
         FoodAutomationPolicy automationPolicy,
         int experience,
@@ -43,6 +41,7 @@ public record FoodCookingRecipeDefinition(
 
     public FoodCookingRecipeDefinition {
         inputs = List.copyOf(inputs);
+        effects = List.copyOf(effects);
         returnedContainer = returnedContainer.copy();
     }
 
@@ -56,18 +55,7 @@ public record FoodCookingRecipeDefinition(
         inputJson.forEach(element -> inputs.add(IngredientRule.fromJson(element.getAsJsonObject())));
 
         JsonObject food = GsonHelper.getAsJsonObject(json, "food");
-        @Nullable ResourceLocation effectId = null;
-        int effectAmplifier = 0;
-        int effectDuration = 0;
-        if (json.has("effect")) {
-            JsonObject effect = GsonHelper.getAsJsonObject(json, "effect");
-            effectId = requiredId(effect, "id");
-            if (!BuiltInRegistries.MOB_EFFECT.containsKey(effectId)) {
-                throw new IllegalArgumentException("unknown effect: " + effectId);
-            }
-            effectAmplifier = Math.max(0, GsonHelper.getAsInt(effect, "amplifier", 0));
-            effectDuration = Math.max(0, GsonHelper.getAsInt(effect, "duration_seconds", 0) * 20);
-        }
+        List<FoodCookingEffect> effects = parseEffects(json);
 
         ItemStack returnedContainer = ItemStack.EMPTY;
         if (json.has("returned_container")) {
@@ -84,9 +72,7 @@ public record FoodCookingRecipeDefinition(
                 GsonHelper.getAsString(json, "name_key"),
                 Math.max(1, GsonHelper.getAsInt(food, "nutrition")),
                 Math.max(0.0F, GsonHelper.getAsFloat(food, "saturation_gain")),
-                effectId,
-                effectAmplifier,
-                effectDuration,
+                effects,
                 GsonHelper.getAsBoolean(json, "preserved", false),
                 FoodAutomationPolicy.fromName(GsonHelper.getAsString(
                         json, "automation_policy", "manual_only"
@@ -127,9 +113,7 @@ public record FoodCookingRecipeDefinition(
                 nameKey,
                 nutrition,
                 saturationGain,
-                effectId,
-                effectAmplifier,
-                effectDuration,
+                effects,
                 qualityCap,
                 FoodIntermediateData.SUCCESS_RATING,
                 preserved,
@@ -159,6 +143,19 @@ public record FoodCookingRecipeDefinition(
         return result;
     }
 
+    public ItemStack createTestDish(FoodQuality quality, long gameTime) {
+        FoodProcessingRecipes.Match match = match(createTestInputs(gameTime));
+        if (match == null) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack output = match.output().copy();
+        if (resultType == ResultType.PREPARED) {
+            output = FoodCookingData.createDish(output);
+        }
+        FoodQualityData.initialize(output, quality, gameTime);
+        return output;
+    }
+
     private boolean assignInput(int inputIndex, List<ItemStack> stacks, boolean[] used, int[] consumed) {
         if (inputIndex >= inputs.size()) return true;
         IngredientRule input = inputs.get(inputIndex);
@@ -177,6 +174,76 @@ public record FoodCookingRecipeDefinition(
         ResourceLocation id = ResourceLocation.tryParse(GsonHelper.getAsString(json, key));
         if (id == null) throw new IllegalArgumentException("invalid resource location in " + key);
         return id;
+    }
+
+    private static List<FoodCookingEffect> parseEffects(JsonObject json) {
+        if (json.has("effect") && json.has("effects")) {
+            throw new IllegalArgumentException("use either effect or effects, not both");
+        }
+        List<FoodCookingEffect> effects = new ArrayList<>();
+        if (json.has("effect")) {
+            effects.add(parseEffect(GsonHelper.getAsJsonObject(json, "effect"), "mob_effect"));
+        }
+        if (json.has("effects")) {
+            JsonArray array = GsonHelper.getAsJsonArray(json, "effects");
+            for (int index = 0; index < array.size(); index++) {
+                JsonObject effect = array.get(index).getAsJsonObject();
+                effects.add(parseEffect(
+                        effect,
+                        GsonHelper.getAsString(effect, "type", "mob_effect")
+                ));
+            }
+        }
+        return List.copyOf(effects);
+    }
+
+    private static FoodCookingEffect parseEffect(JsonObject json, String type) {
+        ResourceLocation effectId = requiredId(json, "id");
+        var effect = ForgeRegistries.MOB_EFFECTS.getValue(effectId);
+        if (effect == null) {
+            throw new IllegalArgumentException("unknown effect: " + effectId);
+        }
+        int durationTicks = secondsToTicks(GsonHelper.getAsInt(json, "duration_seconds", 0));
+        return switch (type) {
+            case "mob_effect" -> new FoodCookingEffect(
+                    effectId,
+                    Math.max(0, GsonHelper.getAsInt(json, "amplifier", 0)),
+                    durationTicks,
+                    GsonHelper.getAsBoolean(json, "show_particles", true),
+                    GsonHelper.getAsBoolean(json, "show_icon", true)
+            );
+            case "attribute_modifier" -> {
+                if (!(effect instanceof FoodRoleMobEffect roleEffect)) {
+                    throw new IllegalArgumentException(
+                            "attribute_modifier requires a FoodRoleMobEffect: " + effectId
+                    );
+                }
+                double amount = GsonHelper.getAsDouble(json, "amount");
+                if (!Double.isFinite(amount)
+                        || amount < 0.0D
+                        || amount > roleEffect.maximumEffectiveAmount()) {
+                    throw new IllegalArgumentException(
+                            "attribute effect amount must be between 0 and "
+                                    + roleEffect.maximumEffectiveAmount()
+                    );
+                }
+                yield new FoodCookingEffect(
+                        effectId,
+                        roleEffect.encodeEffectiveAmount(amount),
+                        durationTicks,
+                        GsonHelper.getAsBoolean(json, "show_particles", false),
+                        GsonHelper.getAsBoolean(json, "show_icon", false)
+                );
+            }
+            default -> throw new IllegalArgumentException("unknown effect type: " + type);
+        };
+    }
+
+    private static int secondsToTicks(int seconds) {
+        if (seconds <= 0) {
+            return 0;
+        }
+        return seconds > Integer.MAX_VALUE / 20 ? Integer.MAX_VALUE : seconds * 20;
     }
 
     private static Item requiredItem(ResourceLocation id) {

@@ -1,0 +1,21 @@
+{
+  "result": "prepared",
+  "automation_policy": "manual_only",
+  "required_recipe_rank": 1,
+  "name_key": "item.craftbound.provisional_builder_vegetable_bread",
+  "inputs": [
+    { "item": "craftbound:dough", "count": 1 },
+    {
+      "item": "craftbound:chopped_vegetable",
+      "source_item": "minecraft:beetroot",
+      "count": 1
+    }
+  ],
+  "food": { "nutrition": 6, "saturation_gain": 5.0 },
+  "effects": [
+    { "type": "mob_effect", "id": "minecraft:haste", "amplifier": 0, "duration_seconds": 300 },
+    { "type": "attribute_modifier", "id": "craftbound:architect_meal_demolition", "amount": 0.15, "duration_seconds": 300 }
+  ],
+  "preserved": false,
+  "experience": 5
+}

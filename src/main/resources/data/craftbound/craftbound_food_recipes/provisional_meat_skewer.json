@@ -15,11 +15,10 @@
     "nutrition": 6,
     "saturation_gain": 5.0
   },
-  "effect": {
-    "id": "minecraft:strength",
-    "amplifier": 0,
-    "duration_seconds": 120
-  },
+  "effects": [
+    { "type": "mob_effect", "id": "minecraft:strength", "amplifier": 0, "duration_seconds": 300 },
+    { "type": "attribute_modifier", "id": "craftbound:adventurer_meal_armor", "amount": 1.0, "duration_seconds": 300 }
+  ],
   "preserved": false,
   "experience": 5
 }

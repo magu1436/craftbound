@@ -11,11 +11,10 @@
     "nutrition": 6,
     "saturation_gain": 5.0
   },
-  "effect": {
-    "id": "minecraft:speed",
-    "amplifier": 0,
-    "duration_seconds": 120
-  },
+  "effects": [
+    { "type": "mob_effect", "id": "minecraft:night_vision", "amplifier": 0, "duration_seconds": 300 },
+    { "type": "attribute_modifier", "id": "craftbound:explorer_meal_endurance", "amount": 0.05, "duration_seconds": 300 }
+  ],
   "preserved": false,
   "experience": 5
 }

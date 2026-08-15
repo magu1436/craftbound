@@ -1,6 +1,7 @@
 package com.magu1436.craftbound.occupations.foodproducer.processing;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nullable;
 
@@ -9,7 +10,6 @@ import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityEffects;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /** NBTの料理定義から食事性能と固有バフを提供する共通完成料理。 */
 public final class FoodDishItem extends Item {
@@ -46,20 +47,24 @@ public final class FoodDishItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         FoodQuality quality = FoodQualityData.getOrStandard(stack);
-        var effectId = FoodCookingData.effectId(stack);
-        int amplifier = FoodCookingData.effectAmplifier(stack);
-        int baseDuration = FoodCookingData.effectDuration(stack);
+        List<FoodCookingEffect> effects = FoodCookingData.effects(stack);
         ItemStack result = super.finishUsingItem(stack, level, entity);
 
-        if (!level.isClientSide && quality != FoodQuality.SPOILED && baseDuration > 0) {
-            effectId.map(BuiltInRegistries.MOB_EFFECT::get)
-                    .filter(effect -> effect != null)
-                    .ifPresent(effect -> entity.addEffect(new MobEffectInstance(
-                            effect,
-                            Math.max(1, (int) Math.round(baseDuration
-                                    * FoodQualityEffects.buffDurationMultiplier(quality))),
-                            amplifier
-                    )));
+        if (!level.isClientSide && quality != FoodQuality.SPOILED) {
+            for (FoodCookingEffect stored : effects) {
+                MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(stored.id());
+                if (effect == null || stored.durationTicks() <= 0) {
+                    continue;
+                }
+                entity.addEffect(new MobEffectInstance(
+                        effect,
+                        scaledDuration(stored.durationTicks(), quality),
+                        stored.amplifier(),
+                        false,
+                        stored.showParticles(),
+                        stored.showIcon()
+                ));
+            }
         }
         return result;
     }
@@ -71,16 +76,49 @@ public final class FoodDishItem extends Item {
                 FoodCookingData.nutrition(stack),
                 FoodCookingData.saturationGain(stack)
         ).withStyle(ChatFormatting.GRAY));
-        FoodCookingData.effectId(stack).ifPresent(id -> {
-            MobEffect effect = BuiltInRegistries.MOB_EFFECT.get(id);
-            if (effect != null && FoodCookingData.effectDuration(stack) > 0) {
+        FoodQuality quality = FoodQualityData.getOrStandard(stack);
+        for (FoodCookingEffect stored : FoodCookingData.effects(stack)) {
+            MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(stored.id());
+            if (effect == null || stored.durationTicks() <= 0) {
+                continue;
+            }
+            int durationSeconds = scaledDuration(stored.durationTicks(), quality) / 20;
+            if (effect instanceof FoodRoleMobEffect roleEffect) {
+                double amount = roleEffect.decodeEffectiveAmount(stored.amplifier());
+                String displayAmount = formatAmount(
+                        roleEffect.amountDisplay() == FoodRoleMobEffect.AmountDisplay.PERCENT
+                                ? amount * 100.0D
+                                : amount
+                );
+                tooltip.add(Component.translatable(
+                        switch (roleEffect.amountDisplay()) {
+                            case PERCENT -> "tooltip.craftbound.cooking.attribute_effect.percent";
+                            case FLAT -> "tooltip.craftbound.cooking.attribute_effect.flat";
+                            case BLOCKS -> "tooltip.craftbound.cooking.attribute_effect.blocks";
+                        },
+                        Component.translatable(effect.getDescriptionId()),
+                        displayAmount,
+                        durationSeconds
+                ).withStyle(ChatFormatting.GRAY));
+            } else {
                 tooltip.add(Component.translatable(
                         "tooltip.craftbound.cooking.effect",
                         Component.translatable(effect.getDescriptionId()),
-                        FoodCookingData.effectAmplifier(stack) + 1,
-                        FoodCookingData.effectDuration(stack) / 20
+                        stored.amplifier() + 1,
+                        durationSeconds
                 ).withStyle(ChatFormatting.GRAY));
             }
-        });
+        }
+    }
+
+    private static int scaledDuration(int baseDuration, FoodQuality quality) {
+        return Math.max(1, (int) Math.round(
+                baseDuration * FoodQualityEffects.buffDurationMultiplier(quality)
+        ));
+    }
+
+    private static String formatAmount(double amount) {
+        return String.format(Locale.ROOT, "%.3f", amount)
+                .replaceAll("\\.?0+$", "");
     }
 }
