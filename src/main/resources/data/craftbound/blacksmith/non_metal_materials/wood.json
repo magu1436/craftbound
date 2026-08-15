@@ -1,0 +1,7 @@
+{
+  "schema_version": 2,
+  "tool": { "item": "craftbound:carving_knife" },
+  "remove_per_pass": 0.5,
+  "path_interpolation": "supercover",
+  "removed_units_per_durability": 8
+}
