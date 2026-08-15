@@ -57,13 +57,22 @@ public final class BlacksmithExperienceService {
     public static AwardResult processCarvingResult(
         ServerPlayer player,
         UUID operatorId,
+        int shapeMatchPercentage,
         boolean success,
         boolean permanentMaterialLoss
     ) {
+        if (shapeMatchPercentage < 0 || shapeMatchPercentage > 100) {
+            throw new IllegalArgumentException(
+                "shapeMatchPercentage must be between 0 and 100"
+            );
+        }
+        int successExperience = success
+            ? CARVING_SUCCESS_EXPERIENCE * shapeMatchPercentage / 100
+            : CARVING_SUCCESS_EXPERIENCE;
         return processResult(
             player,
             operatorId,
-            CARVING_SUCCESS_EXPERIENCE,
+            successExperience,
             success,
             permanentMaterialLoss
         );

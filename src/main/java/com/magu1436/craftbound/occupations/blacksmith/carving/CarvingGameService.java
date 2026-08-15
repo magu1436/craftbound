@@ -62,8 +62,10 @@ public final class CarvingGameService {
             grid, remainder, progress.definitionSnapshot());
         if (new RemainingRatioBreakEvaluator().shouldBreak(grid, progress.definitionSnapshot().idealShape(),
             progress.definitionSnapshot().breakThreshold())) {
+            int shapeMatchPercentage = new IouCarvingShapeEvaluator().evaluate(
+                grid, progress.definitionSnapshot().idealShape());
             CarvingExperienceResult experienceResult = new CarvingExperienceResult(
-                progress.processId(), player.getUUID(), false, true);
+                progress.processId(), player.getUUID(), shapeMatchPercentage, false, true);
             if (!table.clearBroken()) return StrokeResult.ERROR;
             CarvingExperienceHook.onResult(player, experienceResult);
             player.closeContainer(); return StrokeResult.BROKEN;
@@ -95,7 +97,7 @@ public final class CarvingGameService {
         }
         if (grantExperience && operator != null) {
             CarvingExperienceHook.onResult(operator, new CarvingExperienceResult(progress.processId(),
-                operator.getUUID(), true, false));
+                operator.getUUID(), quality, true, false));
         }
         if (deliverToOperator && operator != null) table.collect(operator);
         return FinalizeResult.COMPLETED;

@@ -13,6 +13,7 @@ public final class CarvingExperienceHook {
             BlacksmithExperienceService.processCarvingResult(
                 player,
                 result.operatorId(),
+                result.shapeMatchPercentage(),
                 result.success(),
                 result.permanentMaterialLoss()
             );

@@ -6,11 +6,17 @@ import java.util.UUID;
 public record CarvingExperienceResult(
     UUID resultId,
     UUID operatorId,
+    int shapeMatchPercentage,
     boolean success,
     boolean permanentMaterialLoss
 ) {
     public CarvingExperienceResult {
         Objects.requireNonNull(resultId, "resultId");
         Objects.requireNonNull(operatorId, "operatorId");
+        if (shapeMatchPercentage < 0 || shapeMatchPercentage > 100) {
+            throw new IllegalArgumentException(
+                "shapeMatchPercentage must be between 0 and 100"
+            );
+        }
     }
 }
