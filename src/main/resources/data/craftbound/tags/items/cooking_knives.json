@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "craftbound:cooking_knife"
+    "craftbound:cooking_knife",
+    "craftbound:blacksmith_cooking_knife"
   ]
 }

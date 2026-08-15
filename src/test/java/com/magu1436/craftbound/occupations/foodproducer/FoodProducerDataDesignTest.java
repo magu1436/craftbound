@@ -68,8 +68,12 @@ class FoodProducerDataDesignTest {
         }
 
         JsonObject knifeTag = resource("/data/craftbound/tags/items/cooking_knives.json");
-        assertTrue(knifeTag.getAsJsonArray("values").asList().stream()
-                .anyMatch(value -> value.getAsString().equals("craftbound:cooking_knife")));
+        Set<String> knives = knifeTag.getAsJsonArray("values").asList().stream()
+                .map(value -> value.getAsString())
+                .collect(Collectors.toSet());
+        assertTrue(knives.contains("craftbound:cooking_knife"));
+        assertTrue(knives.contains("craftbound:blacksmith_cooking_knife"));
+        resource("/assets/craftbound/models/item/blacksmith_cooking_knife.json");
     }
 
     @Test
