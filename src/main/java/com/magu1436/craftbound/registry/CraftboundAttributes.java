@@ -249,7 +249,7 @@ public final class CraftboundAttributes {
         createCraftboundAttribute(ALCHEMICAL_THERMAL_RETENTION_NAME, 1.0D);
     public static final RegistryObject<Attribute> ALCHEMICAL_WAIT_TIME_REDUCTION =
         createCraftboundAttribute(ALCHEMICAL_WAIT_TIME_REDUCTION_NAME, 1.0D);
-    public static final RegistryObject<Attribute> ALCHEMIST_AFTEREFFECT_REDUCTION =
+    public static final RegistryObject<Attribute> ALCHEMICAL_AFTEREFFECT_REDUCTION =
         createCraftboundAttribute(ALCHEMICAL_AFTEREFFECT_REDUCTION_NAME, 1.0D);
 
 
