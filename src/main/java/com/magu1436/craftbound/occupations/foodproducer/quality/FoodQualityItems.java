@@ -7,6 +7,7 @@ import com.magu1436.craftbound.occupations.foodproducer.processing.FoodIntermedi
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingData;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodDishItem;
 import com.magu1436.craftbound.occupations.foodproducer.processing.PreparedIngredientSetItem;
+import com.magu1436.craftbound.occupations.foodproducer.foraging.RegionalIngredientItem;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -60,6 +61,9 @@ public final class FoodQualityItems {
 
     public static Optional<FoodQualityCategory> category(ItemStack stack) {
         Item item = stack.getItem();
+        if (item instanceof RegionalIngredientItem) {
+            return Optional.of(FoodQualityCategory.REGIONAL_INGREDIENT);
+        }
         if (MATERIALS.contains(item)
                 || item instanceof FoodIntermediateItem
                 || item instanceof PreparedIngredientSetItem) {

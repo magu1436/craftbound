@@ -326,8 +326,14 @@ public record FoodCookingRecipeDefinition(
         }
 
         ItemStack example() {
-            if (items.isEmpty()) return ItemStack.EMPTY;
-            ItemStack stack = new ItemStack(items.get(0), count);
+            Item exampleItem = items.isEmpty() && tag != null
+                    ? BuiltInRegistries.ITEM.getTag(tag)
+                            .flatMap(named -> named.stream().findFirst())
+                            .map(holder -> holder.value())
+                            .orElse(null)
+                    : items.isEmpty() ? null : items.get(0);
+            if (exampleItem == null) return ItemStack.EMPTY;
+            ItemStack stack = new ItemStack(exampleItem, count);
             if (sourceItem != null) {
                 FoodIntermediateData.setSource(stack, requiredItem(sourceItem));
             }

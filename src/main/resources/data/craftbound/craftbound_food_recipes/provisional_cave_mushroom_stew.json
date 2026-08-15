@@ -5,8 +5,8 @@
   "name_key": "item.craftbound.provisional_cave_mushroom_stew",
   "inputs": [
     { "items": ["minecraft:brown_mushroom", "minecraft:red_mushroom"], "count": 2 },
-    { "item": "craftbound:chopped_vegetable", "source_item": "minecraft:potato", "count": 1 },
-    { "item": "minecraft:potion", "potion": "minecraft:water", "count": 1 }
+    { "item": "minecraft:potion", "potion": "minecraft:water", "count": 1 },
+    { "tag": "craftbound:regional_ingredients/tier_4", "count": 1 }
   ],
   "returned_container": { "item": "minecraft:glass_bottle", "count": 1 },
   "food": { "nutrition": 10, "saturation_gain": 10.0 },

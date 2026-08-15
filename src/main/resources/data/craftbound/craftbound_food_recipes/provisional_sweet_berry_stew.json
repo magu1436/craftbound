@@ -6,9 +6,8 @@
   "inputs": [
     { "item": "craftbound:fruit_pieces", "count": 1 },
     { "item": "minecraft:sugar", "count": 1 },
-    { "item": "minecraft:potion", "potion": "minecraft:water", "count": 1 }
+    { "tag": "craftbound:regional_ingredients/tier_2", "count": 1 }
   ],
-  "returned_container": { "item": "minecraft:glass_bottle", "count": 1 },
   "food": { "nutrition": 7, "saturation_gain": 6.0 },
   "preserved": false,
   "experience": 5

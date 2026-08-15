@@ -10,12 +10,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityCategory;
 
 class FoodProducerDataDesignTest {
 
@@ -149,6 +151,45 @@ class FoodProducerDataDesignTest {
             assertFalse(recipe.has("effect"), file);
             assertFalse(recipe.has("effects"), file);
         }
+    }
+
+    @Test
+    void roleMealsRequireMatchingRegionalIngredientTier() {
+        Map<Integer, List<String>> mealsByRank = Map.of(
+                1, List.of("provisional_work_stew", "provisional_berry_bread",
+                        "provisional_meat_skewer", "provisional_mushroom_soup",
+                        "provisional_builder_vegetable_bread"),
+                2, List.of("provisional_iron_pot_meat_wrap", "provisional_vegetable_wrap",
+                        "provisional_fortified_meat_soup", "provisional_sweet_berry_stew",
+                        "provisional_masons_egg_porridge"),
+                3, List.of("provisional_hearth_meat_dish", "provisional_cave_travel_bread",
+                        "provisional_warrior_meat_pie", "provisional_glow_berry_milk_porridge",
+                        "provisional_foreman_soup"),
+                4, List.of("provisional_artisan_meat_pie", "provisional_cave_mushroom_stew",
+                        "provisional_hero_roast", "provisional_cocoa_tonic_pudding",
+                        "provisional_master_builder_wrap"),
+                5, List.of("provisional_master_table", "provisional_horizon_table",
+                        "provisional_hero_table", "provisional_alchemist_table",
+                        "provisional_architect_table")
+        );
+
+        mealsByRank.forEach((rank, files) -> files.forEach(file -> {
+            JsonObject recipe = resource(FOOD_RECIPE_BASE + file + ".json");
+            assertEquals(rank, recipe.get("required_recipe_rank").getAsInt(), file);
+            var inputs = recipe.getAsJsonArray("inputs");
+            assertEquals(3, inputs.size(), file);
+            long regionalInputs = inputs.asList().stream()
+                    .map(value -> value.getAsJsonObject())
+                    .filter(value -> value.has("tag"))
+                    .filter(value -> value.get("tag").getAsString().equals(
+                            "craftbound:regional_ingredients/tier_" + rank
+                    ))
+                    .count();
+            assertEquals(1L, regionalInputs, file);
+        }));
+
+        assertEquals(24L * 60L * 60L * 20L,
+                FoodQualityCategory.REGIONAL_INGREDIENT.stageDurationTicks());
     }
 
     private static void assertRecipePolicy(String file, int rank, String policy) {

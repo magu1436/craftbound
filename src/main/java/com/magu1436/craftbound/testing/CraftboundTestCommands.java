@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingData;
+import com.magu1436.craftbound.occupations.foodproducer.foraging.RegionalForageBlock;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodRoleMobEffect;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingRecipeManager;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodCookingTestHooks;
@@ -15,6 +16,7 @@ import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQuality;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityData;
 import com.magu1436.craftbound.occupations.foodproducer.quality.FoodQualityItems;
+import com.magu1436.craftbound.occupations.foodproducer.quality.PlayerInventoryQualityEvents;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchAnimalData;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlockEntity;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchManagementEvents;
@@ -24,6 +26,7 @@ import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerPendi
 import com.magu1436.craftbound.occupations.foodproducer.skills.FoodProducerSkills;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlockEntity;
 import com.magu1436.craftbound.registry.CraftboundItemTags;
+import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundMobEffects;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -42,11 +45,15 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import net.puffish.skillsmod.api.Category;
 import net.puffish.skillsmod.api.Experience;
 import net.puffish.skillsmod.api.SkillsAPI;
@@ -153,6 +160,20 @@ public final class CraftboundTestCommands {
         test.then(Commands.literal("storage")
                 .then(Commands.literal("status")
                         .executes(context -> showNearestStorageStatus(context.getSource()))));
+
+        test.then(Commands.literal("foraging")
+                .then(Commands.literal("give")
+                        .executes(context -> giveRegionalIngredients(context.getSource())))
+                .then(Commands.literal("status")
+                        .executes(context -> showNearestForageStatus(context.getSource())))
+                .then(Commands.literal("regrow")
+                        .executes(context -> regrowNearestForage(context.getSource())))
+                .then(Commands.literal("countdown")
+                        .then(Commands.argument("seconds", IntegerArgumentType.integer(1, 600))
+                                .executes(context -> setForageRegrowCountdown(
+                                        context.getSource(),
+                                        IntegerArgumentType.getInteger(context, "seconds")
+                                )))));
 
         LiteralArgumentBuilder<CommandSourceStack> cookingPrepare = Commands.literal("prepare");
         cookingPrepare.then(cookingQualityLiteral("high", FoodQuality.HIGH));
@@ -794,6 +815,127 @@ public final class CraftboundTestCommands {
                 finalTotalItems
         ), false);
         return 1;
+    }
+
+    private static int giveRegionalIngredients(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        List<RegistryObject<net.minecraft.world.item.Item>> ingredients = List.of(
+                CraftboundItems.WILD_GARLIC,
+                CraftboundItems.FOREST_THYME,
+                CraftboundItems.JUNIPER_BERRY,
+                CraftboundItems.CACTUS_FIG,
+                CraftboundItems.WATER_CELERY,
+                CraftboundItems.JUNGLE_PEPPER,
+                CraftboundItems.CHERRY_HERB,
+                CraftboundItems.ALPINE_LEEK,
+                CraftboundItems.MUSHROOM_TRUFFLE,
+                CraftboundItems.ICE_CRYSTAL_BERRY,
+                CraftboundItems.BADLANDS_SAFFRON
+        );
+        long gameTime = player.serverLevel().getGameTime();
+        for (RegistryObject<net.minecraft.world.item.Item> ingredient : ingredients) {
+            ItemStack stack = new ItemStack(ingredient.get(), 4);
+            FoodQualityData.initialize(stack, FoodQuality.STANDARD, gameTime);
+            PlayerInventoryQualityEvents.prepareForInventoryInsertion(player, stack);
+            if (!player.addItem(stack)) player.drop(stack, false);
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.foraging.give",
+                ingredients.size()
+        ), false);
+        return ingredients.size();
+    }
+
+    private static int showNearestForageStatus(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos pos = nearestForage(source);
+        if (pos == null) return 0;
+        BlockState state = source.getLevel().getBlockState(pos);
+        ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(state.getBlock());
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.foraging.status",
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                blockId == null ? "unknown" : blockId.toString(),
+                state.getValue(RegionalForageBlock.HARVESTED)
+        ), false);
+        return 1;
+    }
+
+    private static int regrowNearestForage(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos pos = nearestForage(source);
+        if (pos == null) return 0;
+        BlockState state = source.getLevel().getBlockState(pos);
+        source.getLevel().setBlock(
+                pos,
+                state.setValue(RegionalForageBlock.HARVESTED, false),
+                net.minecraft.world.level.block.Block.UPDATE_CLIENTS
+        );
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.foraging.regrow",
+                pos.getX(),
+                pos.getY(),
+                pos.getZ()
+        ), false);
+        return 1;
+    }
+
+    private static int setForageRegrowCountdown(CommandSourceStack source, int seconds)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        BlockPos pos = nearestForage(source);
+        if (pos == null) return 0;
+        BlockState state = source.getLevel().getBlockState(pos);
+        RegionalForageBlock forage = (RegionalForageBlock) state.getBlock();
+        source.getLevel().setBlock(
+                pos,
+                state.setValue(RegionalForageBlock.HARVESTED, true),
+                net.minecraft.world.level.block.Block.UPDATE_CLIENTS
+        );
+        // 収穫時の48,000 tick予約を消してから、テスト用の短い予約へ置き換える。
+        source.getLevel().getBlockTicks().clearArea(new BoundingBox(pos));
+        source.getLevel().scheduleTick(pos, forage, seconds * 20);
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.foraging.countdown",
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                seconds
+        ), false);
+        return 1;
+    }
+
+    @Nullable
+    private static BlockPos nearestForage(CommandSourceStack source)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        HitResult hit = player.pick(16.0D, 1.0F, false);
+        if (hit instanceof BlockHitResult blockHit
+                && player.serverLevel().getBlockState(blockHit.getBlockPos()).getBlock()
+                        instanceof RegionalForageBlock) {
+            return blockHit.getBlockPos();
+        }
+        BlockPos center = player.blockPosition();
+        BlockPos nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+        for (BlockPos pos : BlockPos.betweenClosed(
+                center.offset(-16, -16, -16),
+                center.offset(16, 16, 16)
+        )) {
+            if (player.serverLevel().getBlockState(pos).getBlock() instanceof RegionalForageBlock) {
+                double distance = pos.distSqr(center);
+                if (distance < nearestDistance) {
+                    nearest = pos.immutable();
+                    nearestDistance = distance;
+                }
+            }
+        }
+        if (nearest == null) {
+            source.sendFailure(Component.translatable("command.craftbound.test.foraging.none"));
+        }
+        return nearest;
     }
 
     @Nullable

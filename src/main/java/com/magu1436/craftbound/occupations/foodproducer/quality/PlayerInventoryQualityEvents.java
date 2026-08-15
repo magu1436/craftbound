@@ -53,7 +53,7 @@ public final class PlayerInventoryQualityEvents {
     @SubscribeEvent
     public static void onItemPickup(EntityItemPickupEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            preparePickedUpStack(player, event.getItem().getItem());
+            prepareForInventoryInsertion(player, event.getItem().getItem());
         }
     }
 
@@ -98,7 +98,8 @@ public final class PlayerInventoryQualityEvents {
     }
 
     /** 拾得前に統合先と時計を揃え、空きスロットがなくてもバニラ回収を成立させる. */
-    private static void preparePickedUpStack(ServerPlayer player, ItemStack pickedUp) {
+    /** 品質時計だけが異なる直接付与アイテムを、既存在庫へ安全に統合できる状態へ揃える。 */
+    public static void prepareForInventoryInsertion(ServerPlayer player, ItemStack pickedUp) {
         long gameTime = player.serverLevel().getGameTime();
         Inventory inventory = player.getInventory();
         for (ItemStack existing : inventory.items) {

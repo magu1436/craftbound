@@ -5,7 +5,8 @@
   "name_key": "item.craftbound.provisional_berry_bread",
   "inputs": [
     { "item": "craftbound:dough", "count": 1 },
-    { "item": "craftbound:fruit_pieces", "count": 1 }
+    { "item": "craftbound:fruit_pieces", "count": 1 },
+    { "tag": "craftbound:regional_ingredients/tier_1", "count": 1 }
   ],
   "food": {
     "nutrition": 6,

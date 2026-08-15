@@ -6,15 +6,11 @@
   "inputs": [
     { "item": "craftbound:sliced_meat", "count": 1 },
     {
-      "item": "craftbound:chopped_vegetable",
-      "source_item": "minecraft:potato",
-      "count": 1
-    },
-    {
       "item": "minecraft:potion",
       "potion": "minecraft:water",
       "count": 1
-    }
+    },
+    { "tag": "craftbound:regional_ingredients/tier_1", "count": 1 }
   ],
   "returned_container": {
     "item": "minecraft:glass_bottle",

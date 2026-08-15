@@ -7,7 +7,9 @@ import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceB
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlock;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlock;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlock;
+import com.magu1436.craftbound.occupations.foodproducer.foraging.RegionalForageBlock;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -104,6 +106,18 @@ public class CraftboundBlocks {
         )
     );
 
+    public static final RegistryObject<Block> WILD_GARLIC = registerRegionalForage("wild_garlic");
+    public static final RegistryObject<Block> FOREST_THYME = registerRegionalForage("forest_thyme");
+    public static final RegistryObject<Block> JUNIPER_BERRY = registerRegionalForage("juniper_berry");
+    public static final RegistryObject<Block> CACTUS_FIG = registerRegionalForage("cactus_fig");
+    public static final RegistryObject<Block> WATER_CELERY = registerRegionalForage("water_celery");
+    public static final RegistryObject<Block> JUNGLE_PEPPER = registerRegionalForage("jungle_pepper");
+    public static final RegistryObject<Block> CHERRY_HERB = registerRegionalForage("cherry_herb");
+    public static final RegistryObject<Block> ALPINE_LEEK = registerRegionalForage("alpine_leek");
+    public static final RegistryObject<Block> MUSHROOM_TRUFFLE = registerRegionalForage("mushroom_truffle");
+    public static final RegistryObject<Block> ICE_CRYSTAL_BERRY = registerRegionalForage("ice_crystal_berry");
+    public static final RegistryObject<Block> BADLANDS_SAFFRON = registerRegionalForage("badlands_saffron");
+
     private static RegistryObject<Block> registerProcessingBlock(
         String id,
         MapColor color,
@@ -114,6 +128,17 @@ public class CraftboundBlocks {
                 .mapColor(color)
                 .strength(2.5F)
                 .sound(sound)
+        ));
+    }
+
+    private static RegistryObject<Block> registerRegionalForage(String id) {
+        return BLOCKS.register(id, () -> new RegionalForageBlock(
+            BlockBehaviour.Properties.copy(Blocks.GRASS)
+                .noCollission()
+                .instabreak()
+                .sound(SoundType.CROP)
+                .offsetType(BlockBehaviour.OffsetType.XZ),
+            new ResourceLocation(Craftbound.MODID, id)
         ));
     }
 
