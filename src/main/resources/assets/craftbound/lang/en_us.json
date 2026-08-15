@@ -414,5 +414,6 @@
     "command.craftbound.test.foraging.status": "Position=(%s,%s,%s) Forage=%s Harvested=%s",
     "command.craftbound.test.foraging.regrow": "Regrew the forage source at (%s,%s,%s).",
     "command.craftbound.test.foraging.countdown": "Marked the forage at (%s,%s,%s) harvested; it will regrow in %s seconds.",
-    "command.craftbound.test.foraging.none": "No regional forage source was found within 16 blocks."
+    "command.craftbound.test.foraging.none": "No regional forage source was found within 16 blocks.",
+    "message.craftbound.blacksmith.experience_gained": "Blacksmith XP +%s"
 }
