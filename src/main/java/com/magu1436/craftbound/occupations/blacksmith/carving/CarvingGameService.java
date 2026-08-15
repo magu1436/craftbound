@@ -62,7 +62,11 @@ public final class CarvingGameService {
             grid, remainder, progress.definitionSnapshot());
         if (new RemainingRatioBreakEvaluator().shouldBreak(grid, progress.definitionSnapshot().idealShape(),
             progress.definitionSnapshot().breakThreshold())) {
-            table.clearBroken(); player.closeContainer(); return StrokeResult.BROKEN;
+            CarvingExperienceResult experienceResult = new CarvingExperienceResult(
+                progress.processId(), player.getUUID(), false, true);
+            if (!table.clearBroken()) return StrokeResult.ERROR;
+            CarvingExperienceHook.onResult(player, experienceResult);
+            player.closeContainer(); return StrokeResult.BROKEN;
         }
         if (!table.updateProgress(updated)) return StrokeResult.ERROR;
         if (damageTool(player, damageRequests)) { player.closeContainer(); return StrokeResult.TOOL_BROKEN; }
