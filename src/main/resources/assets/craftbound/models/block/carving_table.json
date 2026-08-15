@@ -1,9 +1,8 @@
 {
-  "parent": "minecraft:block/cube",
+  "parent": "minecraft:block/orientable",
   "textures": {
-    "up": "minecraft:block/crafting_table_top", "down": "minecraft:block/oak_planks",
-    "north": "minecraft:block/crafting_table_front", "south": "minecraft:block/crafting_table_front",
-    "east": "minecraft:block/crafting_table_side", "west": "minecraft:block/crafting_table_side",
-    "particle": "minecraft:block/oak_planks"
+    "top": "craftbound:block/carving_table_top",
+    "front": "craftbound:block/carving_table_front",
+    "side": "craftbound:block/carving_table_side"
   }
 }
