@@ -10,6 +10,7 @@ import com.magu1436.craftbound.occupations.adventurer.rewards.AdventurerRewardsF
 import com.magu1436.craftbound.occupations.architect.ArchitectConfig;
 import com.magu1436.craftbound.occupations.architect.experience.ArchitectConstructionExperienceSource;
 import com.magu1436.craftbound.occupations.architect.rewards.ArchitectRewardFactory;
+import com.magu1436.craftbound.occupations.blacksmith.experience.BlacksmithProcessExperienceSource;
 import com.magu1436.craftbound.occupations.blacksmith.reward.BlacksmithRewardsFactory;
 import com.magu1436.craftbound.occupations.explorer.integration.PufferfishExplorerExperienceGateway;
 import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
@@ -75,6 +76,7 @@ public class Craftbound {
         AdventurerMobKillExperienceSource.register();
         PufferfishExplorerExperienceGateway.register();
         ArchitectConstructionExperienceSource.register();
+        BlacksmithProcessExperienceSource.register();
 
         AdventurerRewardsFactory.registerRewards();
         ArchitectRewardFactory.registerRewards();

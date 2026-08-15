@@ -6,5 +6,10 @@
       "expression": "floor(min(level ^ 1.432 + 10, 200))"
     }
   },
-  "sources": []
+  "sources": [
+    {
+      "type": "craftbound:blacksmith_process",
+      "data": {}
+    }
+  ]
 }
