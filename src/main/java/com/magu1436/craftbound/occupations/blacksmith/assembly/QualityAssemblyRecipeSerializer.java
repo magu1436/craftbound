@@ -4,10 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalMaterialDefinitions;
-import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalPartDefinitions;
-import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitions;
-import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefinitions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -136,20 +132,12 @@ public final class QualityAssemblyRecipeSerializer implements RecipeSerializer<Q
             case "metal_part" -> {
                 ResourceLocation partType = requiredId(json, "part_type");
                 ResourceLocation material = requiredId(json, "material");
-                require(MetalPartDefinitions.INSTANCE.get(partType).isPresent(),
-                    "unknown metal part type `" + partType + "`");
-                require(MetalMaterialDefinitions.INSTANCE.get(material).isPresent(),
-                    "unknown metal material `" + material + "`");
                 yield new MetalPartAssemblyIngredient(partType, material,
                     GsonHelper.getAsBoolean(json, "contributes_to_quality", false));
             }
             case "nonmetal_part" -> {
                 ResourceLocation partType = requiredId(json, "part_type");
                 ResourceLocation material = requiredId(json, "material");
-                require(NonMetalPartDefinitions.INSTANCE.get(partType).isPresent(),
-                    "unknown non-metal part type `" + partType + "`");
-                require(NonMetalMaterialDefinitions.INSTANCE.get(material).isPresent(),
-                    "unknown non-metal material `" + material + "`");
                 yield new NonMetalPartAssemblyIngredient(partType, material,
                     GsonHelper.getAsBoolean(json, "contributes_to_quality", false));
             }
