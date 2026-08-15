@@ -163,78 +163,94 @@ public final class CraftboundAttributes {
         );
 
 
-        // 探検家
+    // 探検家
 
-        public static final String EXPEDITION_ENDURANCE_NAME = "expedition_endurance";
-        public static final String DIVING_NAME = "diving";
-        public static final String CLIMBING_NAME = "climbing";
-        public static final String TOOL_CARE_NAME = "tool_care";
-        public static final String SOUL_SAND_TRAVERSAL_NAME = "soul_sand_traversal";
-        public static final String BUSHWHACKING_NAME = "bushwhacking";
-        public static final String POWDER_SNOW_TRAVERSAL_NAME = "powder_snow_traversal";
-        public static final String COLD_ADAPTATION_NAME = "cold_adaptation";
+    public static final String EXPEDITION_ENDURANCE_NAME = "expedition_endurance";
+    public static final String DIVING_NAME = "diving";
+    public static final String CLIMBING_NAME = "climbing";
+    public static final String TOOL_CARE_NAME = "tool_care";
+    public static final String SOUL_SAND_TRAVERSAL_NAME = "soul_sand_traversal";
+    public static final String BUSHWHACKING_NAME = "bushwhacking";
+    public static final String POWDER_SNOW_TRAVERSAL_NAME = "powder_snow_traversal";
+    public static final String COLD_ADAPTATION_NAME = "cold_adaptation";
 
-        /**
-         * 遠征歩行の取得段階
-         */
-        public static final RegistryObject<Attribute> EXPEDITION_ENDURANCE =
-            ATTRIBUTES.register(
-                EXPEDITION_ENDURANCE_NAME,
-                () -> new RangedAttribute(
-                    createTranslateName(EXPEDITION_ENDURANCE_NAME),
-                    0.0D,
-                    0.0D,
-                    1.0D
-                ).setSyncable(true)
-            );
+    /**
+     * 遠征歩行の取得段階
+     */
+    public static final RegistryObject<Attribute> EXPEDITION_ENDURANCE =
+        ATTRIBUTES.register(
+            EXPEDITION_ENDURANCE_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(EXPEDITION_ENDURANCE_NAME),
+                0.0D,
+                0.0D,
+                1.0D
+            ).setSyncable(true)
+        );
 
-        public static final RegistryObject<Attribute> DIVING =
-            createCraftboundAttribute(DIVING_NAME, 1.0D);
+    public static final RegistryObject<Attribute> DIVING =
+        createCraftboundAttribute(DIVING_NAME, 1.0D);
 
-        public static final RegistryObject<Attribute> CLIMBING =
-            createCraftboundAttribute(CLIMBING_NAME, 1.0D);
+    public static final RegistryObject<Attribute> CLIMBING =
+        createCraftboundAttribute(CLIMBING_NAME, 1.0D);
 
-        public static final RegistryObject<Attribute> TOOL_CARE =
-            createCraftboundAttribute(TOOL_CARE_NAME, 1.0D);
+    public static final RegistryObject<Attribute> TOOL_CARE =
+        createCraftboundAttribute(TOOL_CARE_NAME, 1.0D);
 
-        public static final RegistryObject<Attribute> SOUL_SAND_TRAVERSAL =
-            createCraftboundAttribute(SOUL_SAND_TRAVERSAL_NAME, 1.0D);
+    public static final RegistryObject<Attribute> SOUL_SAND_TRAVERSAL =
+        createCraftboundAttribute(SOUL_SAND_TRAVERSAL_NAME, 1.0D);
 
-        public static final RegistryObject<Attribute> BUSHWHACKING =
-            createCraftboundAttribute(BUSHWHACKING_NAME, 1.0D);
+    public static final RegistryObject<Attribute> BUSHWHACKING =
+        createCraftboundAttribute(BUSHWHACKING_NAME, 1.0D);
 
-        public static final RegistryObject<Attribute> POWDER_SNOW_TRAVERSAL =
-            createCraftboundAttribute(POWDER_SNOW_TRAVERSAL_NAME, 1.0D);
+    public static final RegistryObject<Attribute> POWDER_SNOW_TRAVERSAL =
+        createCraftboundAttribute(POWDER_SNOW_TRAVERSAL_NAME, 1.0D);
 
-        public static final RegistryObject<Attribute> COLD_ADAPTATION =
-            createCraftboundAttribute(COLD_ADAPTATION_NAME, 1.0D);
+    public static final RegistryObject<Attribute> COLD_ADAPTATION =
+        createCraftboundAttribute(COLD_ADAPTATION_NAME, 1.0D);
 
 
-        // 建築家
-        public static final String SCAFFOLDING_MOBILITY_NAME = "scaffolding_mobility";
-        public static final String DEMOLITION_SPEED_NAME = "demolition_speed";
-        public static final String FALL_DAMAGE_REDUCTION_NAME = "fall_damage_reduction";
-        public static final String FIREWORK_CONSERVATION_CHANCE_NAME = "firework_conservation_chance";
+    // 建築家
+    public static final String SCAFFOLDING_MOBILITY_NAME = "scaffolding_mobility";
+    public static final String DEMOLITION_SPEED_NAME = "demolition_speed";
+    public static final String FALL_DAMAGE_REDUCTION_NAME = "fall_damage_reduction";
+    public static final String FIREWORK_CONSERVATION_CHANCE_NAME = "firework_conservation_chance";
 
-        public static final RegistryObject<Attribute> SCAFFOLDING_MOBILITY =
-            createCraftboundAttribute(SCAFFOLDING_MOBILITY_NAME, 5.0D);
+    public static final RegistryObject<Attribute> SCAFFOLDING_MOBILITY =
+        createCraftboundAttribute(SCAFFOLDING_MOBILITY_NAME, 5.0D);
 
-        public static final RegistryObject<Attribute> DEMOLITION_SPEED =
-            ATTRIBUTES.register(
-                DEMOLITION_SPEED_NAME,
-                () -> new RangedAttribute(
-                    createTranslateName(DEMOLITION_SPEED_NAME),
-                    1.0D,
-                    1.0D,
-                    5.0D
-                ).setSyncable(true)
-            );
+    public static final RegistryObject<Attribute> DEMOLITION_SPEED =
+        ATTRIBUTES.register(
+            DEMOLITION_SPEED_NAME,
+            () -> new RangedAttribute(
+                createTranslateName(DEMOLITION_SPEED_NAME),
+                1.0D,
+                1.0D,
+                5.0D
+            ).setSyncable(true)
+        );
 
-        public static final RegistryObject<Attribute> FALL_DAMAGE_REDUCTION =
-            createCraftboundAttribute(FALL_DAMAGE_REDUCTION_NAME, 1.0D);
+    public static final RegistryObject<Attribute> FALL_DAMAGE_REDUCTION =
+        createCraftboundAttribute(FALL_DAMAGE_REDUCTION_NAME, 1.0D);
 
-        public static final RegistryObject<Attribute> FIREWORK_CONSERVATION_CHANCE =
-            createCraftboundAttribute(FIREWORK_CONSERVATION_CHANCE_NAME, 1.0D);
+    public static final RegistryObject<Attribute> FIREWORK_CONSERVATION_CHANCE =
+        createCraftboundAttribute(FIREWORK_CONSERVATION_CHANCE_NAME, 1.0D);
+    
+
+    // 錬金術師
+    public static final String ALCHEMICAL_FINE_HEAT_REDUCTION_NAME = "alchemical_fine_heat_reduction";
+    public static final String ALCHEMICAL_THERMAL_RETENTION_NAME = "alchemical_thermal_retention";
+    public static final String ALCHEMICAL_WAIT_TIME_REDUCTION_NAME = "alchemical_wait_time_reduction";
+    public static final String ALCHEMICAL_AFTEREFFECT_REDUCTION_NAME = "alchemical_aftereffect_reduction";
+
+    public static final RegistryObject<Attribute> ALCHEMICAL_FINE_HEAT_REDUCTION = 
+        createCraftboundAttribute(ALCHEMICAL_FINE_HEAT_REDUCTION_NAME, 1.0D);
+    public static final RegistryObject<Attribute> ALCHEMICAL_THERMAL_RETENTION = 
+        createCraftboundAttribute(ALCHEMICAL_THERMAL_RETENTION_NAME, 1.0D);
+    public static final RegistryObject<Attribute> ALCHEMICAL_WAIT_TIME_REDUCTION =
+        createCraftboundAttribute(ALCHEMICAL_WAIT_TIME_REDUCTION_NAME, 1.0D);
+    public static final RegistryObject<Attribute> ALCHEMIST_AFTEREFFECT_REDUCTION =
+        createCraftboundAttribute(ALCHEMICAL_AFTEREFFECT_REDUCTION_NAME, 1.0D);
 
 
     public static void register(IEventBus modEventBus) {
