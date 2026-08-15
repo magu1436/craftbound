@@ -74,11 +74,15 @@ public final class CarvingGameService {
     }
 
     public static FinalizeResult finalizeCarving(CarvingTableBlockEntity table, ServerPlayer operator) {
-        return finalizeCarving(table, operator, true);
+        return finalizeCarving(table, operator, true, true);
     }
 
-    public static FinalizeResult finalizeCarving(CarvingTableBlockEntity table, ServerPlayer operator,
-        boolean deliverToOperator) {
+    public static FinalizeResult finalizeCarvingWithoutExperience(CarvingTableBlockEntity table) {
+        return finalizeCarving(table, null, false, false);
+    }
+
+    private static FinalizeResult finalizeCarving(CarvingTableBlockEntity table, ServerPlayer operator,
+        boolean deliverToOperator, boolean grantExperience) {
         if (!table.reserveCompletion()) return FinalizeResult.REJECTED;
         CarvingProgressState progress = table.progress().orElse(null);
         if (progress == null) { table.cancelCompletion(); return FinalizeResult.UNSELECTED; }
@@ -89,11 +93,11 @@ public final class CarvingGameService {
         if (!QualityStateService.setQuality(output, quality) || !table.commitOutput(output)) {
             table.cancelCompletion(); return FinalizeResult.ERROR;
         }
-        if (operator != null) {
+        if (grantExperience && operator != null) {
             CarvingExperienceHook.onResult(operator, new CarvingExperienceResult(progress.processId(),
                 operator.getUUID(), true, false));
-            if (deliverToOperator) table.collect(operator);
         }
+        if (deliverToOperator && operator != null) table.collect(operator);
         return FinalizeResult.COMPLETED;
     }
 
