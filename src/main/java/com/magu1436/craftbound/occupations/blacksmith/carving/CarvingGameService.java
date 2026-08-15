@@ -87,7 +87,7 @@ public final class CarvingGameService {
         }
         if (operator != null) {
             CarvingExperienceHook.onResult(operator, new CarvingExperienceResult(progress.processId(),
-                operator.getUUID(), progress.definitionSnapshot().ingredientCount(), true, false));
+                operator.getUUID(), true, false));
             if (deliverToOperator) table.collect(operator);
         }
         return FinalizeResult.COMPLETED;
