@@ -92,6 +92,9 @@ public final class CarvingScreen extends AbstractContainerScreen<CarvingMenu> {
         int[] hover = cell(mouseX, mouseY);
         if (hover != null) renderBrushPreview(graphics, grid, hover[0], hover[1], gx, gy);
     }
+    @Override protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        // The material-to-part header replaces the standard menu and inventory labels.
+    }
     @Override public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics); super.render(graphics, mouseX, mouseY, partialTick);
         CarvingSessionSyncPacket session = CarvingClientSessionState.session();

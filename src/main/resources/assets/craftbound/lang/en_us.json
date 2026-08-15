@@ -422,5 +422,8 @@
     "container.craftbound.carving_part_selection": "Select Part",
     "container.craftbound.carving_table": "Carving Table",
     "button.craftbound.carving.complete": "Complete",
-    "message.craftbound.carving.wrong_tool": "This tool does not seem suitable"
+    "message.craftbound.carving.wrong_tool": "This tool does not seem suitable",
+    "command.craftbound.test.carving.quality.invalid_item": "Hold a non-metal part in your main hand.",
+    "command.craftbound.test.carving.quality.untracked": "%s has no quality data.",
+    "command.craftbound.test.carving.quality.get": "%s quality: %s / 100"
 }

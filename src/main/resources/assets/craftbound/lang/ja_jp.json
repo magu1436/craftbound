@@ -416,5 +416,8 @@
     "container.craftbound.carving_part_selection": "加工先を選択",
     "container.craftbound.carving_table": "細工台",
     "button.craftbound.carving.complete": "加工完了",
-    "message.craftbound.carving.wrong_tool": "この道具では加工できなさそうだ"
+    "message.craftbound.carving.wrong_tool": "この道具では加工できなさそうだ",
+    "command.craftbound.test.carving.quality.invalid_item": "メインハンドに非金属パーツを持ってください。",
+    "command.craftbound.test.carving.quality.untracked": "%sに品質データがありません。",
+    "command.craftbound.test.carving.quality.get": "%sの品質：%s / 100"
 }

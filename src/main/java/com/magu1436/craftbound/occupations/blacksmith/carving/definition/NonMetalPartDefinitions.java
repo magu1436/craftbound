@@ -23,6 +23,11 @@ public final class NonMetalPartDefinitions extends SimpleJsonResourceReloadListe
     public List<NonMetalPartDefinition> matching(ItemStack stack) {
         return definitions.values().stream().filter(value -> value.matches(stack)).toList();
     }
+    public boolean isOutput(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        return definitions.values().stream().anyMatch(value -> value.outputItemId().equals(itemId));
+    }
     @Override protected void apply(Map<ResourceLocation, JsonElement> input, ResourceManager manager,
                                    ProfilerFiller profiler) {
         Map<ResourceLocation, NonMetalPartDefinition> loaded = new HashMap<>();

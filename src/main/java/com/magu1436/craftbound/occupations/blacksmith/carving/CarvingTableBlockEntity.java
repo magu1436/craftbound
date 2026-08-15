@@ -110,6 +110,7 @@ public final class CarvingTableBlockEntity extends BlockEntity {
     }
     @Override public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
+        tag.putBoolean("HasMaterial", !material.isEmpty());
         if (!material.isEmpty()) tag.put("Material", material.save(new CompoundTag()));
         return tag;
     }
@@ -118,7 +119,10 @@ public final class CarvingTableBlockEntity extends BlockEntity {
         if (packet.getTag() != null) handleUpdateTag(packet.getTag());
     }
     @Override public void handleUpdateTag(CompoundTag tag) {
-        clientMaterial = tag.contains("Material", Tag.TAG_COMPOUND)
+        boolean hasMaterial = tag.contains("HasMaterial", Tag.TAG_BYTE)
+            ? tag.getBoolean("HasMaterial")
+            : tag.contains("Material", Tag.TAG_COMPOUND);
+        clientMaterial = hasMaterial && tag.contains("Material", Tag.TAG_COMPOUND)
             ? ItemStack.of(tag.getCompound("Material")) : ItemStack.EMPTY;
     }
 }

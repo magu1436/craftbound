@@ -9,7 +9,9 @@ import net.minecraft.world.entity.player.Inventory;
 
 public final class CarvingPartSelectionScreen extends AbstractContainerScreen<CarvingPartSelectionMenu> {
     public CarvingPartSelectionScreen(CarvingPartSelectionMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title); imageWidth = 220; imageHeight = 166;
+        super(menu, inventory, title);
+        imageWidth = 220;
+        imageHeight = Math.max(62, 38 + menu.candidates().size() * 24);
     }
     @Override protected void init() {
         super.init(); int y = topPos + 30;
@@ -24,6 +26,9 @@ public final class CarvingPartSelectionScreen extends AbstractContainerScreen<Ca
     }
     @Override protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, 0xFF202020);
+    }
+    @Override protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawCenteredString(font, title, imageWidth / 2, 10, 0xFFFFFF);
     }
     @Override public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics); super.render(graphics, mouseX, mouseY, partialTick);
