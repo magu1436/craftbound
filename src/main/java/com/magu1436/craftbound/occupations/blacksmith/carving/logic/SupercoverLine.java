@@ -20,13 +20,16 @@ public final class SupercoverLine {
         for (int ix = 0, iy = 0; ix < nx || iy < ny;) {
             long decision = (1L + 2L * ix) * ny - (1L + 2L * iy) * nx;
             if (decision == 0) {
+                cells.add(new CarvingBrush.Cell(x + signX, y));
+                cells.add(new CarvingBrush.Cell(x, y + signY));
                 x += signX; y += signY; ix++; iy++;
             } else if (decision < 0) {
                 x += signX; ix++;
             } else {
                 y += signY; iy++;
             }
-            cells.add(new CarvingBrush.Cell(x, y));
+            CarvingBrush.Cell cell = new CarvingBrush.Cell(x, y);
+            if (!cells.get(cells.size() - 1).equals(cell)) cells.add(cell);
         }
         return List.copyOf(cells);
     }

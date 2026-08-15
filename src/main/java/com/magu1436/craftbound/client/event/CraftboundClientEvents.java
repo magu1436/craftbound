@@ -13,6 +13,8 @@ import com.magu1436.craftbound.occupations.blacksmith.client.ForgingScreen;
 import com.magu1436.craftbound.occupations.blacksmith.client.ForgingTableBlockEntityRenderer;
 import com.magu1436.craftbound.client.carving.CarvingScreen;
 import com.magu1436.craftbound.client.carving.CarvingPartSelectionScreen;
+import com.magu1436.craftbound.client.carving.CarvingTableBlockEntityRenderer;
+import com.magu1436.craftbound.client.carving.DefaultCarvingMaterialTextureProvider;
 import com.magu1436.craftbound.occupations.blacksmith.client.casting.CastingMaskReloadListener;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingScreen;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchScreen;
@@ -108,6 +110,7 @@ public final class CraftboundClientEvents {
             @Override
             public void onResourceManagerReload(ResourceManager resourceManager) {
                 MetalRenderColorResolver.clearCache();
+                DefaultCarvingMaterialTextureProvider.INSTANCE.clearCache();
             }
         });
     }
@@ -122,6 +125,8 @@ public final class CraftboundClientEvents {
             CraftboundBlockEntities.CASTING_TABLE.get(),
             CastingTableRenderer::new
         );
+        event.registerBlockEntityRenderer(CraftboundBlockEntities.CARVING_TABLE.get(),
+            CarvingTableBlockEntityRenderer::new);
     }
 
     private static <

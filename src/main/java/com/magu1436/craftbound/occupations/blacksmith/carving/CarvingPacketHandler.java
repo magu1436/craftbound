@@ -3,6 +3,10 @@ package com.magu1436.craftbound.occupations.blacksmith.carving;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.network.packet.*;
 import com.magu1436.craftbound.occupations.blacksmith.carving.logic.*;
+import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalMaterialDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.carving.evaluation.RemainingRatioBreakEvaluator;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import com.magu1436.craftbound.occupations.blacksmith.carving.menu.CarvingMenu;
 import com.magu1436.craftbound.occupations.blacksmith.carving.session.CarvingSessionState;
 import com.magu1436.craftbound.occupations.blacksmith.data.*;
@@ -10,6 +14,8 @@ import com.magu1436.craftbound.occupations.blacksmith.forging.session.Blacksmith
 import com.magu1436.craftbound.occupations.blacksmith.forging.session.BlacksmithOperationSessionRegistry.CarvingBinding;
 import java.util.*;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public final class CarvingPacketHandler {
     private CarvingPacketHandler() {}
@@ -31,11 +37,16 @@ public final class CarvingPacketHandler {
         CarvingGrid after = binding.table().progress().map(value -> value.carvingGrid()).orElse(before);
         CraftboundNetwork.sendToPlayer(player, new CarvingDeltaSyncPacket(binding.session().sessionId(),
             packet.sequence(), changes(before, after)));
+        double retention = binding.table().progress().map(value -> new RemainingRatioBreakEvaluator()
+            .retention(value.carvingGrid(), value.definitionSnapshot().idealShape())).orElse(1.0D);
+        double warning = binding.table().progress().map(value -> value.definitionSnapshot().warningRetention()).orElse(0.0D);
         CarvingFeedbackPacket.Status feedback = switch (result) {
             case BROKEN -> CarvingFeedbackPacket.Status.BROKEN;
             case TOOL_BROKEN -> CarvingFeedbackPacket.Status.TOOL_BROKEN;
-            default -> CarvingFeedbackPacket.Status.ACCEPTED;
+            default -> retention <= warning ? CarvingFeedbackPacket.Status.WARNING : CarvingFeedbackPacket.Status.ACCEPTED;
         };
+        if (feedback == CarvingFeedbackPacket.Status.WARNING) player.serverLevel().playSound(null,
+            binding.table().getBlockPos(), SoundEvents.WOOD_HIT, SoundSource.BLOCKS, 0.25F, 0.65F);
         CraftboundNetwork.sendToPlayer(player, new CarvingFeedbackPacket(feedback));
         if (result == CarvingGameService.StrokeResult.BROKEN || result == CarvingGameService.StrokeResult.TOOL_BROKEN) {
             BlacksmithOperationSessionRegistry.release(binding.table()); player.closeContainer();
@@ -51,7 +62,10 @@ public final class CarvingPacketHandler {
     public static void syncFull(ServerPlayer player, CarvingTableBlockEntity table, CarvingSessionState session) {
         table.progress().ifPresent(progress -> CraftboundNetwork.sendToPlayer(player, new CarvingSessionSyncPacket(
             session.sessionId(), session.lastSequence(), progress.brushRadius(),
-            progress.definitionSnapshot().removePerPass(), progress.carvingGrid())));
+            progress.definitionSnapshot().removePerPass(), progress.carvingGrid(), table.material(),
+            new ItemStack(ForgeRegistries.ITEMS.getValue(progress.definitionSnapshot().outputItemId())),
+            NonMetalMaterialDefinitions.INSTANCE.get(progress.materialProfileId())
+                .map(value -> value.carvingTexture()).orElse(null))));
     }
     private static Optional<Validated> validate(ServerPlayer player, UUID sessionId, long sequence) {
         if (!(player.containerMenu instanceof CarvingMenu menu) || !menu.stillValid(player)) return Optional.empty();

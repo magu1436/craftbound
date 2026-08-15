@@ -15,7 +15,7 @@ public final class CarvingPartSelectionScreen extends AbstractContainerScreen<Ca
         super.init(); int y = topPos + 30;
         for (int i = 0; i < menu.candidates().size(); i++) {
             int button = i;
-            addRenderableWidget(Button.builder(Component.literal(menu.candidates().get(i).getPath()), value -> {
+            addRenderableWidget(Button.builder(menu.candidates().get(i).output().getHoverName(), value -> {
                 if (minecraft != null && minecraft.gameMode != null)
                     minecraft.gameMode.handleInventoryButtonClick(menu.containerId, button);
             }).bounds(leftPos + 20, y, 180, 20).build());

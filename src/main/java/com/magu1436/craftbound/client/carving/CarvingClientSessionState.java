@@ -14,10 +14,12 @@ public final class CarvingClientSessionState {
     private static long nextSequence;
     private static final NavigableMap<Long, CarvingStroke> pending = new TreeMap<>();
     private static CarvingFeedbackPacket.Status feedback;
+    private static long feedbackSequence;
+    private static CarvingSessionSyncPacket session;
     private CarvingClientSessionState() {}
 
     public static void full(CarvingSessionSyncPacket packet) {
-        sessionId = packet.sessionId(); authoritativeGrid = packet.grid().copy();
+        session = packet; sessionId = packet.sessionId(); authoritativeGrid = packet.grid().copy();
         predictedGrid = packet.grid().copy(); brushRadius = packet.brushRadius(); removePerPass = packet.removePerPass();
         nextSequence = Math.max(nextSequence, packet.ackSequence() + 1L); pending.clear();
     }
@@ -46,7 +48,10 @@ public final class CarvingClientSessionState {
     }
     public static CarvingGrid predictedGrid() { return predictedGrid == null ? null : predictedGrid.copy(); }
     public static UUID sessionId() { return sessionId; }
-    public static void feedback(CarvingFeedbackPacket packet) { feedback = packet.status(); }
+    public static void feedback(CarvingFeedbackPacket packet) { feedback = packet.status(); feedbackSequence++; }
     public static CarvingFeedbackPacket.Status feedback() { return feedback; }
-    public static void clear() { sessionId = null; authoritativeGrid = null; predictedGrid = null; pending.clear(); feedback = null; nextSequence = 0; }
+    public static long feedbackSequence() { return feedbackSequence; }
+    public static CarvingSessionSyncPacket session() { return session; }
+    public static void clear() { session = null; sessionId = null; authoritativeGrid = null; predictedGrid = null;
+        pending.clear(); feedback = null; feedbackSequence = 0; nextSequence = 0; }
 }

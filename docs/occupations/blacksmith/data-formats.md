@@ -270,14 +270,14 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 | `shape` | 必須 | パーツ種別ごとに `shapes/` へ定義した理想形状ID |
 | `base_grid_size` | 必須 | スキルなしで使用する解像度 |
 | `warning_at_or_below_retention` | 必須 | 危険通知を開始する理想形状の残存率 |
-| `destroy_at_or_below_retention` | 必須 | 素材消失となる理想形状の残存率 |
+| `break_condition` | 必須 | `type`と`threshold`で定義する素材破損条件 |
 | `shape_evaluator` | 必須 | 使用する形状評価関数のID |
 
 板材からピッケルの柄を作る定義の確定部分は以下のとおり。
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "material_profile": "craftbound:wood",
   "ingredient": {
     "tag": "minecraft:planks"
@@ -287,7 +287,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
   "shape": "craftbound:pickaxe_handle",
   "base_grid_size": 16,
   "warning_at_or_below_retention": 0.6,
-  "destroy_at_or_below_retention": 0.5,
+  "break_condition": { "type": "craftbound:remaining_ratio", "threshold": 0.5 },
   "shape_evaluator": "craftbound:iou"
 }
 ```
@@ -298,7 +298,7 @@ data/<namespace>/recipes/blacksmith/<recipe_id>.json
 
 ブラシ半径 `0.5` はカーソルを含むセルだけを返す。半径が `0.5` より大きい場合は、セル単位へ変換したカーソル位置とセル中心のユークリッド距離が半径以下のセルを返す。グリッド外のセルは処理対象に含めない。
 
-理想形状として残すべき領域の残存率が `warning_at_or_below_retention` 以下になった場合は、警告音とGUI枠の色変化を発生させる。`destroy_at_or_below_retention` 以下になった場合は即時失敗とする。専用の亀裂表示はデータ上の必須要素とせず、低コストで共通描画できる場合だけ追加する。
+理想形状として残すべき領域の残存率が `warning_at_or_below_retention` 以下になった場合は、警告音とGUI枠の色変化を発生させる。`break_condition` の初期type `craftbound:remaining_ratio` がthreshold以下になった場合は即時失敗とする。
 
 ---
 
@@ -841,7 +841,9 @@ JSON読込時に、少なくとも以下を検証する。
 - `remove_per_pass` が `0` より大きく `1` 以下である
 - `removed_units_per_durability` が正の整数である
 - `path_interpolation` が `supercover` である
-- `0 < destroy_at_or_below_retention < warning_at_or_below_retention <= 1` を満たす
+- `0 < break_condition.threshold < warning_at_or_below_retention <= 1` を満たす
+
+非金属素材profile schema v2は表示専用のoptional `carving_texture`を受け付ける。加工状態は途中Itemではなく細工台Block Entityへ保存し、clickとstationary holdは同じセルを再加工できる。dragの連続通信では共有端点だけを除外し、client predictionはserverのauthoritative delta受信後に未ack strokeを再適用する。
 - スキルIDが重複せず、参照先がPufferfish's Skillsの鍛冶師カテゴリに存在する
 - 精密目盛の間隔が25、20、10、5、2の順に減少し、各値がゲージ範囲を割り切る
 - 精密成形の段階が上がるにつれて、グリッド解像度は単調増加し、ブラシ半径は単調減少する

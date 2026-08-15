@@ -14,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 
 public final class CarvingTableBlockEntity extends BlockEntity {
     private ItemStack material = ItemStack.EMPTY;
@@ -21,6 +23,7 @@ public final class CarvingTableBlockEntity extends BlockEntity {
     private final List<ItemStack> pendingOutputs = new ArrayList<>();
     private boolean completionReserved;
     private CarvingSessionState activeSession;
+    private ItemStack clientMaterial = ItemStack.EMPTY;
 
     public CarvingTableBlockEntity(BlockPos pos, BlockState state) {
         super(CraftboundBlockEntities.CARVING_TABLE.get(), pos, state);
@@ -43,6 +46,7 @@ public final class CarvingTableBlockEntity extends BlockEntity {
         if (material.isEmpty()) progress = null;
     }
     public ItemStack material() { return material.copy(); }
+    public ItemStack displayMaterial() { return level != null && level.isClientSide() ? clientMaterial.copy() : material.copy(); }
     public Optional<CarvingProgressState> progress() { return Optional.ofNullable(progress); }
     public CarvingSessionState activeSession() { return activeSession; }
     public synchronized boolean setActiveSession(CarvingSessionState session) {
@@ -103,5 +107,18 @@ public final class CarvingTableBlockEntity extends BlockEntity {
     }
     private void changed() {
         setChanged(); if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+    }
+    @Override public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        if (!material.isEmpty()) tag.put("Material", material.save(new CompoundTag()));
+        return tag;
+    }
+    @Override public ClientboundBlockEntityDataPacket getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this); }
+    @Override public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
+        if (packet.getTag() != null) handleUpdateTag(packet.getTag());
+    }
+    @Override public void handleUpdateTag(CompoundTag tag) {
+        clientMaterial = tag.contains("Material", Tag.TAG_COMPOUND)
+            ? ItemStack.of(tag.getCompound("Material")) : ItemStack.EMPTY;
     }
 }

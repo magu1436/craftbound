@@ -5,6 +5,10 @@ import com.magu1436.craftbound.occupations.blacksmith.carving.logic.CarvingGridR
 
 public final class RemainingRatioBreakEvaluator implements CarvingBreakEvaluator {
     @Override public boolean shouldBreak(CarvingGrid actual, CarvingGrid ideal, double threshold) {
+        return retention(actual, ideal) <= threshold;
+    }
+
+    public double retention(CarvingGrid actual, CarvingGrid ideal) {
         CarvingGrid comparable = actual.size() == ideal.size()
             ? actual : CarvingGridResampler.areaWeighted(actual, ideal.size());
         double remaining = 0.0D;
@@ -14,6 +18,6 @@ public final class RemainingRatioBreakEvaluator implements CarvingBreakEvaluator
             remaining += Math.min(comparable.get(x, y), idealValue);
             idealUnits += idealValue;
         }
-        return idealUnits == 0.0D || remaining / idealUnits <= threshold;
+        return idealUnits == 0.0D ? 0.0D : remaining / idealUnits;
     }
 }
