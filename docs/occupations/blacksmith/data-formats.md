@@ -70,7 +70,7 @@ data/<namespace>/blacksmith/
 完成品の組み立てレシピは、通常のデータパックレシピと同じ場所へ配置する。
 
 ```text
-data/<namespace>/recipes/blacksmith/<recipe_id>.json
+data/<namespace>/recipes/blacksmith/quality_assembly/<recipe_id>.json
 ```
 
 共通設備と道具のレシピは[設備・道具・鋳型仕様](./equipment/stations-and-tools.md)、バニラ完成品のレシピは[バニラ装備構成仕様](./equipment/vanilla.md)に従う。
@@ -680,7 +680,6 @@ data/craftbound/puffish_skills/categories/blacksmith/
   "casting_per_consumed_unit": 1,
   "forging_per_material_unit": 2,
   "non_metal_per_ingredient": 3,
-  "assembly_per_quality_part": 1,
   "material_loss_failure": {
     "basis": "committed_input",
     "multiplier": 0.25,
@@ -708,9 +707,9 @@ data/craftbound/puffish_skills/categories/blacksmith/
 
 `feedback` は、Pufferfish's Skillsの経験値源が1以上を実際に受理した場合だけ、操作者のアクションバーへ `actionbar_translation` と付与量を1回送信する。経験値更新と同じ工程結果IDの処理内で送信し、すでに付与済みのID、再読み込み、再ログイン、サーバー再起動では再送しない。レベルアップとポイント獲得にはPufferfish's Skillsの標準表示を使用し、Craftbound独自の音とトーストを登録しない。
 
-カスタム経験値源へ渡す工程結果は、工程種別、結果を確定した操作者UUID、素材単位数または素材数、品質付きパーツ数、素材の恒久損失有無、および一意な工程結果IDを持つ。工程結果IDは、同じ完成要求、失敗、再送、再読み込みから経験値を二重付与しないために使用する。品質値、打撃回数、操作パケット数は経験値計算へ渡さない。
+カスタム経験値源へ渡す工程結果は、工程種別、結果を確定した操作者UUID、素材単位数または素材数、素材の恒久損失有無、および一意な工程結果IDを持つ。工程結果IDは、同じ完成要求、失敗、再送、再読み込みから経験値を二重付与しないために使用する。品質値、打撃回数、操作パケット数は経験値計算へ渡さない。完成品組み立ては経験値計算へ渡さない。
 
-操作者UUIDは、鋳造成功では有効な流し込み要求、鍛造と非金属加工の成功では完成要求、組み立てでは組み立て要求をサーバーへ確定させたプレイヤーとする。素材損失を伴う失敗では、失敗を確定させた最後の打撃、削り、または鋳造要求の送信者とする。同じ工程を別プレイヤーが再開しても過去の操作者へ分割せず、結果を確定した1人だけを記録する。要求がサーバーへ受理される前に切断した場合は、工程結果と経験値を確定しない。
+操作者UUIDは、鋳造成功では有効な流し込み要求、鍛造と非金属加工の成功では完成要求をサーバーへ確定させたプレイヤーとする。素材損失を伴う失敗では、失敗を確定させた最後の打撃、削り、または鋳造要求の送信者とする。同じ工程を別プレイヤーが再開しても過去の操作者へ分割せず、結果を確定した1人だけを記録する。要求がサーバーへ受理される前に切断した場合は、工程結果と経験値を確定しない。
 
 サーバーは工程結果を確定して出力を予約する処理と、経験値源を更新する処理を同じ排他区間で行う。工程結果ID、操作者UUID、経験値付与済みフラグはBlock Entityの加工状態へ保存し、経験値更新後に同じ結果IDを処理した場合は0を返す。失敗時も次の工程を開始できる状態へ戻す前に同じ情報を永続化する。クリエイティブ、スペクテイター、操作者不明、外部自動処理、開発用処理の結果は経験値源を更新しない。
 
@@ -747,15 +746,15 @@ MVPではすべての熱源を同じ加熱速度として扱う。熱源ごと�
 
 完成品レシピは、バニラの作業台から品質付き完成品を生成する独自レシピタイプ `craftbound:quality_assembly` として定義する。
 
-レシピは少なくとも以下を持つ。
+レシピはVanilla shaped recipeに準じた `pattern`、`key`、`result` を持つ。空白は空きスロットを表し、パターン外の余分な入力は許可しない。作業グリッド内のオフセットと左右反転は許可する。
 
-- 完成品ID
-- 必要な品質付きパーツ
-- 品質を持たない追加材料
-- 完成品品質評価関数のID
-- 評価関数へ渡す重みなどのパラメータ
+`key` の材料条件は次の3種類とする。
 
-鉄のピッケルでは、鉄製ピッケルヘッドと `pickaxe_handle` を要求し、算術平均を行う完成品品質評価関数を使用する。
+- `ingredient`: Vanilla `Ingredient` と同じ `item` または `tag` を使用し、品質計算には含めない。
+- `metal_part`: `part_type` と `material` を必須とし、完成金属パーツの種別と素材IDを完全一致で照合する。
+- `nonmetal_part`: `part_type` と `material` を必須とし、完成非金属パーツの種別と素材IDを完全一致で照合する。
+
+加工済みパーツを品質計算へ含める場合は `contributes_to_quality: true` を指定する。通常素材にはこのフィールドを指定しない。対象パーツの品質を算術平均し、端数を切り捨てて完成品へ保存する。対象が0件の場合は品質を設定しない。
 
 ```json
 {
@@ -766,22 +765,26 @@ MVPではすべての熱源を同じ加熱速度として扱う。熱源ごと�
   ],
   "key": {
     "H": {
-      "item": "craftbound:pickaxe_head"
+      "kind": "metal_part",
+      "part_type": "craftbound:iron/pickaxe_head",
+      "material": "craftbound:iron",
+      "contributes_to_quality": true
     },
     "S": {
-      "item": "craftbound:pickaxe_handle"
+      "kind": "nonmetal_part",
+      "part_type": "craftbound:wood/pickaxe_handle",
+      "material": "craftbound:wood",
+      "contributes_to_quality": true
     }
   },
   "result": {
-    "item": "minecraft:iron_pickaxe"
-  },
-  "quality": {
-    "evaluator": "craftbound:arithmetic_mean"
+    "item": "minecraft:iron_pickaxe",
+    "count": 1
   }
 }
 ```
 
-`key` で品質付きパーツを要求したスロットは、品質データを持つ完成パーツだけを受け付ける。クラフト時に `quality.evaluator` を呼び出し、結果の品質と品質から計算した性能補正を完成品へ保存する。
+読み込み時は、patternの存在、3×3以内の寸法、行幅、記号とkeyの対応、kind、パーツ条件の必須フィールド、パーツ種別・素材IDの存在、通常素材への品質寄与指定禁止、result.itemと正のcountを検証する。不正な定義は別条件へフォールバックせず読み込みエラーとする。
 
 バニラの通常レシピは削除しない。通常レシピから生成した鉄のピッケルには品質 `30` を付与し、`craftbound:quality_assembly` から生成したものだけが入力パーツから品質を計算する。
 
