@@ -4,6 +4,7 @@ import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.casting.CastingTableBlock;
 import com.magu1436.craftbound.occupations.blacksmith.forging.ForgingTableBlock;
 import com.magu1436.craftbound.occupations.blacksmith.furnace.BlacksmithFurnaceBlock;
+import com.magu1436.craftbound.occupations.blacksmith.carving.CarvingTableBlock;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingBlock;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchBlock;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageBlock;
@@ -65,6 +66,11 @@ public class CraftboundBlocks {
                         .requiresCorrectToolForDrops()
                 )
             );
+
+    public static final RegistryObject<CarvingTableBlock> CARVING_TABLE = BLOCKS.register(
+        "carving_table", () -> new CarvingTableBlock(BlockBehaviour.Properties.of()
+            .mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD))
+    );
 
     public static final RegistryObject<Block> COOKING_TABLE = registerProcessingBlock(
         "cooking_table", MapColor.WOOD, SoundType.WOOD

@@ -408,5 +408,16 @@
     "command.craftbound.test.foraging.status": "位置=(%s,%s,%s) 採集源=%s 収穫済み=%s",
     "command.craftbound.test.foraging.regrow": "位置=(%s,%s,%s)の採集源を再生しました。",
     "command.craftbound.test.foraging.countdown": "位置=(%s,%s,%s)の採集源を収穫済みにし、%s秒後に再生します。",
-    "command.craftbound.test.foraging.none": "16ブロック以内に地域食材の採集源がありません。"
+    "command.craftbound.test.foraging.none": "16ブロック以内に地域食材の採集源がありません。",
+    "block.craftbound.carving_table": "細工台",
+    "item.craftbound.carving_knife": "細工ナイフ",
+    "item.craftbound.carving_chisel": "細工ノミ",
+    "item.craftbound.pickaxe_handle": "ピッケルの柄",
+    "container.craftbound.carving_part_selection": "加工先を選択",
+    "container.craftbound.carving_table": "細工台",
+    "button.craftbound.carving.complete": "加工完了",
+    "message.craftbound.carving.wrong_tool": "この道具では加工できなさそうだ",
+    "command.craftbound.test.carving.quality.invalid_item": "メインハンドに非金属パーツを持ってください。",
+    "command.craftbound.test.carving.quality.untracked": "%sに品質データがありません。",
+    "command.craftbound.test.carving.quality.get": "%sの品質：%s / 100"
 }

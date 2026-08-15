@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shaped", "pattern": ["IPI", "PCP"],
+  "key": { "I": { "item": "minecraft:iron_ingot" }, "P": { "tag": "minecraft:planks" },
+    "C": { "item": "minecraft:crafting_table" } }, "result": { "item": "craftbound:carving_table" }
+}

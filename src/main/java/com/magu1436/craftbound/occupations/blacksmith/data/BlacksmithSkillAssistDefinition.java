@@ -13,11 +13,14 @@ public record BlacksmithSkillAssistDefinition(
     int strikeReferenceEnabledAtLevel,
     boolean strikeReferenceEnabled,
     List<SmithingInstinctLevel> smithingInstinct,
-    InstinctAudio instinctAudio
+    InstinctAudio instinctAudio,
+    PrecisionShaping precisionShaping,
+    List<ToolPreservationLevel> toolPreservation
 ) {
     public BlacksmithSkillAssistDefinition {
         precisionScale = List.copyOf(precisionScale);
         smithingInstinct = List.copyOf(smithingInstinct);
+        toolPreservation = List.copyOf(toolPreservation);
     }
 
     public record Gauge(
@@ -39,4 +42,10 @@ public record BlacksmithSkillAssistDefinition(
         float dangerPitch,
         float criticalPitch
     ) {}
+    public record PrecisionShaping(int baseGridSize, double baseBrushRadius,
+        List<PrecisionShapingLevel> levels) {
+        public PrecisionShaping { levels = List.copyOf(levels); }
+    }
+    public record PrecisionShapingLevel(int level, int gridSize, double brushRadius) {}
+    public record ToolPreservationLevel(int level, double preventDamageChance) {}
 }

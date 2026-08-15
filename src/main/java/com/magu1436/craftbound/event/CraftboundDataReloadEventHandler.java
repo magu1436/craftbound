@@ -8,6 +8,9 @@ import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefi
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.data.BlacksmithSettingsDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.data.BlacksmithSkillAssistDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.carving.definition.CarvingShapeDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalMaterialDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalPartDefinitions;
 
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -35,6 +38,9 @@ public final class CraftboundDataReloadEventHandler {
         event.addListener(ToolCareBlockDefinitions.INSTANCE);
         event.addListener(MetalMaterialDefinitions.INSTANCE);
         event.addListener(MetalPartDefinitions.INSTANCE);
+        event.addListener(NonMetalMaterialDefinitions.INSTANCE);
+        event.addListener(NonMetalPartDefinitions.INSTANCE);
+        event.addListener(CarvingShapeDefinitions.INSTANCE);
         event.addListener(BlacksmithSettingsDefinitions.INSTANCE);
         event.addListener(BlacksmithSkillAssistDefinitions.INSTANCE);
     }

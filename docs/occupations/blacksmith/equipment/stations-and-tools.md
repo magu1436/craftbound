@@ -38,7 +38,7 @@ data/craftbound/recipes/blacksmith/equipment/<recipe_id>.json
 | `blacksmith_furnace` | `craftbound:blacksmith_furnace` | shaped | `BIB / IFI / BIB` | `F = minecraft:blast_furnace` |
 | `casting_table` | `craftbound:casting_table` | shaped | `SSS / ICI /  S ` | `C = minecraft:stonecutter` |
 | `forging_table` | `craftbound:forging_table` | shaped | `SSS /  B  /  T ` | `B = minecraft:iron_block` |
-| `non_metal_workbench` | `craftbound:non_metal_workbench` | shaped | `IPI / PCP` | `C = minecraft:crafting_table` |
+| `carving_table` | `craftbound:carving_table` | shaped | `IPI / PCP` | `C = minecraft:crafting_table` |
 
 設備レシピの材料数は以下のとおり。
 
@@ -47,7 +47,7 @@ data/craftbound/recipes/blacksmith/equipment/<recipe_id>.json
 | 溶鉱炉 | 溶鉱炉1、鉄インゴット4、レンガ4 |
 | 鋳造用作業台 | 石切台1、滑らかな石4、鉄インゴット2 |
 | 鍛造台 | 鍛冶台1、鉄ブロック1、滑らかな石3 |
-| 非金属加工用作業台 | 作業台1、鉄インゴット2、板材3 |
+| 細工台 | 作業台1、鉄インゴット2、板材3 |
 
 ---
 
@@ -58,10 +58,10 @@ data/craftbound/recipes/blacksmith/equipment/<recipe_id>.json
 | `crucible` | `craftbound:crucible` | shaped | `B B / B B / BBB` | レンガ7 |
 | `smithing_hammer` | `craftbound:smithing_hammer` | shaped | `III /  R  /  R ` | 鉄インゴット3、棒2 |
 | `carving_knife` | `craftbound:carving_knife` | shaped | `I / R` | 鉄インゴット1、棒1 |
-| `chisel` | `craftbound:chisel` | shaped | `I / N / R` | 鉄インゴット1、鉄塊1、棒1 |
+| `carving_chisel` | `craftbound:carving_chisel` | shaped | `I / N / R` | 鉄インゴット1、鉄塊1、棒1 |
 | `tailoring_shears` | `craftbound:tailoring_shears` | shaped | ` I / RI` | 鉄インゴット2、棒1 |
 
-彫刻ナイフの最大耐久値は `128`、タガネは `192`、裁断ばさみは `238` とする。3種類の加工道具にはバニラの耐久力と修繕エンチャントを許可する。耐久力によって耐久消費が防がれなかった場合だけ鍛冶師スキル「道具保全」の抽選を行い、修繕による回復には道具保全を適用しない。
+細工ナイフの最大耐久値は `128`、細工ノミは `192` とする。2種類の加工道具にはバニラの耐久力と修繕エンチャントを許可する。耐久力によって耐久消費が防がれなかった場合だけ鍛冶師スキル「道具保全」の抽選を行い、修繕による回復には道具保全を適用しない。
 
 ハンマーはMVPでは耐久値を消費せず、道具保全の対象にしない。ハンマーの耐久システムは将来拡張とする。
 
@@ -98,11 +98,11 @@ data/craftbound/recipes/blacksmith/equipment/molds/<part_id>_mold.json
 ## 6. 受け入れ条件
 
 - 各レシピが指定した材料数だけを消費し、出力を1個生成する
-- 板材タグに含まれる任意のバニラ板材で非金属加工用作業台を製作できる
+- 板材タグに含まれる任意のバニラ板材で細工台を製作できる
 - レシピ競合がある場合に、ファイルと競合先を特定できるログを出力する
 - 未導入MODのアイテムを共通設備レシピから参照しない
 - 空鋳型1個から任意の標準鋳型1個を石切台で製作できる
 - 完成した標準鋳型を別種類へ再変換できない
 - 専用鋳型を空鋳型から製作できない
 - 鋳型を使用しても耐久値や個数が減少しない
-- 彫刻ナイフ、タガネ、裁断ばさみに耐久力と修繕を付与でき、耐久力判定後にだけ道具保全を判定する
+- 細工ナイフ、細工ノミに耐久力と修繕を付与でき、耐久力判定後にだけ道具保全を判定する

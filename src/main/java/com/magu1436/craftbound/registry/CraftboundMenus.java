@@ -3,6 +3,8 @@ package com.magu1436.craftbound.registry;
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.crucible.menu.CrucibleMenu;
 import com.magu1436.craftbound.occupations.blacksmith.forging.menu.ForgingMenu;
+import com.magu1436.craftbound.occupations.blacksmith.carving.menu.CarvingMenu;
+import com.magu1436.craftbound.occupations.blacksmith.carving.menu.CarvingPartSelectionMenu;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodProcessingMenu;
 import com.magu1436.craftbound.occupations.foodproducer.ranch.RanchMenu;
 import com.magu1436.craftbound.occupations.foodproducer.storage.PreservationStorageMenu;
@@ -46,6 +48,10 @@ public final class CraftboundMenus {
             "forging_table",
             () -> IForgeMenuType.create(ForgingMenu::new)
         );
+    public static final RegistryObject<MenuType<CarvingPartSelectionMenu>> CARVING_PART_SELECTION =
+        MENUS.register("carving_part_selection", () -> IForgeMenuType.create(CarvingPartSelectionMenu::new));
+    public static final RegistryObject<MenuType<CarvingMenu>> CARVING =
+        MENUS.register("carving", () -> IForgeMenuType.create(CarvingMenu::new));
     
     public static void  register(IEventBus modEventBus) {
         MENUS.register(modEventBus);
