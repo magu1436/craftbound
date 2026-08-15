@@ -7,6 +7,7 @@ import com.magu1436.craftbound.occupations.blacksmith.casting.mold.CastingMoldIt
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartItem;
 import com.magu1436.craftbound.occupations.blacksmith.casting.finished.MetalPartItem;
 import com.magu1436.craftbound.occupations.foodproducer.farming.AgriculturalFertilizerItem;
+import com.magu1436.craftbound.occupations.foodproducer.foraging.RegionalIngredientItem;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodDishItem;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodIntermediateItem;
 import com.magu1436.craftbound.occupations.foodproducer.processing.PreparedIngredientSetItem;
@@ -175,6 +176,17 @@ public final class CraftboundItems {
             CraftboundBlocks.PRESERVATION_STORAGE_2.get(), new Item.Properties()
         )
     );
+    public static final RegistryObject<Item> WILD_GARLIC = registerRegionalIngredient("wild_garlic");
+    public static final RegistryObject<Item> FOREST_THYME = registerRegionalIngredient("forest_thyme");
+    public static final RegistryObject<Item> JUNIPER_BERRY = registerRegionalIngredient("juniper_berry");
+    public static final RegistryObject<Item> CACTUS_FIG = registerRegionalIngredient("cactus_fig");
+    public static final RegistryObject<Item> WATER_CELERY = registerRegionalIngredient("water_celery");
+    public static final RegistryObject<Item> JUNGLE_PEPPER = registerRegionalIngredient("jungle_pepper");
+    public static final RegistryObject<Item> CHERRY_HERB = registerRegionalIngredient("cherry_herb");
+    public static final RegistryObject<Item> ALPINE_LEEK = registerRegionalIngredient("alpine_leek");
+    public static final RegistryObject<Item> MUSHROOM_TRUFFLE = registerRegionalIngredient("mushroom_truffle");
+    public static final RegistryObject<Item> ICE_CRYSTAL_BERRY = registerRegionalIngredient("ice_crystal_berry");
+    public static final RegistryObject<Item> BADLANDS_SAFFRON = registerRegionalIngredient("badlands_saffron");
 
     private static RegistryObject<Item> registerItem(String id) {
         return ITEMS.register(id, () -> new Item(new Item.Properties()));
@@ -194,6 +206,10 @@ public final class CraftboundItems {
 
     private static RegistryObject<Item> registerFoodIntermediate(String id) {
         return ITEMS.register(id, () -> new FoodIntermediateItem(new Item.Properties()));
+    }
+
+    private static RegistryObject<Item> registerRegionalIngredient(String id) {
+        return ITEMS.register(id, () -> new RegionalIngredientItem(new Item.Properties()));
     }
 
     private static RegistryObject<Item> registerBlockItem(

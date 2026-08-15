@@ -40,6 +40,17 @@ public final class CraftboundCreativeTabEvents {
             event.accept(CraftboundItems.DRIED_MEAT);
             event.accept(CraftboundItems.DRIED_VEGETABLE);
             event.accept(CraftboundItems.DRIED_FRUIT);
+            event.accept(CraftboundItems.WILD_GARLIC);
+            event.accept(CraftboundItems.FOREST_THYME);
+            event.accept(CraftboundItems.JUNIPER_BERRY);
+            event.accept(CraftboundItems.CACTUS_FIG);
+            event.accept(CraftboundItems.WATER_CELERY);
+            event.accept(CraftboundItems.JUNGLE_PEPPER);
+            event.accept(CraftboundItems.CHERRY_HERB);
+            event.accept(CraftboundItems.ALPINE_LEEK);
+            event.accept(CraftboundItems.MUSHROOM_TRUFFLE);
+            event.accept(CraftboundItems.ICE_CRYSTAL_BERRY);
+            event.accept(CraftboundItems.BADLANDS_SAFFRON);
         }
     }
 }

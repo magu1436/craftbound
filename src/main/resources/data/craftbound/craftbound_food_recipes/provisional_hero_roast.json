@@ -6,7 +6,7 @@
   "inputs": [
     { "item": "craftbound:sliced_meat", "count": 2 },
     { "item": "minecraft:egg", "count": 1 },
-    { "item": "craftbound:chopped_vegetable", "count": 1 }
+    { "tag": "craftbound:regional_ingredients/tier_4", "count": 1 }
   ],
   "food": { "nutrition": 10, "saturation_gain": 10.0 },
   "effects": [

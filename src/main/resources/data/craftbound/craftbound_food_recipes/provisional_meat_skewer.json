@@ -9,7 +9,8 @@
       "item": "craftbound:chopped_vegetable",
       "source_item": "minecraft:carrot",
       "count": 1
-    }
+    },
+    { "tag": "craftbound:regional_ingredients/tier_1", "count": 1 }
   ],
   "food": {
     "nutrition": 6,
