@@ -1,0 +1,34 @@
+{
+  "tiers": [
+    {
+      "id": "poor",
+      "min": 0,
+      "max": 19,
+      "translation_key": "quality.craftbound.blacksmith.poor"
+    },
+    {
+      "id": "low",
+      "min": 20,
+      "max": 39,
+      "translation_key": "quality.craftbound.blacksmith.low"
+    },
+    {
+      "id": "standard",
+      "min": 40,
+      "max": 59,
+      "translation_key": "quality.craftbound.blacksmith.standard"
+    },
+    {
+      "id": "high",
+      "min": 60,
+      "max": 79,
+      "translation_key": "quality.craftbound.blacksmith.high"
+    },
+    {
+      "id": "masterwork",
+      "min": 80,
+      "max": 100,
+      "translation_key": "quality.craftbound.blacksmith.masterwork"
+    }
+  ]
+}
