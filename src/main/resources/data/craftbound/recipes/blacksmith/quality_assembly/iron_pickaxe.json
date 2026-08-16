@@ -13,7 +13,7 @@
     },
     "S": {
       "kind": "nonmetal_part",
-      "part_type": "craftbound:wood/pickaxe_handle",
+      "part_type": "craftbound:wood/tool_handle",
       "material": "craftbound:wood",
       "contributes_to_quality": true
     }
