@@ -17,6 +17,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -82,7 +83,7 @@ public final class RanchManagementEvents {
         }
 
         List<Animal> managed = RanchManager.getManagedAnimals(ranch);
-        if (managed.size() >= ranch.getManagementCapacity()) {
+        if (ranch.getRegistrationCount() >= ranch.getManagementCapacity()) {
             reject(event, player, "message.craftbound.ranch.capacity_full");
             return;
         }
@@ -126,7 +127,7 @@ public final class RanchManagementEvents {
                 || !managed.contains(parentB)
                 || !RanchAnimalData.isFed(parentA)
                 || !RanchAnimalData.isFed(parentB)
-                || managed.size() >= ranch.getManagementCapacity()
+                || ranch.getRegistrationCount() >= ranch.getManagementCapacity()
                 || player == null
                 || event.getChild() == null) {
             event.setCanceled(true);
@@ -135,20 +136,26 @@ public final class RanchManagementEvents {
 
         AgeableMob child = event.getChild();
         RanchAnimalData.initializeNewborn(child);
+        if (!(child instanceof Animal childAnimal) || !ranch.registerNewborn(childAnimal)) {
+            event.setCanceled(true);
+            return;
+        }
 
         Animal lastFedParent = RanchAnimalData.getLastDirectFeedTime(parentA)
                 >= RanchAnimalData.getLastDirectFeedTime(parentB) ? parentA : parentB;
         int breedingRank = RanchAnimalData.getLastBreedingRank(lastFedParent);
         boolean forceExtraChild = player.getPersistentData().getBoolean(FORCE_EXTRA_CHILD);
         player.getPersistentData().remove(FORCE_EXTRA_CHILD);
-        if (managed.size() + 2 <= ranch.getManagementCapacity()
+        if (ranch.hasRegistrationSpace()
                 && (forceExtraChild || level.random.nextInt(100) < breedingRank * 10)) {
             AgeableMob extraChild = parentA.getBreedOffspring(level, parentB);
             if (extraChild != null) {
                 extraChild.setBaby(true);
                 extraChild.moveTo(parentA.getX(), parentA.getY(), parentA.getZ(), 0.0F, 0.0F);
                 RanchAnimalData.initializeNewborn(extraChild);
-                level.addFreshEntity(extraChild);
+                if (extraChild instanceof Animal extraAnimal && ranch.registerNewborn(extraAnimal)) {
+                    level.addFreshEntity(extraChild);
+                }
             }
         }
 
@@ -158,6 +165,18 @@ public final class RanchManagementEvents {
         RanchAnimalData.setNextFeedTime(parentA, nextFeed);
         RanchAnimalData.setNextFeedTime(parentB, nextFeed);
         FoodProducerExperience.add(player, 5);
+    }
+
+    /** 死亡した個体の登録枠を即時解放し、幽霊枠を残さない。 */
+    @SubscribeEvent
+    public static void onAnimalDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof Animal animal) || animal.level().isClientSide) {
+            return;
+        }
+        RanchBlockEntity ranch = RanchManager.findAssignedRanch(animal);
+        if (ranch != null) {
+            ranch.releaseRegistration(animal.getUUID());
+        }
     }
 
     /** OP向けテストで、次の正常な手動繁殖だけ追加個体抽選を成功扱いにする。 */

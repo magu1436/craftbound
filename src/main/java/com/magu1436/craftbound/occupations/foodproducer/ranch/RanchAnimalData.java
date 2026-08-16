@@ -4,7 +4,9 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.animal.Animal;
 
@@ -22,6 +24,8 @@ public final class RanchAnimalData {
     private static final String LAST_FEEDER = "craftbound_ranch_last_feeder";
     private static final String LAST_FEED_TIME = "craftbound_ranch_last_feed_time";
     private static final String LAST_BREEDING_RANK = "craftbound_ranch_last_breeding_rank";
+    private static final String ASSIGNED_DIMENSION = "craftbound_ranch_assigned_dimension";
+    private static final String ASSIGNED_POSITION = "craftbound_ranch_assigned_position";
 
     private RanchAnimalData() {
     }
@@ -103,5 +107,45 @@ public final class RanchAnimalData {
 
     public static int getLastBreedingRank(Animal animal) {
         return Math.max(0, Math.min(5, animal.getPersistentData().getInt(LAST_BREEDING_RANK)));
+    }
+
+    public static void assignTo(Animal animal, ServerLevel level, BlockPos ranchPosition) {
+        CompoundTag data = animal.getPersistentData();
+        data.putString(ASSIGNED_DIMENSION, level.dimension().location().toString());
+        data.putLong(ASSIGNED_POSITION, ranchPosition.asLong());
+    }
+
+    public static boolean isAssignedTo(Animal animal, ServerLevel level, BlockPos ranchPosition) {
+        Assignment assignment = getAssignment(animal);
+        return assignment != null
+                && assignment.dimension().equals(level.dimension().location().toString())
+                && assignment.position().equals(ranchPosition);
+    }
+
+    @Nullable
+    public static Assignment getAssignment(Animal animal) {
+        CompoundTag data = animal.getPersistentData();
+        if (!data.contains(ASSIGNED_DIMENSION) || !data.contains(ASSIGNED_POSITION)) {
+            return null;
+        }
+        return new Assignment(
+                data.getString(ASSIGNED_DIMENSION),
+                BlockPos.of(data.getLong(ASSIGNED_POSITION))
+        );
+    }
+
+    public static void clearAssignment(Animal animal) {
+        CompoundTag data = animal.getPersistentData();
+        data.remove(ASSIGNED_DIMENSION);
+        data.remove(ASSIGNED_POSITION);
+    }
+
+    public static void clearAssignmentIfMatches(Animal animal, ServerLevel level, BlockPos ranchPosition) {
+        if (isAssignedTo(animal, level, ranchPosition)) {
+            clearAssignment(animal);
+        }
+    }
+
+    public record Assignment(String dimension, BlockPos position) {
     }
 }

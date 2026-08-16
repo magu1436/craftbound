@@ -25,9 +25,9 @@ public final class RanchMenu extends AbstractContainerMenu {
 
     public static final int UPDATE_PERFORMANCE_BUTTON = 100;
     private static final int FEED_SLOT_X = 80;
-    private static final int FEED_SLOT_Y = 44;
-    private static final int PLAYER_INVENTORY_Y = 113;
-    private static final int HOTBAR_Y = 171;
+    private static final int FEED_SLOT_Y = 62;
+    private static final int PLAYER_INVENTORY_Y = 158;
+    private static final int HOTBAR_Y = 216;
 
     private final Container ranchContainer;
     private final ContainerData data;
@@ -127,6 +127,18 @@ public final class RanchMenu extends AbstractContainerMenu {
 
     public int getNextFeedSeconds() {
         return data.get(RanchBlockEntity.DATA_NEXT_FEED_SECONDS);
+    }
+
+    public int getRangeCount() {
+        return data.get(RanchBlockEntity.DATA_RANGE_COUNT);
+    }
+
+    public int getRegisteredCount() {
+        return data.get(RanchBlockEntity.DATA_REGISTERED_COUNT);
+    }
+
+    public int getOverflowCount() {
+        return data.get(RanchBlockEntity.DATA_OVERFLOW_COUNT);
     }
 
     public boolean canChangeTarget() {
