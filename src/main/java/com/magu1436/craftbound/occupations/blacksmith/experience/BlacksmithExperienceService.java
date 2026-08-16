@@ -16,7 +16,7 @@ public final class BlacksmithExperienceService {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int CASTING_MULTIPLIER = 1;
     private static final int FORGING_MULTIPLIER = 2;
-    private static final int CARVING_MULTIPLIER = 3;
+    private static final int CARVING_SUCCESS_EXPERIENCE = 3;
     private static final int ASSEMBLY_MULTIPLIER = 1;
 
     private BlacksmithExperienceService() {
@@ -32,8 +32,7 @@ public final class BlacksmithExperienceService {
         return processResult(
             player,
             operatorId,
-            materialUnits,
-            CASTING_MULTIPLIER,
+            saturatedMultiply(materialUnits, CASTING_MULTIPLIER),
             success,
             permanentMaterialLoss
         );
@@ -49,8 +48,7 @@ public final class BlacksmithExperienceService {
         return processResult(
             player,
             operatorId,
-            materialUnits,
-            FORGING_MULTIPLIER,
+            saturatedMultiply(materialUnits, FORGING_MULTIPLIER),
             success,
             permanentMaterialLoss
         );
@@ -59,15 +57,22 @@ public final class BlacksmithExperienceService {
     public static AwardResult processCarvingResult(
         ServerPlayer player,
         UUID operatorId,
-        int materialUnits,
+        int shapeMatchPercentage,
         boolean success,
         boolean permanentMaterialLoss
     ) {
+        if (shapeMatchPercentage < 0 || shapeMatchPercentage > 100) {
+            throw new IllegalArgumentException(
+                "shapeMatchPercentage must be between 0 and 100"
+            );
+        }
+        int successExperience = success
+            ? CARVING_SUCCESS_EXPERIENCE * shapeMatchPercentage / 100
+            : CARVING_SUCCESS_EXPERIENCE;
         return processResult(
             player,
             operatorId,
-            materialUnits,
-            CARVING_MULTIPLIER,
+            successExperience,
             success,
             permanentMaterialLoss
         );
@@ -81,8 +86,7 @@ public final class BlacksmithExperienceService {
         return processResult(
             player,
             operatorId,
-            qualityPartCount,
-            ASSEMBLY_MULTIPLIER,
+            saturatedMultiply(qualityPartCount, ASSEMBLY_MULTIPLIER),
             true,
             false
         );
@@ -91,14 +95,13 @@ public final class BlacksmithExperienceService {
     private static AwardResult processResult(
         ServerPlayer player,
         UUID operatorId,
-        int materialUnits,
-        int multiplier,
+        int successExperience,
         boolean success,
         boolean permanentMaterialLoss
     ) {
         Objects.requireNonNull(player, "player is null");
         Objects.requireNonNull(operatorId, "operatorId is null");
-        if (!isEligiblePlayer(player, operatorId) || materialUnits <= 0) {
+        if (!isEligiblePlayer(player, operatorId) || successExperience <= 0) {
             return new AwardResult(true, 0);
         }
         if (success && permanentMaterialLoss) {
@@ -109,7 +112,6 @@ public final class BlacksmithExperienceService {
             return new AwardResult(true, 0);
         }
 
-        int successExperience = saturatedMultiply(materialUnits, multiplier);
         int requestedExperience;
         if (success) {
             requestedExperience = successExperience;

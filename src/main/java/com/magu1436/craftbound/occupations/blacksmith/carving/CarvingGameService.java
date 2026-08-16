@@ -62,7 +62,13 @@ public final class CarvingGameService {
             grid, remainder, progress.definitionSnapshot());
         if (new RemainingRatioBreakEvaluator().shouldBreak(grid, progress.definitionSnapshot().idealShape(),
             progress.definitionSnapshot().breakThreshold())) {
-            table.clearBroken(); player.closeContainer(); return StrokeResult.BROKEN;
+            int shapeMatchPercentage = new IouCarvingShapeEvaluator().evaluate(
+                grid, progress.definitionSnapshot().idealShape());
+            CarvingExperienceResult experienceResult = new CarvingExperienceResult(
+                progress.processId(), player.getUUID(), shapeMatchPercentage, false, true);
+            if (!table.clearBroken()) return StrokeResult.ERROR;
+            CarvingExperienceHook.onResult(player, experienceResult);
+            player.closeContainer(); return StrokeResult.BROKEN;
         }
         if (!table.updateProgress(updated)) return StrokeResult.ERROR;
         if (damageTool(player, damageRequests)) { player.closeContainer(); return StrokeResult.TOOL_BROKEN; }
@@ -70,11 +76,15 @@ public final class CarvingGameService {
     }
 
     public static FinalizeResult finalizeCarving(CarvingTableBlockEntity table, ServerPlayer operator) {
-        return finalizeCarving(table, operator, true);
+        return finalizeCarving(table, operator, true, true);
     }
 
-    public static FinalizeResult finalizeCarving(CarvingTableBlockEntity table, ServerPlayer operator,
-        boolean deliverToOperator) {
+    public static FinalizeResult finalizeCarvingWithoutExperience(CarvingTableBlockEntity table) {
+        return finalizeCarving(table, null, false, false);
+    }
+
+    private static FinalizeResult finalizeCarving(CarvingTableBlockEntity table, ServerPlayer operator,
+        boolean deliverToOperator, boolean grantExperience) {
         if (!table.reserveCompletion()) return FinalizeResult.REJECTED;
         CarvingProgressState progress = table.progress().orElse(null);
         if (progress == null) { table.cancelCompletion(); return FinalizeResult.UNSELECTED; }
@@ -85,11 +95,11 @@ public final class CarvingGameService {
         if (!QualityStateService.setQuality(output, quality) || !table.commitOutput(output)) {
             table.cancelCompletion(); return FinalizeResult.ERROR;
         }
-        if (operator != null) {
+        if (grantExperience && operator != null) {
             CarvingExperienceHook.onResult(operator, new CarvingExperienceResult(progress.processId(),
-                operator.getUUID(), progress.definitionSnapshot().ingredientCount(), true, false));
-            if (deliverToOperator) table.collect(operator);
+                operator.getUUID(), quality, true, false));
         }
+        if (deliverToOperator && operator != null) table.collect(operator);
         return FinalizeResult.COMPLETED;
     }
 

@@ -67,9 +67,9 @@ public final class CarvingTableBlock extends BaseEntityBlock {
         return InteractionResult.CONSUME;
     }
     @Override public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && player instanceof ServerPlayer operator
+        if (!level.isClientSide && player instanceof ServerPlayer
             && level.getBlockEntity(pos) instanceof CarvingTableBlockEntity table && table.progress().isPresent()) {
-            CarvingGameService.finalizeCarving(table, operator, false);
+            CarvingGameService.finalizeCarvingWithoutExperience(table);
         }
         super.playerWillDestroy(level, pos, state, player);
     }
@@ -78,7 +78,7 @@ public final class CarvingTableBlock extends BaseEntityBlock {
         if (state.getBlock() != next.getBlock() && level instanceof ServerLevel server
             && level.getBlockEntity(pos) instanceof CarvingTableBlockEntity table) {
             BlacksmithOperationSessionRegistry.release(table);
-            if (table.progress().isPresent()) CarvingGameService.finalizeCarving(table, null);
+            if (table.progress().isPresent()) CarvingGameService.finalizeCarvingWithoutExperience(table);
             table.dropContents(server);
         }
         super.onRemove(state, level, pos, next, moved);
