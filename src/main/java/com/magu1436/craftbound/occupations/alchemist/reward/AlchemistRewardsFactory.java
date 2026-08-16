@@ -40,7 +40,7 @@ public class AlchemistRewardsFactory {
             IAlchemistData::getProcessOptimizationState
         ),
         createLevelRewardArgs(
-            "stabilization_reward",
+            "rapid_preparation_reward",
             IAlchemistData::getRapidPreparationState
         )
     );
