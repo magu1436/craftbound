@@ -420,6 +420,7 @@
     "item.craftbound.carving_knife": "Carving Knife",
     "item.craftbound.carving_chisel": "Carving Chisel",
     "item.craftbound.pickaxe_handle": "Pickaxe Handle",
+    "item.craftbound.protective_lining": "Protective Lining",
     "container.craftbound.carving_part_selection": "Select Part",
     "container.craftbound.carving_table": "Carving Table",
     "button.craftbound.carving.complete": "Complete",

@@ -1,0 +1,23 @@
+{
+  "type": "craftbound:quality_assembly",
+  "pattern": [
+    "B",
+    "L"
+  ],
+  "key": {
+    "B": {
+      "kind": "metal_part",
+      "part_type": "craftbound:iron/leggings_body",
+      "material": "craftbound:iron",
+      "contributes_to_quality": true
+    },
+    "L": {
+      "kind": "ingredient",
+      "item": "craftbound:protective_lining"
+    }
+  },
+  "result": {
+    "item": "minecraft:iron_leggings",
+    "count": 1
+  }
+}
