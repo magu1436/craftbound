@@ -8,7 +8,6 @@ public interface IAlchemistData extends PlayerCapabilityData<IAlchemistData> {
     SkillLevelState getBufferedStirringState();
     SkillLevelState getReactionAnalysisState();
     SkillLevelState getBatchHandlingState();
-    SkillLevelState getProcessOptimizationState();
     SkillLevelState getRapidPreparationState();
 
     default int getBufferedStirringLevel() {
@@ -21,10 +20,6 @@ public interface IAlchemistData extends PlayerCapabilityData<IAlchemistData> {
 
     default int getBatchHandlingLevel() {
         return getBatchHandlingState().getLevel();
-    }
-
-    default int getProcessOptimizationLevel() {
-        return getProcessOptimizationState().getLevel();
     }
 
     default int getRapidPreparationLevel() {

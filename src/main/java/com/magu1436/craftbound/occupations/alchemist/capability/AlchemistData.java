@@ -13,7 +13,6 @@ public class AlchemistData implements IAlchemistData {
     public final SkillLevelState bufferedStirringState = new SkillLevelState();
     public final SkillLevelState reactionAnalysisState = new SkillLevelState();
     public final SkillLevelState batchHandlingState = new SkillLevelState();
-    public final SkillLevelState processOptimizationState = new SkillLevelState();
     public final SkillLevelState rapidPreparationState = new SkillLevelState();
 
     @Override
@@ -29,11 +28,6 @@ public class AlchemistData implements IAlchemistData {
     @Override
     public SkillLevelState getBatchHandlingState(){
         return batchHandlingState;
-    }
-    
-    @Override
-    public SkillLevelState getProcessOptimizationState(){
-        return processOptimizationState;
     }
 
     @Override
@@ -68,12 +62,6 @@ public class AlchemistData implements IAlchemistData {
             Objects.requireNonNull(
                 original.getBatchHandlingState(),
                 "batchHandlingState is null"
-            )
-        );
-        processOptimizationState.copyFrom(
-            Objects.requireNonNull(
-                original.getProcessOptimizationState(),
-                "processOptimization is null"
             )
         );
         rapidPreparationState.copyFrom(

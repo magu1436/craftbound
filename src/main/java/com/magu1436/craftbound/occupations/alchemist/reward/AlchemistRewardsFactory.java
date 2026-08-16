@@ -36,10 +36,6 @@ public class AlchemistRewardsFactory {
             IAlchemistData::getBatchHandlingState
         ),
         createLevelRewardArgs(
-            "process_optimization_reward",
-            IAlchemistData::getProcessOptimizationState
-        ),
-        createLevelRewardArgs(
             "rapid_preparation_reward",
             IAlchemistData::getRapidPreparationState
         )
