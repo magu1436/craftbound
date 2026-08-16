@@ -82,6 +82,10 @@ MVPでは以下を鍛冶製作の対象とする。
 
 防具本体だけが品質付きパーツとなるため、完成品品質は防具本体品質と同じ値になる。ネザライト防具は対応するダイヤモンド防具から品質と損傷割合を引き継ぐ。
 
+鉄製防具4部位と金製防具4部位は、対応する防具本体1個と `craftbound:protective_lining` 1個を `craftbound:quality_assembly` で縦に並べて完成させる。`protective_lining` は品質を持たない共通補助アイテムであり、革1個と `#minecraft:wool` 1個から shapeless recipe で1個作成する。品質計算には防具本体だけが寄与するため、完成品品質は防具本体品質と同じ値になる。
+
+鉄製防具と金製防具は、いずれも `craftbound:iron/helmet_body`、`craftbound:iron/chestplate_body`、`craftbound:iron/leggings_body`、`craftbound:iron/boots_body` の共通パーツ定義を使用する。鉄と金の区別は防具本体の `material` で行い、鉄完成レシピは `craftbound:iron`、金完成レシピは `craftbound:gold` を要求する。金用の防具本体パーツ定義は別途追加しない。
+
 ### 5.1 対象完成品ID
 
 | 素材 | ヘルメット | チェストプレート | レギンス | ブーツ |
