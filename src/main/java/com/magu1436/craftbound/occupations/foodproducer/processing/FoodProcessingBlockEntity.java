@@ -209,6 +209,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
                         FoodProducerSkills.rank(player, FoodProducerSkills.PROCESSING_TECHNIQUE)))
                 : 0;
         ItemStack output = match.output().copy();
+        FoodDietValues.inherit(match.qualityInputs(), output);
         if (output.getItem() instanceof FoodIntermediateItem) {
             FoodIntermediateData.setSuccess(output);
         }
@@ -266,6 +267,7 @@ public final class FoodProcessingBlockEntity extends BaseContainerBlockEntity {
         if (match.toolRequired() && !isUsableKnife(items.get(TOOL))) return false;
 
         ItemStack output = match.output().copy();
+        FoodDietValues.inherit(match.qualityInputs(), output);
         if (output.getItem() instanceof FoodIntermediateItem) {
             FoodIntermediateData.setSuccess(output);
         }

@@ -178,6 +178,12 @@ dependencies {
     compileOnly fg.deobf("maven.modrinth:jade:${jade_modrinth_version}")
     runtimeOnly fg.deobf("maven.modrinth:jade:${jade_modrinth_version}")
 
+    // Optional Diet API integration. The production jar remains usable without Diet.
+    compileOnly fg.deobf("curse.maven:diet-443570:${diet_curseforge_file_id}")
+    if (!project.hasProperty('exclude_diet_runtime')) {
+        runtimeOnly fg.deobf("curse.maven:diet-443570:${diet_curseforge_file_id}")
+    }
+
     // Optional Create runtime and the companion artifacts corresponding to
     // the public Create 6.0.8 release.
     runtimeOnly(fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_maven_version}:slim") {
@@ -236,6 +242,7 @@ tasks.named('processResources', ProcessResources).configure {
             loader_version_range: loader_version_range,
             puffish_skills_version_range: puffish_skills_version_range,
             jade_version_range: jade_version_range,
+            diet_version_range: diet_version_range,
             create_version_range: create_version_range,
             cataclysm_version_range: cataclysm_version_range,
             twilight_forest_version_range: twilight_forest_version_range,

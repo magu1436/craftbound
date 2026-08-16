@@ -7,9 +7,9 @@
     { "item": "craftbound:dried_fruit", "count": 1 }
   ],
   "food": {
-    "nutrition": 4,
-    "saturation_gain": 3.0
+    "nutrition": 6,
+    "saturation_gain": 5.0
   },
   "preserved": true,
-  "experience": 3
+  "experience": 2
 }

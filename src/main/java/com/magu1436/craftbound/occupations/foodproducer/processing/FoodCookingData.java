@@ -1,7 +1,9 @@
 package com.magu1436.craftbound.occupations.foodproducer.processing;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.magu1436.craftbound.Craftbound;
@@ -242,6 +244,35 @@ public final class FoodCookingData {
         CompoundTag diet = cooking.getCompound(DIET_VALUES);
         diet.putFloat(category, Math.max(0.0F, value));
         cooking.put(DIET_VALUES, diet);
+    }
+
+    public static void setDietValues(ItemStack stack, Map<String, Float> values) {
+        CompoundTag cooking = stack.getOrCreateTagElement(ROOT);
+        CompoundTag diet = new CompoundTag();
+        if (values != null) {
+            values.forEach((category, value) -> {
+                if (category != null && !category.isBlank() && value != null && value > 0.0F) {
+                    diet.putFloat(category, Math.min(FoodDietValues.MAX_VALUE, value));
+                }
+            });
+        }
+        cooking.put(DIET_VALUES, diet);
+    }
+
+    public static Map<String, Float> dietValues(ItemStack stack) {
+        CompoundTag cooking = stack.getTagElement(ROOT);
+        if (cooking == null || !cooking.contains(DIET_VALUES, Tag.TAG_COMPOUND)) {
+            return Map.of();
+        }
+        CompoundTag diet = cooking.getCompound(DIET_VALUES);
+        Map<String, Float> result = new LinkedHashMap<>();
+        for (String category : FoodDietValues.CATEGORIES) {
+            float value = Math.max(0.0F, Math.min(FoodDietValues.MAX_VALUE, diet.getFloat(category)));
+            if (value > 0.0F) {
+                result.put(category, value);
+            }
+        }
+        return Map.copyOf(result);
     }
 
     public static float dietValue(ItemStack stack, String category) {

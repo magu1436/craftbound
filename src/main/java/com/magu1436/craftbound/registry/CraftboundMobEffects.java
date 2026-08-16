@@ -2,6 +2,7 @@ package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.foodproducer.processing.FoodRoleMobEffect;
+import com.magu1436.craftbound.occupations.foodproducer.processing.ProfessionalMealMarkerEffect;
 
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -16,6 +17,9 @@ public final class CraftboundMobEffects {
 
     private static final DeferredRegister<MobEffect> MOB_EFFECTS =
             DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Craftbound.MODID);
+
+    public static final RegistryObject<MobEffect> PROFESSIONAL_MEAL_ACTIVE =
+            MOB_EFFECTS.register("professional_meal_active", ProfessionalMealMarkerEffect::new);
 
     public static final RegistryObject<FoodRoleMobEffect> ADVENTURER_MEAL_ARMOR =
             registerRoleEffect("adventurer_meal_armor", 0xB53A2D, FoodRoleMobEffect.AmountDisplay.FLAT, 2.0D);

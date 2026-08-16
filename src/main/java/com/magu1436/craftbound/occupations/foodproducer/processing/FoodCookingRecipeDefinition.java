@@ -149,6 +149,7 @@ public record FoodCookingRecipeDefinition(
             return ItemStack.EMPTY;
         }
         ItemStack output = match.output().copy();
+        FoodDietValues.inherit(match.qualityInputs(), output);
         if (resultType == ResultType.PREPARED) {
             output = FoodCookingData.createDish(output);
         }
