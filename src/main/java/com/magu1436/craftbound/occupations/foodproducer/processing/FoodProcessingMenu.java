@@ -78,15 +78,20 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
             public boolean mayPlace(ItemStack stack) {
                 return ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0 && super.mayPlace(stack);
             }
+
+            @Override
+            public boolean isActive() {
+                return station().usesFuel();
+            }
         });
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 105 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 137 + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 163));
+            addSlot(new Slot(inventory, column, 8 + column * 18, 195));
         }
         addDataSlots(data);
         container.startOpen(inventory.player);
@@ -185,7 +190,7 @@ public final class FoodProcessingMenu extends AbstractContainerMenu {
         } else if (stack.is(CraftboundItemTags.COOKING_KNIVES)) {
             if (!moveItemStackTo(stack, FoodProcessingBlockEntity.TOOL,
                     FoodProcessingBlockEntity.TOOL + 1, false)) return ItemStack.EMPTY;
-        } else if (station() == FoodProcessingStation.COOKING_POT
+        } else if (station().usesFuel()
                 && ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0) {
             if (!moveItemStackTo(stack, FoodProcessingBlockEntity.FUEL,
                     FoodProcessingBlockEntity.FUEL + 1, false)) return ItemStack.EMPTY;

@@ -27,6 +27,10 @@ public enum FoodProcessingStation {
         return defaultOperation;
     }
 
+    public boolean usesFuel() {
+        return this == COOKING_POT;
+    }
+
     public static FoodProcessingStation fromBlock(Block block) {
         if (block == CraftboundBlocks.HAND_MILL.get()) return HAND_MILL;
         if (block == CraftboundBlocks.DRYING_RACK.get()) return DRYING_RACK;
