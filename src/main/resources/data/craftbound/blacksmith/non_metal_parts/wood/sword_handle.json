@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "material_profile": "craftbound:wood",
+  "ingredient": { "tag": "minecraft:planks" },
+  "ingredient_count": 1,
+  "output": "craftbound:sword_handle",
+  "shape": "craftbound:sword_handle",
+  "base_grid_size": 16,
+  "warning_at_or_below_retention": 0.6,
+  "break_condition": { "type": "craftbound:remaining_ratio", "threshold": 0.5 },
+  "shape_evaluator": "craftbound:iou"
+}
