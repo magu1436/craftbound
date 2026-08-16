@@ -1,6 +1,7 @@
 package com.magu1436.craftbound;
 
 import com.magu1436.craftbound.client.event.CraftboundMovementPenaltyEventHandler;
+import com.magu1436.craftbound.integration.diet.FoodProducerDietIntegration;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.occupations.adventurer.AdventurerConfig;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyRules;
@@ -14,6 +15,7 @@ import com.magu1436.craftbound.occupations.blacksmith.experience.BlacksmithProce
 import com.magu1436.craftbound.occupations.blacksmith.reward.BlacksmithRewardsFactory;
 import com.magu1436.craftbound.occupations.explorer.integration.PufferfishExplorerExperienceGateway;
 import com.magu1436.craftbound.occupations.explorer.rewards.ExplorerRewardsFactory;
+import com.magu1436.craftbound.occupations.foodproducer.FoodProducerConfig;
 import com.magu1436.craftbound.occupations.foodproducer.loot.FoodProducerLootModifiers;
 import com.magu1436.craftbound.registry.CraftboundAttributes;
 import com.magu1436.craftbound.registry.CraftboundBlockEntities;
@@ -31,6 +33,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -63,6 +66,15 @@ public class Craftbound {
             ArchitectConfig.SPEC,
             "craftbound-architect.toml"
         );
+        context.registerConfig(
+            ModConfig.Type.SERVER,
+            FoodProducerConfig.SPEC,
+            "craftbound-foodproducer.toml"
+        );
+
+        if (ModList.get().isLoaded("diet")) {
+            FoodProducerDietIntegration.register();
+        }
 
         CraftboundItems.register(modEventBus);
         CraftboundBlocks.register(modEventBus);

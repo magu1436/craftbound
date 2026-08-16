@@ -426,5 +426,7 @@
     "message.craftbound.carving.wrong_tool": "This tool does not seem suitable",
     "command.craftbound.test.carving.quality.invalid_item": "Hold a non-metal part in your main hand.",
     "command.craftbound.test.carving.quality.untracked": "%s has no quality data.",
-    "command.craftbound.test.carving.quality.get": "%s quality: %s / 100"
+    "command.craftbound.test.carving.quality.get": "%s quality: %s / 100",
+    "effect.craftbound.professional_meal_active": "Professional Meal Effect (Internal)",
+    "message.craftbound.cooking.professional_meal_active": "You cannot eat a different professional meal until the current meal effect ends (%s seconds remaining)."
 }
