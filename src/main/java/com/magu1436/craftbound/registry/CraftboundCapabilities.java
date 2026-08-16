@@ -2,6 +2,7 @@ package com.magu1436.craftbound.registry;
 
 import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.adventurer.capability.IAdventurerData;
+import com.magu1436.craftbound.occupations.alchemist.capability.IAlchemistData;
 import com.magu1436.craftbound.occupations.architect.capability.ConstructionChunkData;
 import com.magu1436.craftbound.occupations.architect.capability.IArchitectData;
 import com.magu1436.craftbound.occupations.blacksmith.capability.IBlacksmithData;
@@ -40,6 +41,10 @@ public final class CraftboundCapabilities {
     public static final Capability<IBlacksmithData>
         BLACKSMITH_CAPABILITY_DATA =
             CapabilityManager.get(new CapabilityToken<>() {});
+    
+    public static final Capability<IAlchemistData>
+        ALCHEMIST_DATA =
+            CapabilityManager.get(new CapabilityToken<>() {});
 
     private CraftboundCapabilities() {
     }
@@ -51,5 +56,6 @@ public final class CraftboundCapabilities {
         event.register(IArchitectData.class);
         event.register(ExplorerDiscoveryData.class);
         event.register(IBlacksmithData.class);
+        event.register(IAlchemistData.class);
     }
 }
