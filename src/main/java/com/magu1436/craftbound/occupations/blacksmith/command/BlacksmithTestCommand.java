@@ -4,11 +4,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.magu1436.craftbound.common.CraftboundUtilities;
+import com.magu1436.craftbound.common.quality.QualityStateService;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinition;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitionSnapshot;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.casting.part.RoughMetalPartStateService;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -30,15 +32,19 @@ public final class BlacksmithTestCommand {
     private BlacksmithTestCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("craftbound")
-            .then(Commands.literal("blacksmith")
-                .requires(source -> source.hasPermission(2))
-                .then(Commands.literal("give_test_rough_part")
-                    .then(Commands.argument("definition", ResourceLocationArgument.id())
-                        .suggests((context, builder) -> SharedSuggestionProvider.suggestResource(
-                            MetalPartDefinitions.INSTANCE.ids(), builder
-                        ))
-                        .executes(BlacksmithTestCommand::giveRoughPart)))));
+        LiteralArgumentBuilder<CommandSourceStack> quality = Commands.literal("quality");
+        quality.then(Commands.literal("get")
+                .executes(context -> showQuality(context.getSource())));
+        
+        LiteralArgumentBuilder<CommandSourceStack> blacksmith = Commands.literal("blacksmith");
+        blacksmith.then(quality);
+        blacksmith.then(Commands.literal("give_test_rough_part")
+            .then(Commands.argument("definition", ResourceLocationArgument.id())
+                .suggests((context, builder) -> SharedSuggestionProvider.suggestResource(
+                    MetalPartDefinitions.INSTANCE.ids(), builder
+                ))
+                .executes(BlacksmithTestCommand::giveRoughPart)));
+        dispatcher.register(Commands.literal("craftbound").then(blacksmith));
     }
 
     private static int giveRoughPart(
@@ -84,6 +90,22 @@ public final class BlacksmithTestCommand {
         source.sendSuccess(() -> Component.literal("Gave test rough metal part: ")
             .append(itemName)
             .append(" (" + definitionId + ")"), true);
+        return 1;
+    }
+
+    private static int showQuality(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ItemStack stack = source.getPlayerOrException().getMainHandItem();
+        var quality = QualityStateService.read(stack);
+        if (quality.isEmpty()) {
+            source.sendFailure(Component.translatable(
+                    "command.craftbound.test.carving.quality.untracked",
+                    stack.getHoverName()));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.translatable(
+                "command.craftbound.test.carving.quality.get",
+                stack.getHoverName(),
+                quality.get().quality()), false);
         return 1;
     }
 }
