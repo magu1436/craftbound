@@ -11,6 +11,7 @@ import com.magu1436.craftbound.occupations.blacksmith.data.BlacksmithSkillAssist
 import com.magu1436.craftbound.occupations.blacksmith.carving.definition.CarvingShapeDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalMaterialDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalPartDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.assembly.QualityAssemblyRecipeValidationListener;
 
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,5 +44,7 @@ public final class CraftboundDataReloadEventHandler {
         event.addListener(CarvingShapeDefinitions.INSTANCE);
         event.addListener(BlacksmithSettingsDefinitions.INSTANCE);
         event.addListener(BlacksmithSkillAssistDefinitions.INSTANCE);
+        event.addListener(new QualityAssemblyRecipeValidationListener(
+            event.getServerResources().getRecipeManager()));
     }
 }

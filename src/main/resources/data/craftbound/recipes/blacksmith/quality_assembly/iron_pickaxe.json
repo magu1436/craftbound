@@ -1,0 +1,25 @@
+{
+  "type": "craftbound:quality_assembly",
+  "pattern": [
+    "H",
+    "S"
+  ],
+  "key": {
+    "H": {
+      "kind": "metal_part",
+      "part_type": "craftbound:iron/pickaxe_head",
+      "material": "craftbound:iron",
+      "contributes_to_quality": true
+    },
+    "S": {
+      "kind": "nonmetal_part",
+      "part_type": "craftbound:wood/pickaxe_handle",
+      "material": "craftbound:wood",
+      "contributes_to_quality": true
+    }
+  },
+  "result": {
+    "item": "minecraft:iron_pickaxe",
+    "count": 1
+  }
+}

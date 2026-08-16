@@ -29,7 +29,6 @@ import com.magu1436.craftbound.registry.CraftboundItemTags;
 import com.magu1436.craftbound.registry.CraftboundItems;
 import com.magu1436.craftbound.registry.CraftboundMobEffects;
 import com.magu1436.craftbound.common.quality.QualityStateService;
-import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalPartDefinitions;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -90,10 +89,6 @@ public final class CraftboundTestCommands {
                                         context.getSource(),
                                         IntegerArgumentType.getInteger(context, "seconds")
                                 )))));
-
-        test.then(Commands.literal("carving")
-                .then(Commands.literal("quality")
-                        .executes(context -> showHeldNonMetalPartQuality(context.getSource()))));
 
         test.then(Commands.literal("food")
                 .then(Commands.literal("get")
@@ -212,28 +207,6 @@ public final class CraftboundTestCommands {
     ) {
         return Commands.literal(name)
                 .executes(context -> setHeldQuality(context.getSource(), quality));
-    }
-
-    private static int showHeldNonMetalPartQuality(CommandSourceStack source)
-            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        ItemStack stack = source.getPlayerOrException().getMainHandItem();
-        if (!NonMetalPartDefinitions.INSTANCE.isOutput(stack)) {
-            source.sendFailure(Component.translatable(
-                    "command.craftbound.test.carving.quality.invalid_item"));
-            return 0;
-        }
-        var quality = QualityStateService.read(stack);
-        if (quality.isEmpty()) {
-            source.sendFailure(Component.translatable(
-                    "command.craftbound.test.carving.quality.untracked",
-                    stack.getHoverName()));
-            return 0;
-        }
-        source.sendSuccess(() -> Component.translatable(
-                "command.craftbound.test.carving.quality.get",
-                stack.getHoverName(),
-                quality.get().quality()), false);
-        return 1;
     }
 
     private static int setHeldQuality(CommandSourceStack source, FoodQuality quality)
