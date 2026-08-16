@@ -428,5 +428,11 @@
     "command.craftbound.test.carving.quality.untracked": "%s has no quality data.",
     "command.craftbound.test.carving.quality.get": "%s quality: %s / 100",
     "effect.craftbound.professional_meal_active": "Professional Meal Effect (Internal)",
-    "message.craftbound.cooking.professional_meal_active": "You cannot eat a different professional meal until the current meal effect ends (%s seconds remaining)."
+    "message.craftbound.cooking.professional_meal_active": "You cannot eat a different professional meal until the current meal effect ends (%s seconds remaining).",
+    "tooltip.craftbound.blacksmith_quality": "Quality: %s",
+    "quality.craftbound.blacksmith.poor": "Poor",
+    "quality.craftbound.blacksmith.low": "Low Quality",
+    "quality.craftbound.blacksmith.standard": "Standard",
+    "quality.craftbound.blacksmith.high": "High Quality",
+    "quality.craftbound.blacksmith.masterwork": "Masterwork"
 }
