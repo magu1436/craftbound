@@ -18,6 +18,7 @@ import com.magu1436.craftbound.network.packet.CarvingHeartbeatPacket;
 import com.magu1436.craftbound.network.packet.CarvingSessionSyncPacket;
 import com.magu1436.craftbound.network.packet.CarvingDeltaSyncPacket;
 import com.magu1436.craftbound.network.packet.CarvingFeedbackPacket;
+import com.magu1436.craftbound.network.packet.BlacksmithQualityTierSyncPacket;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -30,7 +31,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  * Craftboundのネットワークチャンネルとパケットを管理する。
  */
 public final class CraftboundNetwork {
-    private static final String PROTOCOL_VERSION = "4";
+    private static final String PROTOCOL_VERSION = "5";
 
     private static final SimpleChannel CHANNEL =
         NetworkRegistry.newSimpleChannel(
@@ -116,9 +117,12 @@ public final class CraftboundNetwork {
         CHANNEL.registerMessage(packetId++, CarvingDeltaSyncPacket.class,
             CarvingDeltaSyncPacket::encode, CarvingDeltaSyncPacket::decode,
             CarvingDeltaSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(packetId, CarvingFeedbackPacket.class,
+        CHANNEL.registerMessage(packetId++, CarvingFeedbackPacket.class,
             CarvingFeedbackPacket::encode, CarvingFeedbackPacket::decode,
             CarvingFeedbackPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(packetId, BlacksmithQualityTierSyncPacket.class,
+            BlacksmithQualityTierSyncPacket::encode, BlacksmithQualityTierSyncPacket::decode,
+            BlacksmithQualityTierSyncPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         registered = true;
     }

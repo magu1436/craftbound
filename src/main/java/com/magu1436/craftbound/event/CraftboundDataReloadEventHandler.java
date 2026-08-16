@@ -7,6 +7,7 @@ import com.magu1436.craftbound.occupations.explorer.data.ToolCareBlockDefinition
 import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.data.BlacksmithSettingsDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.data.BlacksmithQualityTierDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.data.BlacksmithSkillAssistDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.carving.definition.CarvingShapeDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalMaterialDefinitions;
@@ -43,6 +44,7 @@ public final class CraftboundDataReloadEventHandler {
         event.addListener(NonMetalPartDefinitions.INSTANCE);
         event.addListener(CarvingShapeDefinitions.INSTANCE);
         event.addListener(BlacksmithSettingsDefinitions.INSTANCE);
+        event.addListener(BlacksmithQualityTierDefinitions.INSTANCE);
         event.addListener(BlacksmithSkillAssistDefinitions.INSTANCE);
         event.addListener(new QualityAssemblyRecipeValidationListener(
             event.getServerResources().getRecipeManager()));

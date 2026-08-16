@@ -422,5 +422,11 @@
     "command.craftbound.test.carving.quality.untracked": "%sに品質データがありません。",
     "command.craftbound.test.carving.quality.get": "%sの品質：%s / 100",
     "effect.craftbound.professional_meal_active": "職業料理効果（内部）",
-    "message.craftbound.cooking.professional_meal_active": "別の職業料理は、現在の料理効果が切れるまで食べられません（残り%s秒）"
+    "message.craftbound.cooking.professional_meal_active": "別の職業料理は、現在の料理効果が切れるまで食べられません（残り%s秒）",
+    "tooltip.craftbound.blacksmith_quality": "品質: %s",
+    "quality.craftbound.blacksmith.poor": "粗悪",
+    "quality.craftbound.blacksmith.low": "低品質",
+    "quality.craftbound.blacksmith.standard": "標準",
+    "quality.craftbound.blacksmith.high": "高品質",
+    "quality.craftbound.blacksmith.masterwork": "最高品質"
 }
