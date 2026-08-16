@@ -6,10 +6,15 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 
 /** 専用画像を必要としない、初期加工設備の最小GUI。 */
 public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProcessingMenu> {
+
+    private static final int BUTTON_Y = 103;
+    private static final int STATUS_TOP = 80;
+    private static final int STATUS_WIDTH = 160;
 
     private Button cutButton;
     private Button mixButton;
@@ -18,8 +23,8 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
     public FoodProcessingScreen(FoodProcessingMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         imageWidth = 176;
-        imageHeight = 187;
-        inventoryLabelY = 93;
+        imageHeight = 219;
+        inventoryLabelY = 125;
     }
 
     @Override
@@ -28,15 +33,15 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
         cutButton = addRenderableWidget(Button.builder(
                 Component.translatable("screen.craftbound.processing.cut"),
                 button -> send(FoodProcessingMenu.SELECT_CUT_BUTTON)
-        ).bounds(leftPos + 8, topPos + 76, 42, 18).build());
+        ).bounds(leftPos + 8, topPos + BUTTON_Y, 42, 18).build());
         mixButton = addRenderableWidget(Button.builder(
                 Component.translatable("screen.craftbound.processing.mix"),
                 button -> send(FoodProcessingMenu.SELECT_MIX_BUTTON)
-        ).bounds(leftPos + 52, topPos + 76, 42, 18).build());
+        ).bounds(leftPos + 52, topPos + BUTTON_Y, 42, 18).build());
         startButton = addRenderableWidget(Button.builder(
                 Component.translatable("screen.craftbound.processing.start"),
                 button -> send(FoodProcessingMenu.START_BUTTON)
-        ).bounds(leftPos + 116, topPos + 76, 52, 18).build());
+        ).bounds(leftPos + 116, topPos + BUTTON_Y, 52, 18).build());
         updateButtons();
     }
 
@@ -59,6 +64,7 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
         cutButton.active = table && !menu.running() && menu.operation() != FoodProcessingOperation.CUT;
         mixButton.active = table && !menu.running() && menu.operation() != FoodProcessingOperation.MIX;
         startButton.active = !menu.running();
+        startButton.setX(leftPos + (table ? 116 : 62));
     }
 
     @Override
@@ -69,17 +75,17 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
         graphics.fill(leftPos + 5, topPos + 5, leftPos + imageWidth - 5, topPos + imageHeight - 5, 0xFFC6C6C6);
         for (int x : new int[] { 26, 44, 62, 116, 134 }) drawSlot(graphics, x, 36);
         drawSlot(graphics, 44, 61);
-        if (menu.station() == FoodProcessingStation.COOKING_POT) {
+        if (menu.station().usesFuel()) {
             drawSlot(graphics, 80, 61);
             int flameHeight = menu.burnTotal() <= 0 ? 0 : Math.min(12,
                     Math.round(12.0F * menu.burnTime() / menu.burnTotal()));
-            graphics.fill(leftPos + 101, topPos + 62 + (12 - flameHeight),
-                    leftPos + 107, topPos + 74, 0xFFFF8C00);
+            graphics.fill(leftPos + 99, topPos + 62 + (12 - flameHeight),
+                    leftPos + 105, topPos + 74, 0xFFFF8C00);
         }
         int width = menu.totalTicks() <= 0 ? 0 : Math.min(50,
                 Math.round(50.0F * menu.progress() / menu.totalTicks()));
-        graphics.fill(leftPos + 65, topPos + 58, leftPos + 117, topPos + 65, 0xFF373737);
-        graphics.fill(leftPos + 66, topPos + 59, leftPos + 66 + width, topPos + 64, 0xFF55AA55);
+        graphics.fill(leftPos + 108, topPos + 62, leftPos + 160, topPos + 69, 0xFF373737);
+        graphics.fill(leftPos + 109, topPos + 63, leftPos + 109 + width, topPos + 68, 0xFF55AA55);
     }
 
     private void drawSlot(GuiGraphics graphics, int x, int y) {
@@ -106,10 +112,15 @@ public final class FoodProcessingScreen extends AbstractContainerScreen<FoodProc
             state = Component.translatable("screen.craftbound.processing.ready");
             stateColor = 0x404040;
         }
-        graphics.drawString(font, state, 101 - font.width(state) / 2, 66, stateColor, false);
-        if (menu.station() == FoodProcessingStation.COOKING_POT) {
-            graphics.drawString(font, Component.translatable("screen.craftbound.processing.fuel"),
-                    77, 82, 0x404040, false);
+        var stateLines = font.split(state, STATUS_WIDTH);
+        int stateY = STATUS_TOP + (stateLines.size() == 1 ? 5 : 0);
+        for (FormattedCharSequence line : stateLines) {
+            graphics.drawString(font, line, imageWidth / 2 - font.width(line) / 2, stateY, stateColor, false);
+            stateY += 10;
+        }
+        if (menu.station().usesFuel()) {
+            Component fuel = Component.translatable("screen.craftbound.processing.fuel");
+            graphics.drawString(font, fuel, 88 - font.width(fuel) / 2, 52, 0x404040, false);
         }
         graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
     }
