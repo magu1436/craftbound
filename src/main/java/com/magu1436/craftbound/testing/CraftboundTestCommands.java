@@ -308,9 +308,29 @@ public final class CraftboundTestCommands {
         long nextFeed = RanchAnimalData.hasNextFeedTime(animal)
                 ? Math.max(0L, RanchAnimalData.getNextFeedTime(animal) - now) / 20L
                 : -1L;
+        RanchBlockEntity assignedRanch = RanchManager.findAssignedRanch(animal);
+        RanchBlockEntity activeRanch = RanchManager.findManagingRanch(animal);
+        int graceSeconds = assignedRanch == null
+                ? -1
+                : assignedRanch.getOutsideGraceSeconds(animal.getUUID(), now);
+        Component registrationState = activeRanch != null
+                ? Component.translatable("command.craftbound.test.ranch.state.managed")
+                : assignedRanch != null
+                        ? Component.translatable("command.craftbound.test.ranch.state.grace")
+                        : Component.translatable("command.craftbound.test.ranch.state.unregistered");
+        RanchAnimalData.Assignment assignment = RanchAnimalData.getAssignment(animal);
+        String ranchPosition = assignment == null
+                ? "-"
+                : assignment.position().getX() + ","
+                        + assignment.position().getY() + ","
+                        + assignment.position().getZ();
         source.sendSuccess(() -> Component.translatable(
                 "command.craftbound.test.ranch.status",
                 animal.getDisplayName(),
+                registrationState,
+                ranchPosition,
+                activeRanch != null,
+                graceSeconds,
                 RanchAnimalData.isFed(animal),
                 animal.isBaby() ? RanchAnimalData.getRemainingGrowth(animal) / 20 : 0,
                 nextFeed
@@ -320,7 +340,7 @@ public final class CraftboundTestCommands {
 
     private static int setNearestFeedDue(CommandSourceStack source)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        Animal animal = nearestAnimal(source, ignored -> true);
+        Animal animal = nearestAnimal(source, candidate -> RanchManager.findManagingRanch(candidate) != null);
         if (animal == null) return 0;
         RanchAnimalData.setFed(animal, false);
         RanchAnimalData.setNextFeedTime(animal, animal.level().getGameTime());
@@ -333,7 +353,7 @@ public final class CraftboundTestCommands {
 
     private static int feedNearestNow(CommandSourceStack source)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        Animal animal = nearestAnimal(source, ignored -> true);
+        Animal animal = nearestAnimal(source, candidate -> RanchManager.findManagingRanch(candidate) != null);
         if (animal == null) return 0;
         RanchAnimalData.setFed(animal, true);
         RanchAnimalData.setNextFeedTime(
@@ -351,7 +371,8 @@ public final class CraftboundTestCommands {
 
     private static int prepareNearestChildGrowth(CommandSourceStack source, int seconds)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        Animal animal = nearestAnimal(source, Animal::isBaby);
+        Animal animal = nearestAnimal(source,
+                candidate -> candidate.isBaby() && RanchManager.findManagingRanch(candidate) != null);
         if (animal == null) return 0;
         RanchAnimalData.ensureManaged(animal);
         RanchAnimalData.setRemainingGrowth(animal, seconds * 20);
@@ -370,7 +391,8 @@ public final class CraftboundTestCommands {
 
     private static int pauseNearestChild(CommandSourceStack source)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        Animal animal = nearestAnimal(source, Animal::isBaby);
+        Animal animal = nearestAnimal(source,
+                candidate -> candidate.isBaby() && RanchManager.findManagingRanch(candidate) != null);
         if (animal == null) return 0;
         RanchAnimalData.ensureManaged(animal);
         RanchAnimalData.setFed(animal, false);
@@ -384,7 +406,8 @@ public final class CraftboundTestCommands {
 
     private static int resumeNearestChild(CommandSourceStack source)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        Animal animal = nearestAnimal(source, Animal::isBaby);
+        Animal animal = nearestAnimal(source,
+                candidate -> candidate.isBaby() && RanchManager.findManagingRanch(candidate) != null);
         if (animal == null) return 0;
         RanchAnimalData.ensureManaged(animal);
         RanchAnimalData.setFed(animal, true);

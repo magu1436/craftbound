@@ -27,7 +27,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 
-/** 共有利用できる牧畜ブロック。管理処理自体は後続段階で追加する。 */
+/** 共有利用できる牧畜ブロック。 */
 public final class RanchBlock extends BaseEntityBlock {
 
     public RanchBlock(Properties properties) {
@@ -91,6 +91,7 @@ public final class RanchBlock extends BaseEntityBlock {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof RanchBlockEntity ranch) {
+                ranch.releaseAllAssignments();
                 Containers.dropContents(level, pos, ranch);
             }
         }

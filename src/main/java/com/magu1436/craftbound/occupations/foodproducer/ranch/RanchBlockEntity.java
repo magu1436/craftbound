@@ -1,5 +1,9 @@
 package com.magu1436.craftbound.occupations.foodproducer.ranch;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.annotation.Nullable;
 
 import com.magu1436.craftbound.Craftbound;
@@ -11,7 +15,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
@@ -46,11 +53,20 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
     public static final int DATA_CHILD_COUNT = 6;
     public static final int DATA_BREEDABLE_COUNT = 7;
     public static final int DATA_NEXT_FEED_SECONDS = 8;
-    public static final int DATA_COUNT = 9;
+    public static final int DATA_RANGE_COUNT = 9;
+    public static final int DATA_REGISTERED_COUNT = 10;
+    public static final int DATA_OVERFLOW_COUNT = 11;
+    public static final int DATA_COUNT = 12;
+
+    public static final long OUTSIDE_GRACE_TICKS = 30L * 20L;
+    private static final long DISCOVERY_INTERVAL_TICKS = 5L * 20L;
 
     private static final String TARGET_TAG = "target";
     private static final String FEED_RANK_TAG = "feed_management_rank";
     private static final String CAPACITY_RANK_TAG = "ranch_capacity_rank";
+    private static final String REGISTRATIONS_TAG = "registered_animals";
+    private static final String REGISTRATION_UUID_TAG = "animal_uuid";
+    private static final String OUTSIDE_SINCE_TAG = "outside_since";
     private static final int[] ALL_SLOTS = { FEED_SLOT };
 
     private NonNullList<ItemStack> items = NonNullList.withSize(CONTAINER_SIZE, ItemStack.EMPTY);
@@ -62,6 +78,10 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
     private int childCount;
     private int breedableCount;
     private int nextFeedSeconds = -1;
+    private int rangeCount;
+    private int overflowCount;
+    private long lastDiscoveryGameTime = Long.MIN_VALUE;
+    private final RanchRegistrationRoster registrations = new RanchRegistrationRoster();
     private LazyOptional<IItemHandler> itemHandler = LazyOptional.of(this::createItemHandler);
 
     private final ContainerData dataAccess = new ContainerData() {
@@ -77,6 +97,9 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
                 case DATA_CHILD_COUNT -> childCount;
                 case DATA_BREEDABLE_COUNT -> breedableCount;
                 case DATA_NEXT_FEED_SECONDS -> nextFeedSeconds;
+                case DATA_RANGE_COUNT -> rangeCount;
+                case DATA_REGISTERED_COUNT -> registrations.size();
+                case DATA_OVERFLOW_COUNT -> overflowCount;
                 default -> 0;
             };
         }
@@ -92,6 +115,8 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
                 case DATA_CHILD_COUNT -> childCount = Math.max(0, value);
                 case DATA_BREEDABLE_COUNT -> breedableCount = Math.max(0, value);
                 case DATA_NEXT_FEED_SECONDS -> nextFeedSeconds = value;
+                case DATA_RANGE_COUNT -> rangeCount = Math.max(0, value);
+                case DATA_OVERFLOW_COUNT -> overflowCount = Math.max(0, value);
                 default -> {
                 }
             }
@@ -132,7 +157,12 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
         if (!items.get(FEED_SLOT).isEmpty()) {
             return false;
         }
+        if (target == newTarget) {
+            return true;
+        }
+        releaseAllAssignments();
         target = newTarget;
+        lastDiscoveryGameTime = Long.MIN_VALUE;
         setChanged();
         return true;
     }
@@ -185,10 +215,28 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
     }
 
     private void processManagedAnimals(long gameTime) {
-        java.util.List<Animal> owned = RanchManager.getOwnedAnimals(this);
-        owned.stream().filter(Animal::isBaby).forEach(RanchAnimalData::ensureManaged);
-        java.util.List<Animal> managed = owned.stream().limit(getManagementCapacity()).toList();
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        reconcileRegistrations(serverLevel, gameTime);
+
+        List<Animal> animalsInRange = null;
+        if (lastDiscoveryGameTime == Long.MIN_VALUE
+                || gameTime - lastDiscoveryGameTime >= DISCOVERY_INTERVAL_TICKS) {
+            lastDiscoveryGameTime = gameTime;
+            animalsInRange = RanchManager.getAnimalsInRange(this);
+            animalsInRange.stream()
+                    .filter(Animal::isBaby)
+                    .forEach(RanchAnimalData::ensureManaged);
+            fillAvailableRegistrations(serverLevel, animalsInRange);
+            rangeCount = animalsInRange.size();
+        }
+
+        List<Animal> managed = getActiveManagedAnimals();
         managedCount = managed.size();
+        if (animalsInRange != null) {
+            overflowCount = Math.max(0, rangeCount - managedCount);
+        }
         adultCount = 0;
         childCount = 0;
         breedableCount = 0;
@@ -218,6 +266,145 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
             }
         }
         setChanged();
+    }
+
+    private void reconcileRegistrations(ServerLevel serverLevel, long gameTime) {
+        if (target == RanchTarget.UNSET) {
+            releaseAllAssignments();
+            return;
+        }
+
+        for (Map.Entry<UUID, Long> entry : registrations.entries()) {
+            UUID animalId = entry.getKey();
+            Animal animal = RanchManager.findLoadedAnimal(this, animalId);
+            if (animal == null) {
+                if (registrations.graceExpired(animalId, gameTime, OUTSIDE_GRACE_TICKS)) {
+                    releaseRegistration(animalId);
+                }
+                continue;
+            }
+            if (!animal.isAlive() || !target.matches(animal)) {
+                releaseRegistration(animalId);
+                continue;
+            }
+
+            RanchBlockEntity assigned = RanchManager.findAssignedRanch(animal);
+            if (assigned != null && assigned != this) {
+                releaseRegistration(animalId);
+                continue;
+            }
+            if (animal.level() == serverLevel && getManagementBounds().contains(animal.position())) {
+                registrations.markInside(animalId);
+                RanchAnimalData.assignTo(animal, serverLevel, worldPosition);
+            } else {
+                registrations.markOutside(animalId, gameTime);
+                if (registrations.graceExpired(animalId, gameTime, OUTSIDE_GRACE_TICKS)) {
+                    releaseRegistration(animalId);
+                }
+            }
+        }
+    }
+
+    private void fillAvailableRegistrations(ServerLevel serverLevel, List<Animal> candidates) {
+        if (!hasRegistrationSpace()) {
+            return;
+        }
+        for (Animal animal : candidates) {
+            if (!hasRegistrationSpace()) {
+                break;
+            }
+            if (!registrations.contains(animal.getUUID()) && RanchManager.mayRegister(animal, this)) {
+                registerAnimal(serverLevel, animal);
+            }
+        }
+    }
+
+    private boolean registerAnimal(ServerLevel serverLevel, Animal animal) {
+        if (!target.matches(animal)
+                || !registrations.register(animal.getUUID(), getManagementCapacity())) {
+            return false;
+        }
+        RanchAnimalData.assignTo(animal, serverLevel, worldPosition);
+        RanchAnimalData.ensureManaged(animal);
+        setChanged();
+        return true;
+    }
+
+    public boolean registerNewborn(Animal animal) {
+        return level instanceof ServerLevel serverLevel && registerAnimal(serverLevel, animal);
+    }
+
+    public boolean hasRegistration(UUID animalId) {
+        return registrations.contains(animalId);
+    }
+
+    public boolean hasRegistrationSpace() {
+        return target != RanchTarget.UNSET && registrations.size() < getManagementCapacity();
+    }
+
+    public int getRegistrationCount() {
+        return registrations.size();
+    }
+
+    public int getRangeCount() {
+        return rangeCount;
+    }
+
+    public int getOverflowCount() {
+        return overflowCount;
+    }
+
+    public int getOutsideGraceSeconds(UUID animalId, long gameTime) {
+        long outsideSince = registrations.outsideSince(animalId);
+        if (!registrations.contains(animalId) || outsideSince == RanchRegistrationRoster.INSIDE) {
+            return -1;
+        }
+        long remaining = Math.max(0L, OUTSIDE_GRACE_TICKS - (gameTime - outsideSince));
+        return (int) ((remaining + 19L) / 20L);
+    }
+
+    List<Animal> getActiveManagedAnimals() {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return List.of();
+        }
+        return registrations.ids().stream()
+                .map(id -> RanchManager.findLoadedAnimal(this, id))
+                .filter(java.util.Objects::nonNull)
+                .filter(Animal::isAlive)
+                .filter(animal -> animal.level() == serverLevel)
+                .filter(target::matches)
+                .filter(animal -> getManagementBounds().contains(animal.position()))
+                .filter(animal -> RanchAnimalData.isAssignedTo(animal, serverLevel, worldPosition))
+                .toList();
+    }
+
+    public void releaseRegistration(UUID animalId) {
+        Animal animal = RanchManager.findLoadedAnimal(this, animalId);
+        if (animal != null && level instanceof ServerLevel serverLevel) {
+            RanchAnimalData.clearAssignmentIfMatches(animal, serverLevel, worldPosition);
+        }
+        if (registrations.release(animalId)) {
+            lastDiscoveryGameTime = Long.MIN_VALUE;
+            setChanged();
+        }
+    }
+
+    public void releaseAllAssignments() {
+        if (level instanceof ServerLevel serverLevel) {
+            for (UUID animalId : registrations.ids()) {
+                Animal animal = RanchManager.findLoadedAnimal(this, animalId);
+                if (animal != null) {
+                    RanchAnimalData.clearAssignmentIfMatches(animal, serverLevel, worldPosition);
+                }
+            }
+        }
+        if (registrations.size() > 0) {
+            registrations.clear();
+            managedCount = 0;
+            rangeCount = 0;
+            overflowCount = 0;
+            setChanged();
+        }
     }
 
     private void updateFeeding(Animal animal, long gameTime) {
@@ -281,6 +468,7 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
         }
         feedManagementRank = newFeedRank;
         ranchCapacityRank = newCapacityRank;
+        lastDiscoveryGameTime = Long.MIN_VALUE;
         setChanged();
         return 1;
     }
@@ -396,6 +584,14 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
         tag.putString(TARGET_TAG, target.serializedName());
         tag.putInt(FEED_RANK_TAG, feedManagementRank);
         tag.putInt(CAPACITY_RANK_TAG, ranchCapacityRank);
+        ListTag registrationList = new ListTag();
+        for (Map.Entry<UUID, Long> entry : registrations.entries()) {
+            CompoundTag registration = new CompoundTag();
+            registration.putUUID(REGISTRATION_UUID_TAG, entry.getKey());
+            registration.putLong(OUTSIDE_SINCE_TAG, entry.getValue());
+            registrationList.add(registration);
+        }
+        tag.put(REGISTRATIONS_TAG, registrationList);
     }
 
     @Override
@@ -406,6 +602,19 @@ public final class RanchBlockEntity extends BaseContainerBlockEntity implements 
         target = RanchTarget.fromSerializedName(tag.getString(TARGET_TAG));
         feedManagementRank = clampRank(tag.getInt(FEED_RANK_TAG));
         ranchCapacityRank = clampRank(tag.getInt(CAPACITY_RANK_TAG));
+        registrations.clear();
+        ListTag registrationList = tag.getList(REGISTRATIONS_TAG, Tag.TAG_COMPOUND);
+        for (int index = 0; index < registrationList.size(); index++) {
+            CompoundTag registration = registrationList.getCompound(index);
+            if (registration.hasUUID(REGISTRATION_UUID_TAG)
+                    && registrations.size() < getManagementCapacity()) {
+                registrations.load(
+                        registration.getUUID(REGISTRATION_UUID_TAG),
+                        registration.getLong(OUTSIDE_SINCE_TAG)
+                );
+            }
+        }
+        lastDiscoveryGameTime = Long.MIN_VALUE;
     }
 
     @Override
