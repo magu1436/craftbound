@@ -8,7 +8,7 @@
     { "item": "minecraft:egg", "count": 1 },
     { "tag": "craftbound:regional_ingredients/tier_3", "count": 1 }
   ],
-  "food": { "nutrition": 8, "saturation_gain": 8.0 },
+  "food": { "nutrition": 6, "saturation_gain": 5.0 },
   "preserved": false,
   "experience": 5
 }

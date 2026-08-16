@@ -23,8 +23,8 @@
     "count": 1
   },
   "food": {
-    "nutrition": 6,
-    "saturation_gain": 5.0
+    "nutrition": 4,
+    "saturation_gain": 3.0
   },
   "preserved": false,
   "experience": 5

@@ -25,6 +25,23 @@ class FoodProducerDataDesignTest {
             "/data/craftbound/puffish_skills/categories/food_producer/";
     private static final String FOOD_RECIPE_BASE =
             "/data/craftbound/craftbound_food_recipes/";
+    private static final Map<Integer, List<String>> ROLE_MEALS_BY_RANK = Map.of(
+            1, List.of("provisional_work_stew", "provisional_berry_bread",
+                    "provisional_meat_skewer", "provisional_mushroom_soup",
+                    "provisional_builder_vegetable_bread"),
+            2, List.of("provisional_iron_pot_meat_wrap", "provisional_vegetable_wrap",
+                    "provisional_fortified_meat_soup", "provisional_sweet_berry_stew",
+                    "provisional_masons_egg_porridge"),
+            3, List.of("provisional_hearth_meat_dish", "provisional_cave_travel_bread",
+                    "provisional_warrior_meat_pie", "provisional_glow_berry_milk_porridge",
+                    "provisional_foreman_soup"),
+            4, List.of("provisional_artisan_meat_pie", "provisional_cave_mushroom_stew",
+                    "provisional_hero_roast", "provisional_cocoa_tonic_pudding",
+                    "provisional_master_builder_wrap"),
+            5, List.of("provisional_master_table", "provisional_horizon_table",
+                    "provisional_hero_table", "provisional_alchemist_table",
+                    "provisional_architect_table")
+    );
 
     @Test
     void skillTreeUsesThreeFunctionalRootsAndMatchingDefinitions() {
@@ -52,6 +69,30 @@ class FoodProducerDataDesignTest {
         assertRecipePolicy("provisional_dried_meat_ration.json", 3, "manual_only");
         assertRecipePolicy("provisional_deluxe_dried_mix.json", 4, "manual_only");
         assertRecipePolicy("provisional_ultimate_ration.json", 5, "manual_only");
+    }
+
+    @Test
+    void preservedFoodsMatchDocumentedFoodValuesAndExperience() {
+        assertFoodValues("provisional_dried_fruit_wrap", 6, 5.0D, 2);
+        assertFoodValues("provisional_dried_mixed_pack", 8, 7.0D, 2);
+        assertFoodValues("provisional_dried_meat_ration", 10, 9.0D, 2);
+        assertFoodValues("provisional_deluxe_dried_mix", 12, 12.0D, 2);
+        assertFoodValues("provisional_ultimate_ration", 14, 16.0D, 2);
+    }
+
+    @Test
+    void roleMealsUseDocumentedFoodValuesByRank() {
+        int[] nutritionByRank = {4, 5, 6, 7, 8};
+        double[] saturationByRank = {3.0D, 4.0D, 5.0D, 6.0D, 7.0D};
+
+        ROLE_MEALS_BY_RANK.forEach((rank, files) -> files.forEach(file ->
+                assertFoodValues(
+                        file,
+                        nutritionByRank[rank - 1],
+                        saturationByRank[rank - 1],
+                        5
+                )
+        ));
     }
 
     @Test
@@ -155,25 +196,7 @@ class FoodProducerDataDesignTest {
 
     @Test
     void roleMealsRequireMatchingRegionalIngredientTier() {
-        Map<Integer, List<String>> mealsByRank = Map.of(
-                1, List.of("provisional_work_stew", "provisional_berry_bread",
-                        "provisional_meat_skewer", "provisional_mushroom_soup",
-                        "provisional_builder_vegetable_bread"),
-                2, List.of("provisional_iron_pot_meat_wrap", "provisional_vegetable_wrap",
-                        "provisional_fortified_meat_soup", "provisional_sweet_berry_stew",
-                        "provisional_masons_egg_porridge"),
-                3, List.of("provisional_hearth_meat_dish", "provisional_cave_travel_bread",
-                        "provisional_warrior_meat_pie", "provisional_glow_berry_milk_porridge",
-                        "provisional_foreman_soup"),
-                4, List.of("provisional_artisan_meat_pie", "provisional_cave_mushroom_stew",
-                        "provisional_hero_roast", "provisional_cocoa_tonic_pudding",
-                        "provisional_master_builder_wrap"),
-                5, List.of("provisional_master_table", "provisional_horizon_table",
-                        "provisional_hero_table", "provisional_alchemist_table",
-                        "provisional_architect_table")
-        );
-
-        mealsByRank.forEach((rank, files) -> files.forEach(file -> {
+        ROLE_MEALS_BY_RANK.forEach((rank, files) -> files.forEach(file -> {
             JsonObject recipe = resource(FOOD_RECIPE_BASE + file + ".json");
             assertEquals(rank, recipe.get("required_recipe_rank").getAsInt(), file);
             var inputs = recipe.getAsJsonArray("inputs");
@@ -196,6 +219,24 @@ class FoodProducerDataDesignTest {
         JsonObject recipe = resource(FOOD_RECIPE_BASE + file);
         assertEquals(rank, recipe.get("required_recipe_rank").getAsInt());
         assertEquals(policy, recipe.get("automation_policy").getAsString());
+    }
+
+    private static void assertFoodValues(
+            String file,
+            int nutrition,
+            double saturationGain,
+            int experience
+    ) {
+        JsonObject recipe = resource(FOOD_RECIPE_BASE + file + ".json");
+        JsonObject food = recipe.getAsJsonObject("food");
+        assertEquals(nutrition, food.get("nutrition").getAsInt(), file);
+        assertEquals(
+                saturationGain,
+                food.get("saturation_gain").getAsDouble(),
+                0.000001D,
+                file
+        );
+        assertEquals(experience, recipe.get("experience").getAsInt(), file);
     }
 
     private static void assertRoleSeries(
