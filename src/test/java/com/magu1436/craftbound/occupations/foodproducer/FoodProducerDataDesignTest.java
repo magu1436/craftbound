@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -77,6 +77,52 @@ class FoodProducerDataDesignTest {
         assertFalse(definitions.has("food_producer_root"));
         assertEquals(skills.keySet(), definitions.keySet());
         assertTrue(connections.getAsJsonObject("normal").has("unidirectional"));
+    }
+
+    @Test
+    void skillProgressionMatchesMultiplayerIntegrationBaseline() {
+        JsonObject category = resource(SKILL_BASE + "category.json");
+        JsonObject experience = resource(SKILL_BASE + "experience.json");
+        JsonObject skills = resource(SKILL_BASE + "skills.json");
+        JsonObject definitions = resource(SKILL_BASE + "definitions.json");
+
+        assertTrue(category.get("unlocked_by_default").getAsBoolean());
+        assertFalse(category.get("exclusive_root").getAsBoolean());
+        assertEquals(50, experience.get("level_limit").getAsInt());
+        assertEquals(
+                "10 + level * 5",
+                experience.getAsJsonObject("experience_per_level")
+                        .getAsJsonObject("data")
+                        .get("expression")
+                        .getAsString()
+        );
+        assertEquals(0, experience.getAsJsonArray("sources").size());
+
+        int cumulativeExperience = 0;
+        for (int level = 0; level < 50; level++) {
+            cumulativeExperience += 10 + level * 5;
+        }
+        assertEquals(6_625, cumulativeExperience);
+
+        assertEquals(50, skills.size());
+        assertEquals(50, definitions.size());
+        assertTrue(definitions.entrySet().stream().allMatch(entry ->
+                entry.getValue().getAsJsonObject().get("cost").getAsInt() == 1
+        ));
+        int totalSkillCost = definitions.entrySet().stream()
+                .mapToInt(entry -> entry.getValue().getAsJsonObject().get("cost").getAsInt())
+                .sum();
+        assertEquals(50, totalSkillCost);
+
+        assertEquals(19L, skills.keySet().stream()
+                .filter(FoodProducerDataDesignTest::isAgricultureSkill)
+                .count());
+        assertEquals(17L, skills.keySet().stream()
+                .filter(FoodProducerDataDesignTest::isRanchSkill)
+                .count());
+        assertEquals(14L, skills.keySet().stream()
+                .filter(FoodProducerDataDesignTest::isProcessingSkill)
+                .count());
     }
 
     @Test
@@ -310,6 +356,29 @@ class FoodProducerDataDesignTest {
     }
 
     private record RoleEffect(String id, double amount) {
+    }
+
+    private static boolean isAgricultureSkill(String skill) {
+        return skill.equals("farmland_diagnosis")
+                || skill.startsWith("growth_management_")
+                || skill.startsWith("yield_management_")
+                || skill.startsWith("quality_cultivation_")
+                || skill.startsWith("fertility_management_");
+    }
+
+    private static boolean isRanchSkill(String skill) {
+        return skill.equals("ranch_management")
+                || skill.startsWith("feed_management_")
+                || skill.startsWith("ranch_capacity_")
+                || skill.startsWith("breeding_management_")
+                || skill.startsWith("meat_processing_");
+    }
+
+    private static boolean isProcessingSkill(String skill) {
+        return skill.equals("basic_processing")
+                || skill.startsWith("processing_technique_")
+                || skill.startsWith("quality_cooking_")
+                || skill.startsWith("recipe_research_");
     }
 
     private static JsonObject resource(String path) {
