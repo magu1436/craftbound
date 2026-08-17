@@ -4,6 +4,7 @@ import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMeta
 import com.magu1436.craftbound.occupations.blacksmith.carving.definition.NonMetalPartDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.casting.definition.MetalPartDefinitions;
 import com.magu1436.craftbound.occupations.blacksmith.material.MetalMaterialDefinitions;
+import com.magu1436.craftbound.occupations.blacksmith.quality.QualityTargetRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -36,6 +37,7 @@ public final class QualityAssemblyRecipeValidationListener
         if (!errors.isEmpty()) {
             throw new IllegalStateException("Invalid quality assembly recipes: " + String.join("; ", errors));
         }
+        QualityTargetRegistry.rebuild(recipeManager);
     }
 
     private static void validate(QualityAssemblyRecipe recipe, List<String> errors) {
