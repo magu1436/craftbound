@@ -4,13 +4,27 @@ import com.magu1436.craftbound.Craftbound;
 import com.magu1436.craftbound.occupations.blacksmith.quality.BlacksmithQualityResolver;
 import com.magu1436.craftbound.occupations.blacksmith.quality.QualityPerformanceService;
 import com.magu1436.craftbound.occupations.blacksmith.quality.QualityPerformanceType;
+import com.magu1436.craftbound.occupations.blacksmith.quality.projectile.QualityProjectileFiringContext;
+import com.magu1436.craftbound.occupations.blacksmith.quality.projectile.QualityProjectileImpactContext;
+import com.magu1436.craftbound.occupations.blacksmith.quality.projectile.QualityProjectileStateService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingGetProjectileEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.ArrowLooseEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -44,6 +58,73 @@ public final class BlacksmithQualityPerformanceEvents {
             QualityPerformanceType.ARMOR_TOUGHNESS,
             quality.getAsInt()
         );
+    }
+
+    @SubscribeEvent
+    public static void onArrowLoose(ArrowLooseEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        recordFiringQuality(player, event.getBow());
+    }
+
+    @SubscribeEvent
+    public static void onLivingGetProjectile(LivingGetProjectileEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        recordFiringQuality(player, event.getProjectileWeaponItemStack());
+    }
+
+    @SubscribeEvent
+    public static void onProjectileJoinLevel(EntityJoinLevelEvent event) {
+        if (event.loadedFromDisk()
+            || !(event.getLevel() instanceof ServerLevel level)
+            || !(event.getEntity() instanceof Projectile projectile)
+            || !(projectile.getOwner() instanceof ServerPlayer owner)) {
+            return;
+        }
+
+        QualityProjectileFiringContext.find(owner.getUUID(), level.getGameTime())
+            .ifPresent(quality -> QualityProjectileStateService.setQuality(projectile, quality));
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLivingHurt(LivingHurtEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+
+        findDamageProjectile(event.getSource().getDirectEntity())
+            .flatMap(projectile -> {
+                OptionalInt quality = QualityProjectileStateService.readQuality(projectile);
+                return quality.isPresent()
+                    ? java.util.Optional.of(quality.getAsInt())
+                    : java.util.Optional.empty();
+            })
+            .ifPresent(quality -> event.setAmount(QualityPerformanceService.apply(
+                QualityPerformanceType.PROJECTILE_DAMAGE,
+                event.getAmount(),
+                quality
+            )));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        QualityProjectileFiringContext.clear(event.getEntity().getUUID());
+    }
+
+    private static void recordFiringQuality(ServerPlayer player, ItemStack weapon) {
+        BlacksmithQualityResolver.resolveForPerformance(weapon).ifPresent(quality ->
+            QualityProjectileFiringContext.record(
+                player.getUUID(),
+                quality,
+                player.level().getGameTime()
+            )
+        );
+    }
+
+    private static java.util.Optional<Projectile> findDamageProjectile(Entity directEntity) {
+        if (directEntity instanceof Projectile directProjectile
+            && QualityProjectileStateService.readQuality(directProjectile).isPresent()) {
+            return java.util.Optional.of(directProjectile);
+        }
+        return QualityProjectileImpactContext.current()
+            .filter(projectile -> QualityProjectileStateService.readQuality(projectile).isPresent());
     }
 
     private static void replaceAdditionModifiers(
