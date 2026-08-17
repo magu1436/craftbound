@@ -2,6 +2,7 @@ package com.magu1436.craftbound;
 
 import com.magu1436.craftbound.client.event.CraftboundMovementPenaltyEventHandler;
 import com.magu1436.craftbound.integration.diet.FoodProducerDietIntegration;
+import com.magu1436.craftbound.loot.CraftboundLootModifiers;
 import com.magu1436.craftbound.network.CraftboundNetwork;
 import com.magu1436.craftbound.occupations.adventurer.AdventurerConfig;
 import com.magu1436.craftbound.occupations.adventurer.client.AdventurerMovementPenaltyRules;
@@ -84,6 +85,7 @@ public class Craftbound {
         CraftboundRecipeSerializers.register(modEventBus);
         CraftboundAttributes.register(modEventBus);
         CraftboundMobEffects.register(modEventBus);
+        CraftboundLootModifiers.register(modEventBus);
         FoodProducerLootModifiers.register(modEventBus);
 
         AdventurerMobKillExperienceSource.register();
