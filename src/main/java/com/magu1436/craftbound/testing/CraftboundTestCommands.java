@@ -921,6 +921,8 @@ public final class CraftboundTestCommands {
         // 収穫時の48,000 tick予約を消してから、テスト用の短い予約へ置き換える。
         source.getLevel().getBlockTicks().clearArea(new BoundingBox(pos));
         source.getLevel().scheduleTick(pos, forage, seconds * 20);
+        // 収穫済みのBlockstateが変化しない場合も、置き換えた予約をセーブ対象にする。
+        source.getLevel().getChunkAt(pos).setUnsaved(true);
         source.sendSuccess(() -> Component.translatable(
                 "command.craftbound.test.foraging.countdown",
                 pos.getX(),

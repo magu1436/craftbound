@@ -141,7 +141,7 @@ public class CraftboundBlocks {
         return BLOCKS.register(id, () -> new RegionalForageBlock(
             BlockBehaviour.Properties.copy(Blocks.GRASS)
                 .noCollission()
-                .instabreak()
+                .strength(0.6F)
                 .sound(SoundType.CROP)
                 .offsetType(BlockBehaviour.OffsetType.XZ),
             new ResourceLocation(Craftbound.MODID, id)
