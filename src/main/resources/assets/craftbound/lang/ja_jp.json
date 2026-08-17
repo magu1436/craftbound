@@ -438,5 +438,8 @@
     "quality.craftbound.blacksmith.low": "低品質",
     "quality.craftbound.blacksmith.standard": "標準",
     "quality.craftbound.blacksmith.high": "高品質",
-    "quality.craftbound.blacksmith.masterwork": "最高品質"
+    "quality.craftbound.blacksmith.masterwork": "最高品質",
+    "item.craftbound.gauntlet_frame_mold": "籠手枠の鋳型",
+    "item.craftbound.rough_gauntlet_frame": "粗加工の籠手枠",
+    "item.craftbound.gauntlet_frame": "籠手枠"
 }

@@ -1,0 +1,17 @@
+{
+  "type": "craftbound:quality_assembly",
+  "conditions": [
+    { "type": "forge:mod_loaded", "modid": "cataclysm" }
+  ],
+  "pattern": ["B", "L"],
+  "key": {
+    "B": {
+      "kind": "metal_part",
+      "part_type": "craftbound:iron/chestplate_body",
+      "material": "craftbound:ignitium",
+      "contributes_to_quality": true
+    },
+    "L": {"kind": "ingredient", "item": "craftbound:protective_lining"}
+  },
+  "result": {"item": "cataclysm:ignitium_chestplate", "count": 1}
+}

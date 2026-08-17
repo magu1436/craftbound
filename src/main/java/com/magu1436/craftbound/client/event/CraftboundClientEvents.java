@@ -91,7 +91,8 @@ public final class CraftboundClientEvents {
             CraftboundItems.ROUGH_BOOTS_BODY.get(), CraftboundItems.ROUGH_HORSE_ARMOR_BODY.get(),
             CraftboundItems.ROUGH_IRON_RING.get(), CraftboundItems.ROUGH_CROSSBOW_TRIGGER.get(),
             CraftboundItems.ROUGH_SHIELD_BOSS.get(), CraftboundItems.ROUGH_SHEARS_BLADES.get(),
-            CraftboundItems.ROUGH_FIRE_STRIKER.get(), CraftboundItems.ROUGH_BRUSH_HEAD.get());
+            CraftboundItems.ROUGH_FIRE_STRIKER.get(), CraftboundItems.ROUGH_BRUSH_HEAD.get(),
+            CraftboundItems.ROUGH_GAUNTLET_FRAME.get());
         event.register(MetalPartColorHandler::getColor,
             CraftboundItems.SWORD_BLADE.get(), CraftboundItems.PICKAXE_HEAD.get(),
             CraftboundItems.AXE_HEAD.get(), CraftboundItems.SHOVEL_HEAD.get(),
@@ -100,7 +101,8 @@ public final class CraftboundClientEvents {
             CraftboundItems.BOOTS_BODY.get(), CraftboundItems.HORSE_ARMOR_BODY.get(),
             CraftboundItems.IRON_RING.get(), CraftboundItems.CROSSBOW_TRIGGER.get(),
             CraftboundItems.SHIELD_BOSS.get(), CraftboundItems.SHEARS_BLADES.get(),
-            CraftboundItems.FIRE_STRIKER.get(), CraftboundItems.BRUSH_HEAD.get());
+            CraftboundItems.FIRE_STRIKER.get(), CraftboundItems.BRUSH_HEAD.get(),
+            CraftboundItems.GAUNTLET_FRAME.get());
     }
 
     @SubscribeEvent

@@ -444,5 +444,8 @@
     "quality.craftbound.blacksmith.low": "Low Quality",
     "quality.craftbound.blacksmith.standard": "Standard",
     "quality.craftbound.blacksmith.high": "High Quality",
-    "quality.craftbound.blacksmith.masterwork": "Masterwork"
+    "quality.craftbound.blacksmith.masterwork": "Masterwork",
+    "item.craftbound.gauntlet_frame_mold": "Gauntlet Frame Mold",
+    "item.craftbound.rough_gauntlet_frame": "Rough Gauntlet Frame",
+    "item.craftbound.gauntlet_frame": "Gauntlet Frame"
 }
