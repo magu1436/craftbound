@@ -16,6 +16,7 @@
     "LivingEntityFreezeMixin",
     "PlayerMovementExhaustionMixin",
     "PowderSnowBlockMixin",
+    "RecipeManagerMixin",
     "SweetBerryBushBlockMixin",
     "AbstractFurnaceBlockEntityMixin",
     "CampfireBlockEntityMixin",
