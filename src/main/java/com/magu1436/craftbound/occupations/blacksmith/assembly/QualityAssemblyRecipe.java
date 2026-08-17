@@ -17,7 +17,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
-public final class QualityAssemblyRecipe implements CraftingRecipe {
+public final class QualityAssemblyRecipe implements CraftingRecipe, QualityAssemblyRecipeView {
     private final ResourceLocation id;
     private final String group;
     private final CraftingBookCategory category;
