@@ -119,7 +119,7 @@ public final class QualityAssemblyRecipeSerializer implements RecipeSerializer<Q
         return new Pattern(width, height, ingredients);
     }
 
-    private static AssemblyIngredient readIngredient(JsonObject json) {
+    static AssemblyIngredient readIngredient(JsonObject json) {
         String kind = GsonHelper.getAsString(json, "kind");
         return switch (kind) {
             case "ingredient" -> {
@@ -145,7 +145,7 @@ public final class QualityAssemblyRecipeSerializer implements RecipeSerializer<Q
         };
     }
 
-    private static ItemStack readResult(JsonObject json) {
+    static ItemStack readResult(JsonObject json) {
         ResourceLocation itemId = requiredId(json, "item");
         require(ForgeRegistries.ITEMS.containsKey(itemId), "unknown result item `" + itemId + "`");
         int count = GsonHelper.getAsInt(json, "count", 1);
@@ -161,7 +161,7 @@ public final class QualityAssemblyRecipeSerializer implements RecipeSerializer<Q
         return id;
     }
 
-    private static AssemblyIngredient readIngredient(FriendlyByteBuf buffer) {
+    static AssemblyIngredient readIngredient(FriendlyByteBuf buffer) {
         return switch (buffer.readByte()) {
             case 0 -> new VanillaAssemblyIngredient(Ingredient.fromNetwork(buffer));
             case 1 -> new MetalPartAssemblyIngredient(buffer.readResourceLocation(),
@@ -173,7 +173,7 @@ public final class QualityAssemblyRecipeSerializer implements RecipeSerializer<Q
         };
     }
 
-    private static void writeIngredient(FriendlyByteBuf buffer, AssemblyIngredient ingredient) {
+    static void writeIngredient(FriendlyByteBuf buffer, AssemblyIngredient ingredient) {
         if (ingredient == null) {
             buffer.writeByte(3);
         } else if (ingredient instanceof VanillaAssemblyIngredient vanilla) {

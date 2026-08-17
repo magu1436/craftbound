@@ -23,6 +23,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import org.slf4j.Logger;
@@ -84,6 +85,9 @@ public final class MetalMaterialDefinitions
 
         definitions.forEach((definitionId, element) -> {
             try {
+                if (isRequiredModMissing(element)) {
+                    return;
+                }
                 ParsedMetal parsed = parse(definitionId, element);
                 loadedIngredients.addAll(parsed.ingredients());
                 loadedDefinitions.put(definitionId, parsed.definition());
@@ -102,6 +106,17 @@ public final class MetalMaterialDefinitions
             "Loaded {} blacksmith metal definitions",
             loadedDefinitions.size()
         );
+    }
+
+    private static boolean isRequiredModMissing(JsonElement element) {
+        if (!element.isJsonObject()) {
+            return false;
+        }
+        JsonObject json = element.getAsJsonObject();
+        if (!json.has("required_mod")) {
+            return false;
+        }
+        return !ModList.get().isLoaded(GsonHelper.getAsString(json, "required_mod"));
     }
 
     static ParsedMetal parse(

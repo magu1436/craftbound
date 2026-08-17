@@ -31,8 +31,8 @@ public final class QualityAssemblyRecipeValidationListener
     protected void apply(Void ignored, ResourceManager resourceManager, ProfilerFiller profiler) {
         List<String> errors = new ArrayList<>();
         recipeManager.getAllRecipesFor(RecipeType.CRAFTING).stream()
-            .filter(QualityAssemblyRecipe.class::isInstance)
-            .map(QualityAssemblyRecipe.class::cast)
+            .filter(QualityAssemblyRecipeView.class::isInstance)
+            .map(QualityAssemblyRecipeView.class::cast)
             .forEach(recipe -> validate(recipe, errors));
         if (!errors.isEmpty()) {
             throw new IllegalStateException("Invalid quality assembly recipes: " + String.join("; ", errors));
@@ -40,7 +40,7 @@ public final class QualityAssemblyRecipeValidationListener
         QualityTargetRegistry.rebuild(recipeManager);
     }
 
-    private static void validate(QualityAssemblyRecipe recipe, List<String> errors) {
+    private static void validate(QualityAssemblyRecipeView recipe, List<String> errors) {
         for (AssemblyIngredient ingredient : recipe.assemblyIngredients()) {
             if (ingredient instanceof MetalPartAssemblyIngredient metal) {
                 if (MetalPartDefinitions.INSTANCE.get(metal.partTypeId()).isEmpty()) {

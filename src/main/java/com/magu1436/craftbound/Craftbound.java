@@ -1,6 +1,7 @@
 package com.magu1436.craftbound;
 
 import com.magu1436.craftbound.client.event.CraftboundMovementPenaltyEventHandler;
+import com.magu1436.craftbound.integration.cataclysm.CataclysmRecipeIntegration;
 import com.magu1436.craftbound.integration.diet.FoodProducerDietIntegration;
 import com.magu1436.craftbound.loot.CraftboundLootModifiers;
 import com.magu1436.craftbound.network.CraftboundNetwork;
@@ -76,6 +77,9 @@ public class Craftbound {
 
         if (ModList.get().isLoaded("diet")) {
             FoodProducerDietIntegration.register();
+        }
+        if (ModList.get().isLoaded("cataclysm")) {
+            CataclysmRecipeIntegration.register();
         }
 
         CraftboundItems.register(modEventBus);

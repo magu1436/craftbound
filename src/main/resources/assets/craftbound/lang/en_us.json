@@ -93,6 +93,7 @@
     "metal.craftbound.iron":  "Iron",
     "metal.craftbound.gold":  "Gold",
     "metal.craftbound.copper":  "Copper",
+    "metal.craftbound.ignitium":  "Ignitium",
     "item.craftbound.smithing_hammer":  "Smithing Hammer",
     "block.craftbound.forging_table":  "Forging Table",
     "container.craftbound.forging_table":  "Forging Table",
@@ -444,5 +445,8 @@
     "quality.craftbound.blacksmith.low": "Low Quality",
     "quality.craftbound.blacksmith.standard": "Standard",
     "quality.craftbound.blacksmith.high": "High Quality",
-    "quality.craftbound.blacksmith.masterwork": "Masterwork"
+    "quality.craftbound.blacksmith.masterwork": "Masterwork",
+    "item.craftbound.gauntlet_frame_mold": "Gauntlet Frame Mold",
+    "item.craftbound.rough_gauntlet_frame": "Rough Gauntlet Frame",
+    "item.craftbound.gauntlet_frame": "Gauntlet Frame"
 }

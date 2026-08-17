@@ -1,0 +1,22 @@
+{
+  "type": "craftbound:quality_shapeless_assembly",
+  "conditions": [
+    { "type": "forge:mod_loaded", "modid": "cataclysm" }
+  ],
+  "ingredients": [
+    {
+      "kind": "metal_part",
+      "part_type": "craftbound:iron/gauntlet_frame",
+      "material": "craftbound:ignitium",
+      "contributes_to_quality": true
+    },
+    {
+      "kind": "ingredient",
+      "item": "craftbound:protective_lining"
+    }
+  ],
+  "result": {
+    "item": "cataclysm:blazing_grips",
+    "count": 1
+  }
+}

@@ -1,6 +1,6 @@
 package com.magu1436.craftbound.occupations.blacksmith.quality;
 
-import com.magu1436.craftbound.occupations.blacksmith.assembly.QualityAssemblyRecipe;
+import com.magu1436.craftbound.occupations.blacksmith.assembly.QualityAssemblyRecipeView;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,9 +22,9 @@ public final class QualityTargetRegistry {
     static Set<Item> collectTargets(List<? extends CraftingRecipe> recipes) {
         Set<Item> rebuilt = new HashSet<>();
         recipes.stream()
-            .filter(QualityAssemblyRecipe.class::isInstance)
-            .map(QualityAssemblyRecipe.class::cast)
-            .map(QualityAssemblyRecipe::result)
+            .filter(QualityAssemblyRecipeView.class::isInstance)
+            .map(QualityAssemblyRecipeView.class::cast)
+            .map(QualityAssemblyRecipeView::result)
             .filter(stack -> !stack.isEmpty())
             .map(ItemStack::getItem)
             .forEach(rebuilt::add);

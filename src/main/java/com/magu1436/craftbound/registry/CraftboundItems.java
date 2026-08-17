@@ -97,6 +97,7 @@ public final class CraftboundItems {
     public static final RegistryObject<Item> SHEARS_BLADES_MOLD = registerCastingMold("shears_blades_mold");
     public static final RegistryObject<Item> FIRE_STRIKER_MOLD = registerCastingMold("fire_striker_mold");
     public static final RegistryObject<Item> BRUSH_HEAD_MOLD = registerCastingMold("brush_head_mold");
+    public static final RegistryObject<Item> GAUNTLET_FRAME_MOLD = registerCastingMold("gauntlet_frame_mold");
     public static final RegistryObject<Item> ROUGH_SWORD_BLADE = registerRoughMetalPart("rough_sword_blade");
     public static final RegistryObject<Item> ROUGH_PICKAXE_HEAD = registerRoughMetalPart("rough_pickaxe_head");
     public static final RegistryObject<Item> ROUGH_AXE_HEAD = registerRoughMetalPart("rough_axe_head");
@@ -113,6 +114,7 @@ public final class CraftboundItems {
     public static final RegistryObject<Item> ROUGH_SHEARS_BLADES = registerRoughMetalPart("rough_shears_blades");
     public static final RegistryObject<Item> ROUGH_FIRE_STRIKER = registerRoughMetalPart("rough_fire_striker");
     public static final RegistryObject<Item> ROUGH_BRUSH_HEAD = registerRoughMetalPart("rough_brush_head");
+    public static final RegistryObject<Item> ROUGH_GAUNTLET_FRAME = registerRoughMetalPart("rough_gauntlet_frame");
     public static final RegistryObject<Item> SMALL_METAL_LUMP = ITEMS.register(
         "small_metal_lump", () -> new MetalLumpItem(new Item.Properties())
     );
@@ -132,6 +134,7 @@ public final class CraftboundItems {
     public static final RegistryObject<Item> SHEARS_BLADES = registerMetalPart("shears_blades");
     public static final RegistryObject<Item> FIRE_STRIKER = registerMetalPart("fire_striker");
     public static final RegistryObject<Item> BRUSH_HEAD = registerMetalPart("brush_head");
+    public static final RegistryObject<Item> GAUNTLET_FRAME = registerMetalPart("gauntlet_frame");
 
     public static final RegistryObject<Item> AGRICULTURAL_FERTILIZER = ITEMS.register(
         "agricultural_fertilizer",
