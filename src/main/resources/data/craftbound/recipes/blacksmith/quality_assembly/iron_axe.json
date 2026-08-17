@@ -7,7 +7,7 @@
   "key": {
     "H": {
       "kind": "metal_part",
-      "part_type": "craftbound:iron/pickaxe_head",
+      "part_type": "craftbound:iron/axe_head",
       "material": "craftbound:iron",
       "contributes_to_quality": true
     },
@@ -19,7 +19,7 @@
     }
   },
   "result": {
-    "item": "minecraft:iron_pickaxe",
+    "item": "minecraft:iron_axe",
     "count": 1
   }
 }

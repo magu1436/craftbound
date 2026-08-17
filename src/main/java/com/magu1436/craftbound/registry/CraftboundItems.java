@@ -73,8 +73,11 @@ public final class CraftboundItems {
     public static final RegistryObject<Item> CARVING_CHISEL = ITEMS.register(
         "carving_chisel", () -> new Item(new Item.Properties().durability(192))
     );
-    public static final RegistryObject<Item> PICKAXE_HANDLE = ITEMS.register(
-        "pickaxe_handle", () -> new Item(new Item.Properties().stacksTo(1))
+    public static final RegistryObject<Item> TOOL_HANDLE = ITEMS.register(
+        "tool_handle", () -> new Item(new Item.Properties().stacksTo(1))
+    );
+    public static final RegistryObject<Item> SWORD_HANDLE = ITEMS.register(
+        "sword_handle", () -> new Item(new Item.Properties().stacksTo(1))
     );
     public static final RegistryObject<Item> PROTECTIVE_LINING = registerItem("protective_lining");
     public static final RegistryObject<Item> BLANK_MOLD = registerItem("blank_mold");

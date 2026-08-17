@@ -7,19 +7,19 @@
   "key": {
     "H": {
       "kind": "metal_part",
-      "part_type": "craftbound:iron/pickaxe_head",
+      "part_type": "craftbound:iron/sword_blade",
       "material": "craftbound:iron",
       "contributes_to_quality": true
     },
     "S": {
       "kind": "nonmetal_part",
-      "part_type": "craftbound:wood/tool_handle",
+      "part_type": "craftbound:wood/sword_handle",
       "material": "craftbound:wood",
       "contributes_to_quality": true
     }
   },
   "result": {
-    "item": "minecraft:iron_pickaxe",
+    "item": "minecraft:iron_sword",
     "count": 1
   }
 }
