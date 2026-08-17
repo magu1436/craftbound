@@ -23,6 +23,7 @@
     "CraftingMenuMixin",
     "DropperBlockMixin",
     "HopperBlockEntityMixin",
+    "integration.cataclysm.WeaponfusionRecipeMixin",
     "accessor.CraftingMenuAccessor",
     "accessor.TransientCraftingContainerAccessor"
   ],

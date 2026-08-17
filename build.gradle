@@ -195,6 +195,7 @@ dependencies {
     runtimeOnly "io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"
 
     // Optional content integrations and their declared runtime libraries.
+    compileOnly fg.deobf("maven.modrinth:l_enders-cataclysm:${cataclysm_modrinth_version}")
     runtimeOnly fg.deobf("maven.modrinth:l_enders-cataclysm:${cataclysm_modrinth_version}")
     runtimeOnly fg.deobf("maven.modrinth:lionfish-api:${lionfish_api_modrinth_version}")
     runtimeOnly fg.deobf("maven.modrinth:curios:${curios_modrinth_version}")
