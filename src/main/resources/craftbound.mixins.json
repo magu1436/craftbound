@@ -8,6 +8,8 @@
     "EntityBlockSpeedFactorMixin",
     "FireworkRocketItemMixin",
     "ItemStackToolCareMixin",
+    "ItemStackQualityPerformanceMixin",
+    "ItemQualityDurabilityBarMixin",
     "EntityStuckMovementMixin",
     "LivingEntityClimbingMixin",
     "LivingEntityFreezeMixin",
