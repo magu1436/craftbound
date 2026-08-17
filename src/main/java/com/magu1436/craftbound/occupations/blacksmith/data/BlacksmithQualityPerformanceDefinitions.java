@@ -53,6 +53,34 @@ public final class BlacksmithQualityPerformanceDefinitions extends SimpleJsonRes
         return current;
     }
 
+    public static Definition validatedDefinition(
+        int defaultQuality,
+        Map<QualityPerformanceType, QualityPerformanceRule> modifiers
+    ) {
+        if (!QualityState.isValidQuality(defaultQuality)) {
+            throw new IllegalArgumentException("default_quality is outside the valid range: " + defaultQuality);
+        }
+        if (modifiers.size() != QualityPerformanceType.values().length) {
+            throw new IllegalArgumentException("quality performance definition must contain every modifier");
+        }
+
+        EnumMap<QualityPerformanceType, QualityPerformanceRule> validated =
+            new EnumMap<>(QualityPerformanceType.class);
+        for (QualityPerformanceType type : QualityPerformanceType.values()) {
+            QualityPerformanceRule rule = modifiers.get(type);
+            if (rule == null) {
+                throw new IllegalArgumentException("missing quality performance modifier: " + type.serializedName());
+            }
+            validateRule(type, rule);
+            validated.put(type, rule);
+        }
+        return new Definition(defaultQuality, validated);
+    }
+
+    public static void replace(Definition definition) {
+        current = validatedDefinition(definition.defaultQuality(), definition.modifiers());
+    }
+
     @Override
     protected void apply(
         Map<ResourceLocation, JsonElement> resources,
@@ -105,7 +133,7 @@ public final class BlacksmithQualityPerformanceDefinitions extends SimpleJsonRes
             JsonObject ruleJson = GsonHelper.getAsJsonObject(modifiersJson, type.serializedName());
             modifiers.put(type, parseRule(type, ruleJson));
         }
-        return new Definition(defaultQuality, modifiers);
+        return validatedDefinition(defaultQuality, modifiers);
     }
 
     private static QualityPerformanceRule parseRule(QualityPerformanceType type, JsonObject json) {
@@ -170,6 +198,24 @@ public final class BlacksmithQualityPerformanceDefinitions extends SimpleJsonRes
         }
     }
 
+    private static void validateRule(QualityPerformanceType type, QualityPerformanceRule rule) {
+        if (!LINEAR_MULTIPLIER.equals(rule.evaluator())) {
+            throw new IllegalArgumentException("unsupported evaluator for " + type.serializedName());
+        }
+        if (!Double.isFinite(rule.base()) || !Double.isFinite(rule.perQuality())) {
+            throw new IllegalArgumentException("non-finite value in modifier: " + type.serializedName());
+        }
+        if (!Double.isFinite(rule.roundTo()) || rule.roundTo() < 0.0D || rule.rounding() == null) {
+            throw new IllegalArgumentException("invalid rounding value in modifier: " + type.serializedName());
+        }
+        validateTypeSpecificOptions(
+            type,
+            rule.roundTo(),
+            rule.rounding(),
+            rule.preserveDamageRatio()
+        );
+    }
+
     private static Definition createDefaultDefinition() {
         EnumMap<QualityPerformanceType, QualityPerformanceRule> modifiers =
             new EnumMap<>(QualityPerformanceType.class);
@@ -186,7 +232,7 @@ public final class BlacksmithQualityPerformanceDefinitions extends SimpleJsonRes
                 maxDurability
             ));
         }
-        return new Definition(30, modifiers);
+        return validatedDefinition(30, modifiers);
     }
 
     public record Definition(

@@ -43,7 +43,9 @@ data/<namespace>/blacksmith/
 │  └─ <shape_id>.json
 ├─ integrations/
 │  └─ <mod_id>/
-├─ quality.json
+├─ quality/
+│  ├─ tiers.json
+│  └─ performance.json
 ├─ skill_assists.json
 └─ experience_rewards.json
 ```
@@ -385,9 +387,23 @@ data/<namespace>/recipes/blacksmith/quality_assembly/<recipe_id>.json
 
 ## 8. 品質定義
 
-配置先は `blacksmith/quality.json` とする。
+品質定義は表示用の `blacksmith/quality/tiers.json` と、既定品質および性能補正用の `blacksmith/quality/performance.json` に分ける。サーバーのデータパック読込結果をログイン時およびデータパック再読込時にクライアントへ同期し、クライアントは同期された定義を表示・計算に使用する。品質対象アイテムの一覧は独自パケットに含めず、同期済み `RecipeManager` の `QualityAssemblyRecipe` 出力から構築する。
 
-品質定義は、表示段階、通常レシピ品の品質、アイテム種別ごとの性能補正を持つ。
+`blacksmith/quality/tiers.json` は品質範囲を隙間なく分割する表示段階を持つ。
+
+```json
+{
+  "tiers": [
+    { "id": "poor", "min": 0, "max": 19, "translation_key": "quality.craftbound.blacksmith.poor" },
+    { "id": "low", "min": 20, "max": 39, "translation_key": "quality.craftbound.blacksmith.low" },
+    { "id": "standard", "min": 40, "max": 59, "translation_key": "quality.craftbound.blacksmith.standard" },
+    { "id": "high", "min": 60, "max": 79, "translation_key": "quality.craftbound.blacksmith.high" },
+    { "id": "masterwork", "min": 80, "max": 100, "translation_key": "quality.craftbound.blacksmith.masterwork" }
+  ]
+}
+```
+
+`blacksmith/quality/performance.json` は品質対象アイテムに品質データがない場合の既定品質と、アイテム種別ごとの性能補正を持つ。既定品質は品質対象外のアイテムには適用しない。
 
 任意の数式文字列をJSONから実行する方式は採用しない。登録済みの評価関数IDと数値パラメータを指定する。
 
@@ -395,13 +411,6 @@ data/<namespace>/recipes/blacksmith/quality_assembly/<recipe_id>.json
 {
   "schema_version": 1,
   "default_quality": 30,
-  "tiers": [
-    { "min": 0, "max": 19, "translation_key": "quality.craftbound.poor" },
-    { "min": 20, "max": 39, "translation_key": "quality.craftbound.low" },
-    { "min": 40, "max": 59, "translation_key": "quality.craftbound.standard" },
-    { "min": 60, "max": 79, "translation_key": "quality.craftbound.high" },
-    { "min": 80, "max": 100, "translation_key": "quality.craftbound.masterwork" }
-  ],
   "modifiers": {
     "attack_damage": {
       "evaluator": "craftbound:linear_multiplier",
@@ -430,11 +439,6 @@ data/<namespace>/recipes/blacksmith/quality_assembly/<recipe_id>.json
       "base": 0.7,
       "per_quality": 0.006
     },
-    "work_speed": {
-      "evaluator": "craftbound:linear_multiplier",
-      "base": 0.7,
-      "per_quality": 0.006
-    },
     "max_durability": {
       "evaluator": "craftbound:linear_multiplier",
       "base": 0.7,
@@ -446,7 +450,7 @@ data/<namespace>/recipes/blacksmith/quality_assembly/<recipe_id>.json
 }
 ```
 
-攻撃速度、ノックバック、ノックバック耐性、エンチャント効果は `modifiers` に含めず、品質で変更しない。各倍率は登録時の基礎性能へ一度だけ適用する。
+攻撃速度、ノックバック、ノックバック耐性、エンチャント効果は `modifiers` に含めず、品質で変更しない。各倍率は登録時の基礎性能へ一度だけ適用する。ただし `projectile_damage` は、発射処理で確定した最終的な `Projectile` のダメージへ適用する。
 
 ---
 
