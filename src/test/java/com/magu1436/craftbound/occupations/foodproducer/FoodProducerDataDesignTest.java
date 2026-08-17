@@ -25,6 +25,23 @@ class FoodProducerDataDesignTest {
             "/data/craftbound/puffish_skills/categories/food_producer/";
     private static final String FOOD_RECIPE_BASE =
             "/data/craftbound/craftbound_food_recipes/";
+    private static final String REGIONAL_PLACED_FEATURE_BASE =
+            "/data/craftbound/worldgen/placed_feature/";
+    private static final String REGIONAL_CONFIGURED_FEATURE_BASE =
+            "/data/craftbound/worldgen/configured_feature/";
+    private static final List<String> REGIONAL_INGREDIENTS = List.of(
+            "wild_garlic",
+            "forest_thyme",
+            "juniper_berry",
+            "cactus_fig",
+            "water_celery",
+            "jungle_pepper",
+            "cherry_herb",
+            "alpine_leek",
+            "mushroom_truffle",
+            "ice_crystal_berry",
+            "badlands_saffron"
+    );
     private static final Map<Integer, List<String>> ROLE_MEALS_BY_RANK = Map.of(
             1, List.of("provisional_work_stew", "provisional_berry_bread",
                     "provisional_meat_skewer", "provisional_mushroom_soup",
@@ -213,6 +230,31 @@ class FoodProducerDataDesignTest {
 
         assertEquals(24L * 60L * 60L * 20L,
                 FoodQualityCategory.REGIONAL_INGREDIENT.stageDurationTicks());
+    }
+
+    @Test
+    void regionalForageUsesSharedIntegrationDensityAndPatchAttempts() {
+        for (String ingredient : REGIONAL_INGREDIENTS) {
+            JsonObject placed = resource(
+                    REGIONAL_PLACED_FEATURE_BASE + ingredient + "_patch.json"
+            );
+            var placement = placed.getAsJsonArray("placement");
+            JsonObject rarity = placement.get(0).getAsJsonObject();
+            assertEquals("minecraft:rarity_filter", rarity.get("type").getAsString(), ingredient);
+            assertEquals(16, rarity.get("chance").getAsInt(), ingredient);
+            assertEquals("minecraft:in_square",
+                    placement.get(1).getAsJsonObject().get("type").getAsString(), ingredient);
+            assertEquals("MOTION_BLOCKING_NO_LEAVES",
+                    placement.get(2).getAsJsonObject().get("heightmap").getAsString(), ingredient);
+            assertEquals("minecraft:biome",
+                    placement.get(3).getAsJsonObject().get("type").getAsString(), ingredient);
+
+            JsonObject configured = resource(
+                    REGIONAL_CONFIGURED_FEATURE_BASE + ingredient + "_patch.json"
+            );
+            assertEquals(6,
+                    configured.getAsJsonObject("config").get("tries").getAsInt(), ingredient);
+        }
     }
 
     private static void assertRecipePolicy(String file, int rank, String policy) {
