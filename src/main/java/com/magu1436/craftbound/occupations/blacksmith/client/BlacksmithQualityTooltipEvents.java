@@ -1,7 +1,8 @@
 package com.magu1436.craftbound.occupations.blacksmith.client;
 
 import com.magu1436.craftbound.Craftbound;
-import com.magu1436.craftbound.common.quality.QualityStateService;
+import com.magu1436.craftbound.occupations.blacksmith.quality.BlacksmithQualityResolver;
+import java.util.OptionalInt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,8 +20,10 @@ public final class BlacksmithQualityTooltipEvents {
 
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
-        QualityStateService.read(event.getItemStack())
-            .flatMap(state -> ClientBlacksmithQualityTierDefinitions.resolve(state.quality()))
+        OptionalInt quality = BlacksmithQualityResolver.resolveForTooltip(event.getItemStack());
+        if (quality.isEmpty()) return;
+
+        ClientBlacksmithQualityTierDefinitions.resolve(quality.getAsInt())
             .ifPresent(tier -> event.getToolTip().add(
                 Component.translatable(
                     "tooltip.craftbound.blacksmith_quality",

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "default_quality": 30,
+  "modifiers": {
+    "attack_damage": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006
+    },
+    "projectile_damage": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006
+    },
+    "armor": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006,
+      "round_to": 0.5
+    },
+    "armor_toughness": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006,
+      "round_to": 0.5
+    },
+    "mining_speed": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006
+    },
+    "max_durability": {
+      "evaluator": "craftbound:linear_multiplier",
+      "base": 0.7,
+      "per_quality": 0.006,
+      "rounding": "round",
+      "preserve_damage_ratio": true
+    }
+  }
+}
