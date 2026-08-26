@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"minecraft:item/beetroot"}}
+{"parent":"minecraft:item/generated","textures":{"layer0":"craftbound:item/chopped_vegetable"}}
