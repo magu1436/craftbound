@@ -89,7 +89,9 @@ public class CraftboundBlocks {
         () -> new RanchBlock(BlockBehaviour.Properties.of()
             .mapColor(MapColor.WOOD)
             .strength(2.5F)
-            .sound(SoundType.WOOD))
+            .sound(SoundType.WOOD)
+            .noOcclusion()
+        )
     );
     public static final RegistryObject<Block> PRESERVATION_STORAGE_1 = BLOCKS.register(
         "preservation_storage_1",

@@ -1,4 +1,5 @@
 {
+  "parent": "minecraft:block/block",
   "textures": {
     "wood": "craftbound:block/ranch_block/ranch_block_wood",
     "inner": "craftbound:block/ranch_block/ranch_block_inner",
