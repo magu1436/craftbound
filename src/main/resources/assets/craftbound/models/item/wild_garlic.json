@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"minecraft:block/allium"}}
+{"parent":"minecraft:item/generated","textures":{"layer0":"craftbound:item/regional_forage/wild_garlic"}}

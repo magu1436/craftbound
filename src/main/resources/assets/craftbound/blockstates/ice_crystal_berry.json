@@ -1,1 +1,1 @@
-{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage_tier_5"},"harvested=true":{"model":"craftbound:block/regional_forage_tier_5_harvested"}}}
+{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage/ice_crystal_berry"},"harvested=true":{"model":"craftbound:block/regional_forage/ice_crystal_berry_harvested"}}}

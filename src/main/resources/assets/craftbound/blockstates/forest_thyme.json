@@ -1,1 +1,1 @@
-{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage_tier_1"},"harvested=true":{"model":"craftbound:block/regional_forage_tier_1_harvested"}}}
+{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage/forest_thyme"},"harvested=true":{"model":"craftbound:block/regional_forage/forest_thyme_harvested"}}}
