@@ -1,1 +1,1 @@
-{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage_tier_3"},"harvested=true":{"model":"craftbound:block/regional_forage_tier_3_harvested"}}}
+{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage/water_celery"},"harvested=true":{"model":"craftbound:block/regional_forage/water_celery_harvested"}}}

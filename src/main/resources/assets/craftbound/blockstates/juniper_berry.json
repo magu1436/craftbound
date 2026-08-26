@@ -1,1 +1,1 @@
-{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage_tier_2"},"harvested=true":{"model":"craftbound:block/regional_forage_tier_2_harvested"}}}
+{"variants":{"harvested=false":{"model":"craftbound:block/regional_forage/juniper_berry"},"harvested=true":{"model":"craftbound:block/regional_forage/juniper_berry_harvested"}}}
