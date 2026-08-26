@@ -279,6 +279,27 @@ class FoodProducerDataDesignTest {
     }
 
     @Test
+    void qualityCategoriesUseFinalizedStageDurations() {
+        assertEquals(70L * 60L * 20L,
+                FoodQualityCategory.DISH.stageDurationTicks());
+        assertEquals(140L * 60L * 20L,
+                FoodQualityCategory.MATERIAL.stageDurationTicks());
+        assertEquals(280L * 60L * 20L,
+                FoodQualityCategory.PRESERVED_FOOD.stageDurationTicks());
+        assertEquals(24L * 60L * 60L * 20L,
+                FoodQualityCategory.REGIONAL_INGREDIENT.stageDurationTicks());
+
+        assertEquals(140L * 60L * 20L,
+                FoodQualityCategory.DISH.stageDurationTicks() * 2L);
+        assertEquals(280L * 60L * 20L,
+                FoodQualityCategory.MATERIAL.stageDurationTicks() * 2L);
+        assertEquals(560L * 60L * 20L,
+                FoodQualityCategory.PRESERVED_FOOD.stageDurationTicks() * 2L);
+        assertEquals(48L * 60L * 60L * 20L,
+                FoodQualityCategory.REGIONAL_INGREDIENT.stageDurationTicks() * 2L);
+    }
+
+    @Test
     void regionalForageUsesSharedIntegrationDensityAndPatchAttempts() {
         for (String ingredient : REGIONAL_INGREDIENTS) {
             JsonObject placed = resource(
