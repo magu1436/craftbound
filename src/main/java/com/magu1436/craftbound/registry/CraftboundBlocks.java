@@ -134,6 +134,7 @@ public class CraftboundBlocks {
                 .mapColor(color)
                 .strength(2.5F)
                 .sound(sound)
+                .noOcclusion()
         ));
     }
 
