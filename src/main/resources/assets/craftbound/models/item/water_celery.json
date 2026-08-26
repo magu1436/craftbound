@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"minecraft:block/seagrass"}}
+{"parent":"minecraft:item/generated","textures":{"layer0":"craftbound:item/regional_forage/water_celery"}}
